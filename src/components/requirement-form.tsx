@@ -9,7 +9,7 @@ import { useSession } from "@/components/session-provider";
 import { ApiError, clientApi } from "@/lib/client-api";
 import { AREA_UNIT_LABELS, PROPERTY_CATEGORY_LABELS, formatCompactPrice, toOptions } from "@/lib/labels";
 import type { MasterData } from "@/lib/master-data";
-import type { AreaUnit, Collection, Phase, PropertyCategory, PropertyPurpose, Resource, WantedPost } from "@/types/api";
+import type { AreaUnit, Collection, Phase, PropertyCategory, PropertyPurpose, Resource, WantedPost, WantedPostApproval } from "@/types/api";
 
 type Values = {
   purpose: PropertyPurpose;
@@ -140,6 +140,7 @@ export function RequirementForm({ id, cities, societies, propertyTypes }: Master
       id={id}
       initial={post.data ? valuesOf(post.data) : undefined}
       isOpen={post.data?.is_open ?? true}
+      approval={post.data?.approval_status}
       cities={cities}
       societies={societies}
       propertyTypes={propertyTypes}
@@ -147,7 +148,15 @@ export function RequirementForm({ id, cities, societies, propertyTypes }: Master
   );
 }
 
-function RequirementFields({ id, initial, isOpen, cities, societies, propertyTypes }: MasterData & { id?: number; initial?: Values; isOpen: boolean }) {
+function RequirementFields({
+  id,
+  initial,
+  isOpen,
+  approval,
+  cities,
+  societies,
+  propertyTypes,
+}: MasterData & { id?: number; initial?: Values; isOpen: boolean; approval?: WantedPostApproval }) {
   const { user } = useSession();
   const { message } = App.useApp();
   const router = useRouter();
@@ -189,9 +198,13 @@ function RequirementFields({ id, initial, isOpen, cities, societies, propertyTyp
       isEdit
         ? clientApi<Resource<WantedPost>>(`portal/my-wanted-posts/${id}`, { method: "PUT", body: payloadOf(values) })
         : clientApi<Resource<WantedPost>>("portal/my-wanted-posts", { method: "POST", body: payloadOf(values) }),
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["my-wanted-posts"] });
-      message.success(isEdit ? "Requirement updated" : "Requirement posted. Sellers can see it for 30 days.");
+      message.success(
+        response.data.approval_status === "pending"
+          ? `${isEdit ? "Requirement updated" : "Requirement posted"}. Our team will review it before sellers can see it.`
+          : "Requirement updated",
+      );
       router.push("/account/requirements");
     },
     onError: (error) => {
@@ -253,6 +266,16 @@ function RequirementFields({ id, initial, isOpen, cities, societies, propertyTyp
               {limitError} <Link href="/account/requirements">Manage your requirements</Link>
             </>
           }
+        />
+      )}
+
+      {isEdit && approval === "approved" && isOpen && (
+        <Alert
+          type="info"
+          showIcon
+          style={{ marginBottom: 24 }}
+          title="Changing the details sends it for review again"
+          description="Sellers stop seeing it until our team approves the changes."
         />
       )}
 

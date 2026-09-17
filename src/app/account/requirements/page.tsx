@@ -13,20 +13,37 @@ import type { Paginated, Resource, WantedPost } from "@/types/api";
 /** The API allows this many open requirements per buyer. */
 const MAX_OPEN = 5;
 
-type Status = "open" | "closed" | "expired";
+type Status = "open" | "pending" | "rejected" | "closed" | "expired";
 
 const STATUS_TAGS: Record<Status, { color: string; label: string }> = {
-  open: { color: "green", label: "Open" },
+  open: { color: "green", label: "Live" },
+  pending: { color: "gold", label: "Pending review" },
+  rejected: { color: "red", label: "Not approved" },
   closed: { color: "default", label: "Closed" },
   expired: { color: "orange", label: "Expired" },
 };
 
 function statusOf(post: WantedPost): Status {
   if (post.is_open) {
-    return "open";
+    return post.approval_status === "rejected" ? "rejected" : post.approval_status === "pending" ? "pending" : "open";
   }
 
   return post.status === "closed" ? "closed" : "expired";
+}
+
+function visibilityNote(post: WantedPost, status: Status): string {
+  switch (status) {
+    case "open":
+      return `Visible until ${formatDate(post.expires_at)}`;
+    case "pending":
+      return "Our team is reviewing it. Sellers see it once approved.";
+    case "rejected":
+      return `Reason: ${post.rejection_reason ?? "—"}. Edit it to send it for review again.`;
+    case "expired":
+      return `Expired ${formatDate(post.expires_at)}`;
+    default:
+      return "Hidden from sellers";
+  }
 }
 
 export default function RequirementsPage() {
@@ -80,7 +97,7 @@ export default function RequirementsPage() {
         <div>
           <h1 className="account-title">My requirements</h1>
           <p>
-            {posts.data ? `${openCount} of ${MAX_OPEN} open · ` : ""}Sellers with a match unlock your contact details in Property Admin and get in touch.
+            {posts.data ? `${openCount} of ${MAX_OPEN} open · ` : ""}Our team reviews each requirement; once approved, sellers with a match unlock your contact details and get in touch.
           </p>
         </div>
         <Link href="/wanted">All buyer requirements →</Link>
@@ -137,7 +154,7 @@ export default function RequirementsPage() {
                   <span>
                     {unlocks === 0 ? "No sellers have unlocked it yet" : `${unlocks} seller${unlocks === 1 ? "" : "s"} unlocked your contact details`}
                   </span>
-                  <span>{status === "open" ? `Visible until ${formatDate(post.expires_at)}` : status === "expired" ? `Expired ${formatDate(post.expires_at)}` : "Hidden from sellers"}</span>
+                  <span>{visibilityNote(post, status)}</span>
                 </div>
                 <WantedCard post={post} />
                 <div className="requirement-actions">
@@ -146,7 +163,7 @@ export default function RequirementsPage() {
                       Edit
                     </Button>
                   </Link>
-                  {status === "open" ? (
+                  {post.is_open ? (
                     <Popconfirm title="Close this requirement?" description="Sellers will no longer see it. You can reopen it later." okText="Close it" onConfirm={() => setStatus.mutate({ id: post.id, status: "closed" })}>
                       <Button icon={<StopOutlined />} loading={busy && setStatus.isPending}>
                         Close

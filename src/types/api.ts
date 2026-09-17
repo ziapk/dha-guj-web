@@ -211,7 +211,9 @@ export type Phase = { id: number; society_id: number; name: string; slug: string
 
 export type WantedPostStatus = "active" | "closed";
 
-/** A buyer requirement. contact is always null on the public API. */
+export type WantedPostApproval = "pending" | "approved" | "rejected";
+
+/** A buyer requirement. contact is always null on the public API; only approved requirements shown to every seller are public. */
 export type WantedPost = {
   id: number;
   purpose: PropertyPurpose;
@@ -228,6 +230,11 @@ export type WantedPost = {
   description: string;
   status: WantedPostStatus;
   is_open: boolean;
+  /** Open and approved by an admin, so sellers can see it. */
+  is_live: boolean;
+  /** Only on the buyer's own requirements. */
+  approval_status?: WantedPostApproval;
+  rejection_reason?: string | null;
   is_unlocked?: boolean;
   unlocks_count?: number;
   contact: { name: string; phone: string; email: string | null } | null;
