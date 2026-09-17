@@ -3291,6 +3291,36 @@ main h3 {
   font-weight: 700;
 }
 
+/* Images with captions and video embeds from the Admin Portal's visual editor. */
+.prose figure {
+  display: table;
+  margin: 0 auto 1.1em;
+}
+
+.prose figure img {
+  display: block;
+}
+
+.prose figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  padding-top: 8px;
+  color: var(--app-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.prose iframe {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  margin: 0 0 1.1em;
+  border: 0;
+  border-radius: var(--radius-m);
+}
+
 /* Forgot password */
 .auth-links {
   display: flex;
