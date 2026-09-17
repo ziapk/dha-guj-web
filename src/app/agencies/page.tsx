@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AgencyCard } from "@/components/agency-card";
+import { SearchSuggest } from "@/components/search-suggest";
 import { publicApi } from "@/lib/api";
 import { openGraph } from "@/lib/seo";
 import type { AgencyProfile, City, Collection, Paginated } from "@/types/api";
@@ -68,7 +69,7 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/agencie
       </div>
 
       <form className="agency-search" action="/agencies" role="search">
-        <input type="search" name="q" defaultValue={q} placeholder="Search by agency name" aria-label="Agency name" maxLength={100} />
+        <SearchSuggest key={q} name="q" defaultValue={q} placeholder="Search by agency name" aria-label="Agency name" maxLength={100} groups={["agencies"]} />
         <select name="city_id" defaultValue={cityId} aria-label="City">
           <option value="">All cities</option>
           {cities.map((city) => (

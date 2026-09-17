@@ -10,13 +10,16 @@ export function coverOf(property: PublicProperty): PropertyMedia | undefined {
   return photosOf(property)[0];
 }
 
+/** The photo fields shared by property and project media. */
+export type Photo = Pick<PropertyMedia, "id" | "url" | "thumbnail_url" | "medium_url">;
+
 /** Small (≈480px) photo for cards and thumbnails. */
-export function thumbnailUrl(photo: PropertyMedia): string {
+export function thumbnailUrl(photo: Photo): string {
   return photo.thumbnail_url || photo.url;
 }
 
 /** Large (≈1280px) photo for the gallery, lightbox and social previews; the API watermarks this copy. */
-export function mediumUrl(photo: PropertyMedia): string {
+export function mediumUrl(photo: Photo): string {
   return photo.medium_url || photo.url;
 }
 

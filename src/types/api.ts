@@ -13,7 +13,7 @@ export type PropertyPurpose = "sale" | "rent";
 export type PropertyCategory = "residential" | "plot" | "commercial";
 export type AreaUnit = "marla" | "kanal" | "sq_ft" | "sq_yd" | "sq_m";
 export type FurnishedStatus = "unfurnished" | "semi_furnished" | "furnished";
-export type AccountType = "individual" | "agency" | "agent";
+export type AccountType = "individual" | "agency" | "agent" | "developer";
 export type QuotaItemType = "credit" | "concurrent" | "per_entity" | "boolean" | "duration";
 export type ResetPeriod = "none" | "monthly" | "yearly";
 
@@ -106,7 +106,7 @@ export type Offer = {
   name: string;
   slug: string;
   description: string | null;
-  audience: "individual" | "agency" | "both";
+  audience: "individual" | "agency" | "both" | "developer";
   price: string;
   current_price: string;
   is_on_sale: boolean;
@@ -240,4 +240,72 @@ export type WantedPost = {
   contact: { name: string; phone: string; email: string | null } | null;
   expires_at: string | null;
   created_at: string;
+};
+
+export type ConstructionStatus = "upcoming" | "under_construction" | "ready";
+
+/** A project photo, video (YouTube/Vimeo link) or PDF brochure. thumbnail_url and medium_url are only set on images. */
+export type ProjectMedia = {
+  id: number;
+  type: "image" | "video" | "brochure";
+  url: string;
+  thumbnail_url: string | null;
+  medium_url: string | null;
+  original_name: string | null;
+  sort_order: number;
+  is_cover: boolean;
+};
+
+/** A unit type in a project with its own price and payment plan. Decimal fields come back as strings. */
+export type ProjectUnit = {
+  id: number;
+  name: string;
+  property_type?: PropertyType | null;
+  property_type_id: number | null;
+  area_size: string | null;
+  area_unit: AreaUnit | null;
+  bedrooms: number | null;
+  price_from: string;
+  price_to: string | null;
+  down_payment: string | null;
+  monthly_installment: string | null;
+  installments_count: number | null;
+  payment_plan: string | null;
+};
+
+/** A live developer project (see dha-guj-api PublicProjectResource). contact is only on GET /public/projects/{slug}. */
+export type PublicProject = {
+  id: number;
+  slug: string;
+  name: string;
+  developer_name: string;
+  description: string;
+  construction_status: ConstructionStatus;
+  completion_date: string | null;
+  city?: City;
+  society?: Society | null;
+  city_id: number;
+  society_id: number | null;
+  phase: string | null;
+  address: string | null;
+  latitude: string | number | null;
+  longitude: string | number | null;
+  /** Lowest and highest unit price; null when the project has no units loaded. */
+  price_from: number | null;
+  price_to: number | null;
+  units?: ProjectUnit[];
+  amenities?: Amenity[];
+  media?: ProjectMedia[];
+  cover_url?: string | null;
+  published_at: string | null;
+  views_count: number;
+  contact?: { name: string; phone: string | null; whatsapp: string | null; email: string | null };
+};
+
+/** Keyword autocomplete from GET /public/search/suggestions; each group holds at most five matches. */
+export type SearchSuggestions = {
+  societies: { id: number; name: string; slug: string; city_id: number; city: string | null }[];
+  phases: { id: number; name: string; society_id: number; society: string | null; city_id: number | null }[];
+  projects: { id: number; name: string; slug: string; developer_name: string; city: string | null }[];
+  agencies: { id: number; name: string; slug: string; city: string | null; is_verified: boolean }[];
 };

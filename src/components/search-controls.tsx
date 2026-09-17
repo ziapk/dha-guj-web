@@ -1,9 +1,10 @@
 "use client";
 
-import { FilterOutlined } from "@ant-design/icons";
+import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Drawer, InputNumber, Pagination, Segmented, Select, Space } from "antd";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SearchSuggest, suggestionHref } from "@/components/search-suggest";
 import { AREA_UNIT_LABELS, PROPERTY_CATEGORY_LABELS, toOptions } from "@/lib/labels";
 import type { City, PropertyCategory, PropertyType, Society } from "@/types/api";
 
@@ -221,6 +222,41 @@ export function FiltersDrawerButton(props: FilterProps) {
         <SearchFilters {...props} onApplied={() => setOpen(false)} />
       </Drawer>
     </>
+  );
+}
+
+/** Keyword box in the results bar with suggestions; picking a society or phase keeps the other filters. */
+export function KeywordSearch({ filters }: { filters: Record<string, string> }) {
+  const router = useRouter();
+  const [keyword, setKeyword] = useState(filters.q ?? "");
+
+  return (
+    <form
+      className="search-keyword-form"
+      role="search"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const next: Record<string, string> = { ...filters, q: keyword.trim() };
+        delete next.page;
+
+        if (!next.q) {
+          delete next.q;
+        }
+
+        pushFilters(router, next);
+      }}
+    >
+      <SearchSuggest
+        className="search-keyword"
+        icon={<SearchOutlined aria-hidden />}
+        aria-label="Keyword"
+        placeholder="Society, phase, block or keyword"
+        maxLength={100}
+        value={keyword}
+        onValueChange={setKeyword}
+        hrefFor={(suggestion) => suggestionHref(suggestion, new URLSearchParams(filters))}
+      />
+    </form>
   );
 }
 

@@ -52,7 +52,7 @@ export default async function PricingPage() {
           <article key={offer.id} className={`pricing-card${offer.badge_text ? " highlight" : ""}`}>
             {offer.badge_text && <span className="pricing-badge">{offer.badge_text}</span>}
             <h3>{offer.name}</h3>
-            <p>{offer.audience === "agency" ? "For real estate agencies" : offer.audience === "individual" ? "For property owners" : "For owners and agencies"}</p>
+            <p>{offer.audience === "agency" ? "For real estate agencies" : offer.audience === "individual" ? "For property owners" : offer.audience === "developer" ? "For developers" : "For owners and agencies"}</p>
             <div className="pricing-price">
               {offer.is_free ? "Free" : formatPrice(offer.current_price)}
               <small>{offer.duration_days ? ` / ${offer.duration_days} days` : " forever"}</small>

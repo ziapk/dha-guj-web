@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import type { AccountType, AreaUnit, FurnishedStatus, PropertyCategory, PropertyPurpose } from "@/types/api";
+import type { AccountType, AreaUnit, ConstructionStatus, FurnishedStatus, PropertyCategory, PropertyPurpose } from "@/types/api";
 
 export const PROPERTY_PURPOSE_LABELS: Record<PropertyPurpose, string> = { sale: "For sale", rent: "For rent" };
 
@@ -13,7 +13,9 @@ export const FURNISHED_LABELS: Record<FurnishedStatus, string> = {
   furnished: "Furnished",
 };
 
-export const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = { individual: "Property owner", agency: "Real estate agency", agent: "Agent" };
+export const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = { individual: "Property owner", agency: "Real estate agency", agent: "Agent", developer: "Developer" };
+
+export const CONSTRUCTION_STATUS_LABELS: Record<ConstructionStatus, string> = { upcoming: "Upcoming", under_construction: "Under construction", ready: "Ready to move in" };
 
 export function toOptions<T extends string>(labels: Record<T, string>): { value: T; label: string }[] {
   return (Object.keys(labels) as T[]).map((value) => ({ value, label: labels[value] }));

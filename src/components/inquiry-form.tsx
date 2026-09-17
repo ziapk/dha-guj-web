@@ -6,17 +6,21 @@ import { useState } from "react";
 
 type InquiryValues = { name: string; phone: string; email?: string; message: string; website?: string };
 
-export function InquiryForm({ slug, title }: { slug: string; title: string }) {
+/** What the inquiry is about: a property listing (the default) or a developer project. */
+type InquirySubject = "property" | "project";
+
+export function InquiryForm({ slug, title, subject = "property" }: { slug: string; title: string; subject?: InquirySubject }) {
   const { message } = App.useApp();
   const [form] = Form.useForm<InquiryValues>();
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
+  const recipient = subject === "project" ? "developer" : "seller";
 
   async function onFinish(values: InquiryValues) {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`/api/leads/${encodeURIComponent(slug)}`, {
+      const response = await fetch(subject === "project" ? `/api/projects/${encodeURIComponent(slug)}/leads` : `/api/leads/${encodeURIComponent(slug)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
@@ -51,7 +55,7 @@ export function InquiryForm({ slug, title }: { slug: string; title: string }) {
       <Result
         status="success"
         title="Message sent"
-        subTitle="The seller will contact you soon."
+        subTitle={`The ${recipient} will contact you soon.`}
         style={{ padding: "16px 0" }}
         extra={
           <Button
@@ -73,7 +77,7 @@ export function InquiryForm({ slug, title }: { slug: string; title: string }) {
         Send a message
       </Typography.Title>
       <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
-        The seller gets your details and replies directly.
+        The {recipient} gets your details and replies directly.
       </Typography.Paragraph>
 
       <Form

@@ -148,3 +148,11 @@ export function CalendarIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function BuildingIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 10h4a1 1 0 0 1 1 1v10M2 21h20M8 8h3M8 12h3M8 16h3" />
+    </Svg>
+  );
+}

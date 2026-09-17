@@ -6,7 +6,7 @@ import { PropertyCard } from "@/components/property-card";
 import { QuickFilters } from "@/components/quick-filters";
 import { RecentlyViewed } from "@/components/recently-viewed";
 import { SaveSearchButton } from "@/components/save-search-button";
-import { ResultsPagination, SortSelect } from "@/components/search-controls";
+import { KeywordSearch, ResultsPagination, SortSelect } from "@/components/search-controls";
 import { ValidationError, publicApi } from "@/lib/api";
 import { pickFilters, searchHeading } from "@/lib/property";
 import { openGraph } from "@/lib/seo";
@@ -76,6 +76,7 @@ export default async function PropertiesPage({ searchParams }: PageProps<"/prope
     <>
       <div className="search-bar-wrap">
         <div className="container search-bar">
+          <KeywordSearch key={filters.q ?? ""} filters={filters} />
           <QuickFilters key={JSON.stringify(filters)} cities={cities} societies={societies} propertyTypes={propertyTypes} filters={filters} />
         </div>
       </div>

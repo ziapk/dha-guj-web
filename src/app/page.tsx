@@ -6,6 +6,7 @@ import { BannerSlot } from "@/components/banner-slot";
 import { HeroSearch } from "@/components/hero-search";
 import { BellIcon, ChatIcon, KeyIcon, MegaphoneIcon, ShieldIcon } from "@/components/icons";
 import { PostCard } from "@/components/post-card";
+import { ProjectCard } from "@/components/project-card";
 import { PropertyCard } from "@/components/property-card";
 import { Rail } from "@/components/rail";
 import { RecentlyViewed } from "@/components/recently-viewed";
@@ -13,7 +14,7 @@ import { publicApi } from "@/lib/api";
 import { openGraph } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
-import type { AgencyProfile, Collection, HomeData, HomeSections, Paginated, PropertyType, Resource } from "@/types/api";
+import type { AgencyProfile, Collection, HomeData, HomeSections, Paginated, PropertyType, PublicProject, Resource } from "@/types/api";
 
 export const revalidate = 60;
 
@@ -110,10 +111,11 @@ function Skyline() {
 
 export default async function HomePage() {
   // The page still renders (with empty sections) if the API is briefly unavailable; it refreshes within a minute.
-  const [home, propertyTypes, agencies] = await Promise.all([
+  const [home, propertyTypes, agencies, projects] = await Promise.all([
     publicApi<Resource<HomeData>>("home").then((response) => response.data).catch(() => EMPTY_HOME),
     publicApi<Collection<PropertyType>>("property-types", { revalidate: 3600 }).then((response) => response.data).catch(() => []),
     publicApi<Paginated<AgencyProfile>>("agencies", { query: { per_page: 8 }, revalidate: 300 }).catch(() => null),
+    publicApi<Paginated<PublicProject>>("projects", { query: { per_page: 6 }, revalidate: 300 }).then((response) => response.data).catch(() => []),
   ]);
 
   const sections = sectionsOf(home);
@@ -261,6 +263,25 @@ export default async function HomePage() {
                 </a>
               </div>
             )}
+          </div>
+        </section>
+      )}
+
+      {projects.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <div className="section-head">
+              <div>
+                <h2>New projects</h2>
+                <p>Unit types, prices and payment plans straight from developers</p>
+              </div>
+              <Link href="/projects">View all</Link>
+            </div>
+            <Rail label="New projects">
+              {projects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </Rail>
           </div>
         </section>
       )}

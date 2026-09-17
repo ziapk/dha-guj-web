@@ -39,6 +39,9 @@ export async function SiteFooter({ settings, pages }: { settings: SiteSettings; 
                 <Link href="/properties?category=commercial">Commercial</Link>
               </li>
               <li>
+                <Link href="/projects">New projects</Link>
+              </li>
+              <li>
                 <Link href="/agencies">Real estate agencies</Link>
               </li>
               <li>

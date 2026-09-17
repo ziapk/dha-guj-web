@@ -4,6 +4,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { SearchSuggest, suggestionHref } from "@/components/search-suggest";
 import { PROPERTY_CATEGORY_LABELS } from "@/lib/labels";
 import { BED_OPTIONS, priceRangesFor } from "@/lib/search-options";
 import type { City, PropertyCategory, PropertyType } from "@/types/api";
@@ -45,33 +46,13 @@ export function HeroSearch({ cities, propertyTypes }: { cities: City[]; property
     }
   }
 
-  function submit(event: FormEvent) {
-    event.preventDefault();
+  /** The property search fields except the keyword, shared by Search and by picked suggestions. */
+  function propertyParams(): URLSearchParams {
     const params = new URLSearchParams();
-    const term = keyword.trim();
-
-    if (isAgencies) {
-      if (term) {
-        params.set("q", term);
-      }
-
-      if (cityId) {
-        params.set("city_id", String(cityId));
-      }
-
-      router.push(params.toString() ? `/agencies?${params.toString()}` : "/agencies");
-
-      return;
-    }
-
     params.set("purpose", tab === "rent" ? "rent" : "sale");
 
     if (isPlot) {
       params.set("category", "plot");
-    }
-
-    if (term) {
-      params.set("q", term);
     }
 
     if (cityId) {
@@ -96,6 +77,35 @@ export function HeroSearch({ cities, propertyTypes }: { cities: City[]; property
       params.set("max_price", String(range.max));
     }
 
+    return params;
+  }
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    const term = keyword.trim();
+
+    if (isAgencies) {
+      const params = new URLSearchParams();
+
+      if (term) {
+        params.set("q", term);
+      }
+
+      if (cityId) {
+        params.set("city_id", String(cityId));
+      }
+
+      router.push(params.toString() ? `/agencies?${params.toString()}` : "/agencies");
+
+      return;
+    }
+
+    const params = propertyParams();
+
+    if (term) {
+      params.set("q", term);
+    }
+
     router.push(`/properties?${params.toString()}`);
   }
 
@@ -110,17 +120,17 @@ export function HeroSearch({ cities, propertyTypes }: { cities: City[]; property
       </div>
 
       <div className="hero-search-row">
-        <label className="hero-input">
-          <SearchOutlined aria-hidden />
-          <span className="sr-only">{isAgencies ? "Agency name" : "Keyword"}</span>
-          <input
-            type="search"
-            value={keyword}
-            maxLength={100}
-            placeholder={isAgencies ? "Search agencies by name" : "Society, phase, block or keyword"}
-            onChange={(event) => setKeyword(event.target.value)}
-          />
-        </label>
+        <SearchSuggest
+          className="hero-input"
+          icon={<SearchOutlined aria-hidden />}
+          aria-label={isAgencies ? "Agency name" : "Keyword"}
+          value={keyword}
+          maxLength={100}
+          placeholder={isAgencies ? "Search agencies by name" : "Society, phase, block or keyword"}
+          onValueChange={setKeyword}
+          groups={isAgencies ? ["agencies"] : undefined}
+          hrefFor={(suggestion) => suggestionHref(suggestion, propertyParams())}
+        />
         <button type="submit" className="btn btn-primary hero-submit">
           Search
         </button>

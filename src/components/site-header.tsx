@@ -19,6 +19,7 @@ const LINKS = [
   { href: "/properties?purpose=rent", label: "Rent" },
   { href: "/properties?category=plot", label: "Plots" },
   { href: "/properties?category=commercial", label: "Commercial" },
+  { href: "/projects", label: "Projects" },
   { href: "/agencies", label: "Agencies" },
   { href: "/wanted", label: "Wanted" },
   { href: "/blog", label: "Blog" },

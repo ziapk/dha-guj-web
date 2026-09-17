@@ -3,8 +3,7 @@
 import { Image } from "antd";
 import type { CSSProperties } from "react";
 import { HomeIcon } from "@/components/icons";
-import { mediumUrl, thumbnailUrl } from "@/lib/property";
-import type { PropertyMedia } from "@/types/api";
+import { mediumUrl, thumbnailUrl, type Photo } from "@/lib/property";
 
 const VISIBLE = 5;
 
@@ -13,7 +12,7 @@ const VISIBLE = 5;
  * The main photo and the lightbox use the medium (≈1280px) copy, which carries the site watermark; the original is never shown.
  * The side tiles use the thumbnail size, unless there are only a few wide tiles.
  */
-export function PropertyGallery({ photos, title }: { photos: PropertyMedia[]; title: string }) {
+export function PropertyGallery({ photos, title }: { photos: Photo[]; title: string }) {
   if (photos.length === 0) {
     return (
       <div className="gallery-empty">

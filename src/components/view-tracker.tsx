@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 
-/** Counts one view per listing per browser session. */
-export function ViewTracker({ slug }: { slug: string }) {
+/** Counts one view per listing (or developer project) per browser session. */
+export function ViewTracker({ slug, subject = "property" }: { slug: string; subject?: "property" | "project" }) {
   useEffect(() => {
-    const key = `viewed:${slug}`;
+    const key = subject === "project" ? `viewed:project:${slug}` : `viewed:${slug}`;
 
     try {
       if (window.sessionStorage.getItem(key)) {
@@ -17,13 +17,13 @@ export function ViewTracker({ slug }: { slug: string }) {
       // Storage can be blocked; counting the view anyway is fine.
     }
 
-    void fetch(`/api/track/${encodeURIComponent(slug)}`, {
+    void fetch(subject === "project" ? `/api/projects/${encodeURIComponent(slug)}/track` : `/api/track/${encodeURIComponent(slug)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ event: "view" }),
       keepalive: true,
     }).catch(() => undefined);
-  }, [slug]);
+  }, [slug, subject]);
 
   return null;
 }
