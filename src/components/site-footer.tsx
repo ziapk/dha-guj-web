@@ -1,108 +1,150 @@
 import Link from "next/link";
-import { ContactList, SocialLinks } from "@/components/site-contact";
+import { ArrowUpIcon, ClockIcon, MailIcon, PhoneIcon, PinIcon } from "@/components/icons";
+import { SocialLinks } from "@/components/site-contact";
 import { SiteLogo } from "@/components/site-logo";
-import { publicApi } from "@/lib/api";
+import { whatsappNumber } from "@/lib/property";
 import { portalUrl } from "@/lib/site";
 import { DEFAULT_TAGLINE, cmsPageHref, siteNameOf } from "@/lib/site-data";
-import type { City, CmsPageSummary, Collection, SiteSettings } from "@/types/api";
+import type { CmsPageSummary, SiteSettings } from "@/types/api";
 
-export async function SiteFooter({ settings, pages }: { settings: SiteSettings; pages: CmsPageSummary[] }) {
+const QUICK_LINKS = [
+  { href: "/projects", label: "Projects" },
+  { href: "/agencies", label: "Dealers" },
+  { href: "/agents", label: "Agents" },
+  { href: "/blog", label: "Blog" },
+  { href: "/maps", label: "Sector Maps" },
+  { href: "/dha-gujranwala-files-rates", label: "File Rates" },
+  { href: "/pricing", label: "Plans & Pricing" },
+  { href: "/wanted", label: "Buyer Requirements" },
+];
+
+const PROPERTY_LINKS = [
+  { href: "/properties?purpose=sale", label: "Buy Property" },
+  { href: "/properties?purpose=rent", label: "Rent Property" },
+  { href: "/properties?category=residential", label: "Houses" },
+  { href: "/properties?category=plot", label: "Plots" },
+  { href: "/properties?category=commercial", label: "Commercial" },
+  { href: "/properties", label: "All Properties" },
+];
+
+export function SiteFooter({ settings, pages }: { settings: SiteSettings; pages: CmsPageSummary[] }) {
   const siteName = siteNameOf(settings);
-
-  const cities = await publicApi<Collection<City>>("cities", { revalidate: 3600 })
-    .then((response) => response.data.slice(0, 6))
-    .catch(() => []);
+  const { contact } = settings;
+  const whatsapp = whatsappNumber(contact.whatsapp);
 
   return (
     <footer className="site-footer">
       <div className="container">
         <div className="footer-grid">
-          <div>
+          <div className="footer-brand">
             <SiteLogo siteName={siteName} logoUrl={settings.general.logo_url} />
             <p>{settings.general.tagline ?? DEFAULT_TAGLINE}</p>
-            <ContactList contact={settings.contact} className="contact-list footer-contact" />
             <SocialLinks social={settings.social} siteName={siteName} />
           </div>
+
           <div>
-            <h4>Search</h4>
+            <h2>Quick Links</h2>
             <ul>
+              {QUICK_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2>Properties</h2>
+            <ul>
+              {PROPERTY_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
               <li>
-                <Link href="/properties?purpose=sale">Properties for sale</Link>
-              </li>
-              <li>
-                <Link href="/properties?purpose=rent">Properties for rent</Link>
-              </li>
-              <li>
-                <Link href="/properties?category=plot">Plots</Link>
-              </li>
-              <li>
-                <Link href="/properties?category=commercial">Commercial</Link>
-              </li>
-              <li>
-                <Link href="/projects">New projects</Link>
-              </li>
-              <li>
-                <Link href="/agencies">Real estate agencies</Link>
-              </li>
-              <li>
-                <Link href="/account/requirements/new">Post your requirement</Link>
+                <a href={portalUrl("/listings/new")}>List Property</a>
               </li>
             </ul>
           </div>
-          {cities.length > 0 && (
-            <div>
-              <h4>Popular cities</h4>
-              <ul>
-                {cities.map((city) => (
-                  <li key={city.id}>
-                    <Link href={`/properties?city_id=${city.id}`}>Property in {city.name}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+
           <div>
-            <h4>For owners & agencies</h4>
+            <h2>Company</h2>
             <ul>
+              {/* About and Contact have their own designed pages, so they are linked directly. */}
               <li>
-                <a href={portalUrl("/listings/new")}>Post a property</a>
+                <Link href="/about-us">About Us</Link>
               </li>
               <li>
-                <Link href="/wanted">Buyer requirements</Link>
-              </li>
-              <li>
-                <Link href="/pricing">Plans & pricing</Link>
-              </li>
-              <li>
-                <a href={portalUrl("/register")}>Create an account</a>
-              </li>
-              <li>
-                <a href={portalUrl("/login")}>Property Admin login</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4>Company</h4>
-            <ul>
-              <li>
-                <Link href="/blog">Blog</Link>
+                <Link href="/contact">Contact</Link>
               </li>
               {pages.map((page) => (
                 <li key={page.id}>
                   <Link href={cmsPageHref(page.slug)}>{page.title}</Link>
                 </li>
               ))}
+              <li>
+                <a href={portalUrl("/register")}>Create an account</a>
+              </li>
+              <li>
+                <Link href="/login">Buyer login</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="footer-contact-col">
+            <h2>Contact Us</h2>
+            <ul className="footer-contact">
+              {contact.email && (
+                <li>
+                  <MailIcon className="icon" />
+                  <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                </li>
+              )}
+              {contact.phone && (
+                <li>
+                  <PhoneIcon className="icon" />
+                  <a href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>{contact.phone}</a>
+                </li>
+              )}
+              {whatsapp && (
+                <li>
+                  <PhoneIcon className="icon" />
+                  <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
+                    WhatsApp {contact.whatsapp}
+                  </a>
+                </li>
+              )}
+              {contact.address && (
+                <li>
+                  <PinIcon className="icon" />
+                  <address>{contact.address}</address>
+                </li>
+              )}
+              {contact.office_hours && (
+                <li>
+                  <ClockIcon className="icon" />
+                  <span>{contact.office_hours}</span>
+                </li>
+              )}
             </ul>
           </div>
         </div>
+
         <div className="footer-bottom">
           <span>
-            © {new Date().getFullYear()} {settings.general.site_name ?? "DHA GUJ Real Estate Services"}. All rights reserved.
+            © {new Date().getFullYear()} {siteName}. All Rights Reserved.
           </span>
-          <nav aria-label="Footer">
-            <Link href="/login">Buyer login</Link>
+          <nav aria-label="Legal">
+            {pages.map((page) => (
+              <Link key={page.id} href={cmsPageHref(page.slug)}>
+                {page.title}
+              </Link>
+            ))}
             <a href="/sitemap.xml">Sitemap</a>
           </nav>
+          <a className="back-to-top" href="#top" aria-label="Back to top">
+            <ArrowUpIcon className="icon" />
+          </a>
         </div>
       </div>
     </footer>

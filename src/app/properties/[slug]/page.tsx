@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps<"/properties/[slug]
   }
 
   const cover = coverOf(property);
-  const location = [property.block, property.phase, locationOf(property)].filter(Boolean).join(", ");
+  const location = [property.block, property.sector, property.phase, locationOf(property)].filter(Boolean).join(", ");
   const purpose = property.purpose === "rent" ? "for rent" : "for sale";
   const price = `${formatCompactPrice(property.price)}${property.purpose === "rent" ? " / month" : ""}`;
   const description = metaText(`${property.property_type?.name ?? "Property"} ${purpose}: ${price} · ${formatArea(property.area_size, property.area_unit)}${location ? ` · ${location}` : ""}. ${property.description}`);
@@ -80,6 +80,9 @@ export default async function PropertyPage({ params }: PageProps<"/properties/[s
 
   const facts = [
     { label: "Type", value: property.property_type?.name },
+    { label: "Sector", value: property.sector },
+    { label: "Block", value: property.block },
+    { label: "Phase", value: property.phase },
     { label: "Area", value: formatArea(property.area_size, property.area_unit) },
     { label: "Bedrooms", value: isPlot ? null : property.bedrooms },
     { label: "Bathrooms", value: isPlot ? null : property.bathrooms },
@@ -111,7 +114,7 @@ export default async function PropertyPage({ params }: PageProps<"/properties/[s
     },
     address: {
       "@type": "PostalAddress",
-      streetAddress: [property.address, property.block, property.phase, property.society?.name].filter(Boolean).join(", ") || undefined,
+      streetAddress: [property.address, property.block, property.sector, property.phase, property.society?.name].filter(Boolean).join(", ") || undefined,
       addressLocality: property.city?.name,
       addressCountry: "PK",
     },
@@ -160,7 +163,7 @@ export default async function PropertyPage({ params }: PageProps<"/properties/[s
             </div>
             <h1>{property.title}</h1>
             <p className="detail-location">
-              <PinIcon /> {[property.block, property.phase, locationOf(property)].filter(Boolean).join(", ")}
+              <PinIcon /> {[property.block, property.sector, property.phase, locationOf(property)].filter(Boolean).join(", ")}
             </p>
             <ul className="detail-highlights">
               {property.property_type && (
@@ -247,7 +250,7 @@ export default async function PropertyPage({ params }: PageProps<"/properties/[s
 
           <section className="detail-section">
             <h2>Location</h2>
-            <p style={{ margin: 0 }}>{[property.address, property.block, property.phase, property.society?.name, property.city?.name].filter(Boolean).join(", ")}</p>
+            <p style={{ margin: 0 }}>{[property.address, property.block, property.sector, property.phase, property.society?.name, property.city?.name].filter(Boolean).join(", ")}</p>
           </section>
         </div>
 

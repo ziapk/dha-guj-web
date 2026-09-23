@@ -3,7 +3,7 @@ import Link from "next/link";
 import { KeyIcon, MegaphoneIcon } from "@/components/icons";
 import { WantedCard } from "@/components/wanted-card";
 import { publicApi } from "@/lib/api";
-import { openGraph } from "@/lib/seo";
+import { openGraph, robots } from "@/lib/seo";
 import { PORTAL_WANTED_PATH, portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PropertyType, Society, WantedPost } from "@/types/api";
 
@@ -44,7 +44,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/wanted">): 
     description: DESCRIPTION,
     alternates: { canonical: "/wanted" },
     openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/wanted" }),
-    robots: filtered ? { index: false, follow: true } : undefined,
+    robots: robots(filtered ? { index: false, follow: true } : undefined),
   };
 }
 

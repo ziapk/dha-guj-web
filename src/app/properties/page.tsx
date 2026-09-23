@@ -9,7 +9,7 @@ import { SaveSearchButton } from "@/components/save-search-button";
 import { KeywordSearch, ResultsPagination, SortSelect } from "@/components/search-controls";
 import { ValidationError, publicApi } from "@/lib/api";
 import { pickFilters, searchHeading } from "@/lib/property";
-import { openGraph } from "@/lib/seo";
+import { openGraph, robots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PropertyType, PublicProperty, Society } from "@/types/api";
 
@@ -44,7 +44,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/properties"
     description,
     alternates: { canonical },
     openGraph: await openGraph({ title, description, url: canonical }),
-    robots: refined ? { index: false, follow: true } : undefined,
+    robots: robots(refined ? { index: false, follow: true } : undefined),
   };
 }
 

@@ -250,7 +250,7 @@ export function KeywordSearch({ filters }: { filters: Record<string, string> }) 
         className="search-keyword"
         icon={<SearchOutlined aria-hidden />}
         aria-label="Keyword"
-        placeholder="Society, phase, block or keyword"
+        placeholder="Society, sector, block or keyword"
         maxLength={100}
         value={keyword}
         onValueChange={setKeyword}

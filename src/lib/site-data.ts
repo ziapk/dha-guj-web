@@ -18,13 +18,19 @@ export const EMPTY_SETTINGS: SiteSettings = {
 
 /** Top-level routes of this app. A CMS page with one of these slugs would be hidden by the route, so it is never linked. */
 export const RESERVED_SLUGS = new Set([
+  "about-us",
   "account",
   "agencies",
+  "agents",
   "api",
+  "author",
   "blog",
   "compare",
+  "contact",
+  "dha-gujranwala-files-rates",
   "forgot-password",
   "login",
+  "maps",
   "pages",
   "pricing",
   "projects",

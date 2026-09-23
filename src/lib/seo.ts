@@ -26,3 +26,23 @@ export function metaText(text: string | null | undefined, max = 160): string {
 export function jsonLd(value: unknown): string {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
+
+/** Non-production deployments (staging, review apps) set NOINDEX=true at build time to stay out of search results. */
+export function noindex(): boolean {
+  return process.env.NOINDEX === "true";
+}
+
+const NOINDEX_RULE: Metadata["robots"] = {
+  index: false,
+  follow: false,
+  nocache: true,
+  googleBot: { index: false, follow: false, noimageindex: true },
+};
+
+/**
+ * A page's `robots` replaces the layout's instead of merging with it — passing `undefined`
+ * clears it too — so every page that sets `robots` builds it here to keep staging's noindex.
+ */
+export function robots(rule?: Metadata["robots"]): Metadata["robots"] {
+  return noindex() ? NOINDEX_RULE : rule;
+}

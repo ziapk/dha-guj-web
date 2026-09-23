@@ -2,7 +2,7 @@
 
 import { cache } from "react";
 import { NotFoundError, publicApi } from "@/lib/api";
-import type { BlogPost, BlogPostSummary, Paginated, Resource } from "@/types/api";
+import type { BlogPost, BlogPostSummary, Collection, Paginated, PostCategory, Resource } from "@/types/api";
 
 export const POSTS_REVALIDATE = 300;
 export const POSTS_PER_PAGE = 12;
@@ -16,12 +16,23 @@ export function isPostSlug(slug: string): boolean {
   return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && slug.length <= 200;
 }
 
-/** One page of published posts, or null when the API is unavailable. */
-export const getPosts = cache(async (page: number, perPage = POSTS_PER_PAGE): Promise<Paginated<BlogPostSummary> | null> => {
+/** One page of published posts, optionally in one category, or null when the API is unavailable. */
+export const getPosts = cache(async (page: number, perPage = POSTS_PER_PAGE, category?: string): Promise<Paginated<BlogPostSummary> | null> => {
   try {
-    return await publicApi<Paginated<BlogPostSummary>>("posts", { query: { page, per_page: perPage }, revalidate: POSTS_REVALIDATE });
+    return await publicApi<Paginated<BlogPostSummary>>("posts", { query: { page, per_page: perPage, category }, revalidate: POSTS_REVALIDATE });
   } catch {
     return null;
+  }
+});
+
+/** Categories that have at least one published article. Empty when the API is unavailable. */
+export const getPostCategories = cache(async (): Promise<PostCategory[]> => {
+  try {
+    const { data } = await publicApi<Collection<PostCategory>>("post-categories", { revalidate: POSTS_REVALIDATE });
+
+    return data;
+  } catch {
+    return [];
   }
 });
 

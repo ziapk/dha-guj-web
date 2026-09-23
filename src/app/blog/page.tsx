@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PostCard } from "@/components/post-card";
-import { getPosts } from "@/lib/blog";
+import { getPostCategories, getPosts } from "@/lib/blog";
 import { openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
@@ -11,12 +11,36 @@ function pageNumber(value: string | string[] | undefined): number {
   return Math.max(1, Number.parseInt(typeof value === "string" ? value : "", 10) || 1);
 }
 
+/** A category slug from the query string, or undefined when it is missing or malformed. */
+function categorySlug(value: string | string[] | undefined): string | undefined {
+  const slug = typeof value === "string" ? value : undefined;
+
+  return slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? slug : undefined;
+}
+
 export async function generateMetadata({ searchParams }: PageProps<"/blog">): Promise<Metadata> {
-  const page = pageNumber((await searchParams).page);
-  const settings = await getSiteSettings();
-  const title = page > 1 ? `Blog – page ${page}` : "Blog";
-  const description = `Property news, buying and renting guides and market updates from ${siteNameOf(settings)}.`;
-  const url = page > 1 ? `/blog?page=${page}` : "/blog";
+  const params = await searchParams;
+  const page = pageNumber(params.page);
+  const category = categorySlug(params.category);
+  const [settings, categories] = await Promise.all([getSiteSettings(), getPostCategories()]);
+  const named = categories.find((item) => item.slug === category);
+
+  const base = named ? `${named.name} articles` : "Blog";
+  const title = page > 1 ? `${base} – page ${page}` : base;
+  const description = named
+    ? named.description ?? `${named.name} articles from ${siteNameOf(settings)}.`
+    : `Property news, buying and renting guides and market updates from ${siteNameOf(settings)}.`;
+  const query = new URLSearchParams();
+
+  if (category) {
+    query.set("category", category);
+  }
+
+  if (page > 1) {
+    query.set("page", String(page));
+  }
+
+  const url = query.size > 0 ? `/blog?${query}` : "/blog";
 
   return {
     title,
@@ -28,10 +52,27 @@ export async function generateMetadata({ searchParams }: PageProps<"/blog">): Pr
 }
 
 export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
-  const page = pageNumber((await searchParams).page);
-  const posts = await getPosts(page);
+  const params = await searchParams;
+  const page = pageNumber(params.page);
+  const category = categorySlug(params.category);
+  const [posts, categories] = await Promise.all([getPosts(page, undefined, category), getPostCategories()]);
   const lastPage = posts?.meta.last_page ?? 1;
-  const pageHref = (target: number) => (target > 1 ? `/blog?page=${target}` : "/blog");
+  const named = categories.find((item) => item.slug === category);
+
+  /** Keeps the chosen category while paging. */
+  const pageHref = (target: number) => {
+    const query = new URLSearchParams();
+
+    if (category) {
+      query.set("category", category);
+    }
+
+    if (target > 1) {
+      query.set("page", String(target));
+    }
+
+    return query.size > 0 ? `/blog?${query}` : "/blog";
+  };
 
   return (
     <div className="container page-section">
@@ -42,9 +83,23 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
       </nav>
 
       <header className="cms-header">
-        <h1>Blog</h1>
-        <p>Guides, market updates and news for buyers, tenants, owners and agencies.</p>
+        <h1>{named ? named.name : "Blog"}</h1>
+        <p>{named?.description ?? "Guides, market updates and news for buyers, tenants, owners and agencies."}</p>
       </header>
+
+      {categories.length > 0 && (
+        <nav className="chip-list blog-filters" aria-label="Article categories">
+          <Link className={`chip${category ? "" : " chip-active"}`} href="/blog">
+            All
+          </Link>
+          {categories.map((item) => (
+            <Link key={item.id} className={`chip${item.slug === category ? " chip-active" : ""}`} href={`/blog?category=${item.slug}`}>
+              {item.name}
+              {typeof item.posts_count === "number" && <span className="chip-count">{item.posts_count}</span>}
+            </Link>
+          ))}
+        </nav>
+      )}
 
       {!posts ? (
         <div className="empty-results">
@@ -55,10 +110,10 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
       ) : posts.data.length === 0 ? (
         <div className="empty-results">
           <div style={{ fontSize: 44 }}>📰</div>
-          <h2>{page > 1 ? "No more articles" : "No articles yet"}</h2>
-          <p>{page > 1 ? "You have reached the end of the blog." : "Check back soon for guides and market updates."}</p>
-          <Link className="btn btn-primary" href={page > 1 ? "/blog" : "/properties"}>
-            {page > 1 ? "Back to the latest articles" : "Browse properties"}
+          <h2>{named ? `No articles in ${named.name}` : page > 1 ? "No more articles" : "No articles yet"}</h2>
+          <p>{named ? "Try another category." : page > 1 ? "You have reached the end of the blog." : "Check back soon for guides and market updates."}</p>
+          <Link className="btn btn-primary" href={named || page > 1 ? "/blog" : "/properties"}>
+            {named ? "All articles" : page > 1 ? "Back to the latest articles" : "Browse properties"}
           </Link>
         </div>
       ) : (

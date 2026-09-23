@@ -24,7 +24,9 @@ export function PostCard({ post, headingLevel = "h3" }: { post: BlogPostSummary;
               <CalendarIcon /> <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
             </p>
           )}
+          {post.category && <p className="post-card-category">{post.category.name}</p>}
           <Heading className="post-card-title">{post.title}</Heading>
+          {post.author && <p className="post-card-author">By {post.author.name}</p>}
           {post.excerpt && <p className="post-card-excerpt">{post.excerpt}</p>}
           <span className="post-card-more" aria-hidden="true">
             Read article →

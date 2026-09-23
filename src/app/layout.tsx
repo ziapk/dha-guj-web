@@ -1,9 +1,10 @@
-import "@fontsource-variable/open-sans";
+import "@fontsource-variable/plus-jakarta-sans";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata } from "next";
 import { CompareTray } from "@/components/compare-tray";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getCmsPages, getSiteSettings, siteNameOf } from "@/lib/site-data";
 import { Providers } from "./providers";
@@ -19,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: `${siteName}: homes, plots and commercial property`, template: `%s | ${siteName}` },
     description,
     applicationName: siteName,
+    robots: robots(),
     openGraph: { siteName, type: "website", locale: "en_PK", description },
     twitter: { card: "summary" },
   };

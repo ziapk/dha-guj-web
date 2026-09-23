@@ -5,12 +5,12 @@ export type ThemeSettings = { mode: ThemeMode };
 
 export const DEFAULT_SETTINGS: ThemeSettings = { mode: "system" };
 
-export const FONT_BODY = "'Open Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+export const FONT_BODY = "'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 
 /** Brand palette; the same values are CSS variables in app/globals.css. */
 const PALETTE = {
-  light: { primary: "#3a307f", link: "#3a307f", layout: "#ffffff", container: "#ffffff", elevated: "#ffffff", border: "#cccccc", borderSoft: "#e3e3e3", text: "#1a1a1a", muted: "#707070", selected: "#e7e5f4" },
-  dark: { primary: "#6459b2", link: "#a9a2e0", layout: "#111019", container: "#1a1824", elevated: "#22202e", border: "#3a3650", borderSoft: "#2e2b3d", text: "#ececf1", muted: "#a3a0b5", selected: "#2a2548" },
+  light: { primary: "#1877f2", link: "#1877f2", layout: "#ffffff", container: "#ffffff", elevated: "#ffffff", border: "#cbd5e1", borderSoft: "#e6ebf2", text: "#12233f", muted: "#64748b", selected: "#e8f1fe" },
+  dark: { primary: "#1877f2", link: "#64a6ff", layout: "#0b1220", container: "#121b2c", elevated: "#18233a", border: "#33415c", borderSoft: "#23304a", text: "#e7ecf5", muted: "#94a3b8", selected: "#14294a" },
 };
 
 export function buildTheme(mode: "light" | "dark"): ThemeConfig {

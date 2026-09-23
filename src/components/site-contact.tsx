@@ -94,7 +94,14 @@ export function SocialLinks({ social, siteName }: { social: SiteSettings["social
     <ul className="social-links" aria-label={`${siteName} on social media`}>
       {links.map((item) => (
         <li key={item.key}>
-          <a href={social[item.key] ?? undefined} target="_blank" rel="noopener noreferrer me" aria-label={`${siteName} on ${item.label} (opens in a new tab)`} title={item.label}>
+          <a
+            className={`social-${item.key}`}
+            href={social[item.key] ?? undefined}
+            target="_blank"
+            rel="noopener noreferrer me"
+            aria-label={`${siteName} on ${item.label} (opens in a new tab)`}
+            title={item.label}
+          >
             {item.icon}
           </a>
         </li>

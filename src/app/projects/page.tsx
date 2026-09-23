@@ -6,7 +6,7 @@ import { SearchSuggest } from "@/components/search-suggest";
 import { publicApi } from "@/lib/api";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
 import { CONSTRUCTION_STATUSES } from "@/lib/project";
-import { openGraph } from "@/lib/seo";
+import { openGraph, robots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PublicProject, Society } from "@/types/api";
 
@@ -53,7 +53,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/projects">)
     description: DESCRIPTION,
     alternates: { canonical: "/projects" },
     openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/projects" }),
-    robots: filtered ? { index: false, follow: true } : undefined,
+    robots: robots(filtered ? { index: false, follow: true } : undefined),
   };
 }
 

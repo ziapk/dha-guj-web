@@ -156,3 +156,131 @@ export function BuildingIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function UsersIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M16 20v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V20" />
+      <circle cx="9" cy="7.5" r="3.5" />
+      <path d="M22 20v-1.5a4 4 0 0 0-3-3.87M16.5 4.13a3.5 3.5 0 0 1 0 6.74" />
+    </Svg>
+  );
+}
+
+export function ChartIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 20V12M12 20V5M19 20v-6" />
+    </Svg>
+  );
+}
+
+export function MapIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z" />
+      <path d="M9 4v13M15 6.5v13" />
+    </Svg>
+  );
+}
+
+export function PhoneIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M21 16.5v2.6a1.9 1.9 0 0 1-2.1 1.9 18.8 18.8 0 0 1-8.2-2.9 18.5 18.5 0 0 1-5.7-5.7A18.8 18.8 0 0 1 2.1 4.1 1.9 1.9 0 0 1 4 2h2.6a1.9 1.9 0 0 1 1.9 1.6c.1 1 .35 1.9.7 2.8a1.9 1.9 0 0 1-.43 2L7.7 9.4a15 15 0 0 0 5.7 5.7l1-1.07a1.9 1.9 0 0 1 2-.43c.9.35 1.83.6 2.8.7a1.9 1.9 0 0 1 1.6 1.93z" />
+    </Svg>
+  );
+}
+
+export function WhatsAppIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M3.5 20.5l1.3-4.2A8.2 8.2 0 1 1 8 19.3l-4.5 1.2z" />
+      <path d="M9 9.2c0 2.7 2.6 5.3 5.3 5.3l1.1-1.4-1.9-.9-.9.9a5 5 0 0 1-2.2-2.2l.9-.9-.9-1.9L9 9.2z" />
+    </Svg>
+  );
+}
+
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 12h15M13 6l6 6-6 6" />
+    </Svg>
+  );
+}
+
+export function ArrowLeftIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M20 12H5M11 6l-6 6 6 6" />
+    </Svg>
+  );
+}
+
+export function ArrowUpIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 20V5M6 11l6-6 6 6" />
+    </Svg>
+  );
+}
+
+export function StarIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m12 3.5 2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85L12 3.5z" />
+    </Svg>
+  );
+}
+
+export function DiamondIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M7 3h10l4 6-9 12L3 9l4-6z" />
+      <path d="M3 9h18M9.5 3 7.5 9l4.5 12 4.5-12-2-6" />
+    </Svg>
+  );
+}
+
+export function BriefcaseIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3" y="7.5" width="18" height="12" rx="2" />
+      <path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3 12.5h18" />
+    </Svg>
+  );
+}
+
+export function MailIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m4 7 8 5.5L20 7" />
+    </Svg>
+  );
+}
+
+export function UserIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="8" r="3.75" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+    </Svg>
+  );
+}
+
+export function PlotIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 4 21 19H3l9-15z" />
+    </Svg>
+  );
+}
+
+export function BoulevardIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M6 3v18M18 3v18M12 5v3M12 11v3M12 17v3" />
+    </Svg>
+  );
+}

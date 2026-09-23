@@ -1,32 +1,42 @@
 "use client";
 
-import { BellOutlined, FileSearchOutlined, HeartOutlined, HomeFilled, HomeOutlined, LogoutOutlined, MailOutlined, MenuOutlined, MoonOutlined, PhoneOutlined, PlusOutlined, SunOutlined, WhatsAppOutlined } from "@ant-design/icons";
+import { BellOutlined, FileSearchOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { Avatar, Button, Drawer, Dropdown, Tooltip } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { HomeIcon, PhoneIcon, UserIcon } from "@/components/icons";
 import { useSession } from "@/components/session-provider";
 import { ContactList, SocialLinks } from "@/components/site-contact";
 import { SiteLogo } from "@/components/site-logo";
-import { whatsappNumber } from "@/lib/property";
 import { portalUrl } from "@/lib/site";
 import { useThemeSettings } from "@/theme/theme-provider";
 import type { SiteSettings } from "@/types/api";
 
 const LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/projects", label: "Projects" },
+  { href: "/maps", label: "Maps" },
+  { href: "/agencies", label: "Dealers" },
+  { href: "/agents", label: "Agents" },
+  { href: "/dha-gujranwala-files-rates", label: "File Rates" },
+  { href: "/blog", label: "Blog" },
+];
+
+/** The links that only appear in the mobile drawer, where there is room for the full site. */
+const MORE_LINKS = [
   { href: "/properties?purpose=sale", label: "Buy" },
   { href: "/properties?purpose=rent", label: "Rent" },
   { href: "/properties?category=plot", label: "Plots" },
   { href: "/properties?category=commercial", label: "Commercial" },
-  { href: "/projects", label: "Projects" },
-  { href: "/agencies", label: "Agencies" },
   { href: "/wanted", label: "Wanted" },
-  { href: "/blog", label: "Blog" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/about-us", label: "About Us" },
+  { href: "/contact", label: "Contact" },
 ];
 
-/** Log in button, or the logged-in buyer's menu. */
+/** The round account button, or the logged-in buyer's menu. */
 function AccountMenu() {
   const { user } = useSession();
   const router = useRouter();
@@ -34,8 +44,8 @@ function AccountMenu() {
 
   if (!user) {
     return (
-      <Link href="/login" className="hide-mobile">
-        <Button>Log in</Button>
+      <Link href="/login" className="icon-button hide-mobile" aria-label="Log in">
+        <UserIcon className="icon" />
       </Link>
     );
   }
@@ -105,102 +115,74 @@ function MobileAccountLinks({ onNavigate }: { onNavigate: () => void }) {
   );
 }
 
-/** Slim bar above the header with the phone, WhatsApp and email from site settings (desktop only; mobile shows them in the menu). */
-function TopBar({ settings }: { settings: SiteSettings }) {
-  const { contact, general } = settings;
-  const whatsapp = whatsappNumber(contact.whatsapp);
-
-  if (!contact.phone && !whatsapp && !contact.email) {
-    return null;
-  }
-
-  return (
-    <div className="site-topbar hide-mobile">
-      <div className="container site-topbar-inner">
-        {general.tagline ? <span className="site-topbar-tagline">{general.tagline}</span> : <span />}
-        <ul>
-          {contact.office_hours && <li className="site-topbar-hours">{contact.office_hours}</li>}
-          {contact.phone && (
-            <li>
-              <a href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${contact.phone}`}>
-                <PhoneOutlined aria-hidden /> {contact.phone}
-              </a>
-            </li>
-          )}
-          {whatsapp && (
-            <li>
-              <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${contact.whatsapp} (opens in a new tab)`}>
-                <WhatsAppOutlined aria-hidden /> WhatsApp
-              </a>
-            </li>
-          )}
-          {contact.email && (
-            <li>
-              <a href={`mailto:${contact.email}`} aria-label={`Email ${contact.email}`}>
-                <MailOutlined aria-hidden /> {contact.email}
-              </a>
-            </li>
-          )}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
 export function SiteHeader({ settings }: { settings: SiteSettings }) {
   const siteName = settings.general.site_name ?? "DHA GUJ Properties";
+  const phone = settings.contact.phone;
   const pathname = usePathname();
   const { resolvedMode, toggleMode } = useThemeSettings();
   const [menuOpen, setMenuOpen] = useState(false);
-  const isActive = (href: string) => !href.includes("?") && (pathname === href || pathname.startsWith(`${href}/`));
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
 
   return (
-    <>
-      <TopBar settings={settings} />
-      <header className="site-header">
-        <div className="container site-header-inner">
-          <SiteLogo siteName={siteName} logoUrl={settings.general.logo_url} icon={<HomeFilled />} />
+    <header className="site-header" id="top">
+      <div className="container site-header-inner">
+        <SiteLogo siteName={siteName} logoUrl={settings.general.logo_url} icon={<HomeIcon />} />
 
-          <nav className="site-nav" aria-label="Main">
-            {LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className={isActive(link.href) ? "active" : undefined} aria-current={isActive(link.href) ? "page" : undefined}>
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+        <nav className="site-nav" aria-label="Main">
+          {LINKS.map((link) => (
+            <Link key={link.href} href={link.href} className={isActive(link.href) ? "active" : undefined} aria-current={isActive(link.href) ? "page" : undefined}>
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
-          <div className="site-actions">
-            <Tooltip title={resolvedMode === "dark" ? "Light mode" : "Dark mode"}>
-              <Button type="text" aria-label="Toggle dark mode" icon={resolvedMode === "dark" ? <SunOutlined /> : <MoonOutlined />} onClick={toggleMode} />
-            </Tooltip>
-            <AccountMenu />
-            <Button type="primary" href={portalUrl("/listings/new")} icon={<PlusOutlined />} className="hide-mobile">
-              Post a property
-            </Button>
-            <Button type="text" aria-label="Open menu" icon={<MenuOutlined />} className="show-mobile" onClick={() => setMenuOpen(true)} />
-          </div>
+        <div className="site-actions">
+          <Tooltip title={resolvedMode === "dark" ? "Light mode" : "Dark mode"}>
+            <button type="button" className="icon-button" aria-label="Toggle dark mode" onClick={toggleMode}>
+              {resolvedMode === "dark" ? <SunOutlined /> : <MoonOutlined />}
+            </button>
+          </Tooltip>
+
+          <a className="pill-link hide-mobile" href={portalUrl("/listings/new")}>
+            <HomeIcon className="icon" /> List Property
+          </a>
+
+          {phone && (
+            <>
+              <span className="site-actions-divider hide-mobile" aria-hidden="true" />
+              <a className="phone-pill hide-mobile" href={`tel:${phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${phone}`}>
+                <PhoneIcon className="icon" /> {phone}
+              </a>
+            </>
+          )}
+
+          <AccountMenu />
+
+          <button type="button" className="icon-button show-mobile" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
+            <MenuOutlined />
+          </button>
         </div>
+      </div>
 
-        <Drawer title="Menu" placement="right" size={290} open={menuOpen} onClose={() => setMenuOpen(false)}>
-          <nav className="mobile-nav" aria-label="Mobile">
-            {LINKS.map((link) => (
-              <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
-            <Button type="primary" size="large" block href={portalUrl("/listings/new")} icon={<PlusOutlined />}>
-              Post a property
-            </Button>
-            <MobileAccountLinks onNavigate={() => setMenuOpen(false)} />
-          </div>
-          <div className="mobile-contact">
-            <ContactList contact={settings.contact} />
-            <SocialLinks social={settings.social} siteName={siteName} />
-          </div>
-        </Drawer>
-      </header>
-    </>
+      <Drawer title="Menu" placement="right" size={290} open={menuOpen} onClose={() => setMenuOpen(false)}>
+        <nav className="mobile-nav" aria-label="Mobile">
+          {[...LINKS, ...MORE_LINKS].map((link) => (
+            <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
+          <Button type="primary" size="large" block href={portalUrl("/listings/new")}>
+            List Property
+          </Button>
+          <MobileAccountLinks onNavigate={() => setMenuOpen(false)} />
+        </div>
+        <div className="mobile-contact">
+          <ContactList contact={settings.contact} />
+          <SocialLinks social={settings.social} siteName={siteName} />
+        </div>
+      </Drawer>
+    </header>
   );
 }

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { PostCard } from "@/components/post-card";
 import { ShareLinks } from "@/components/share-links";
 import { getPost, getPosts, postHref, readingMinutes, stripHtml } from "@/lib/blog";
+import { authorHref } from "@/lib/authors";
 import { formatDate } from "@/lib/labels";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
@@ -62,7 +63,8 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
   const siteName = siteNameOf(settings);
   const url = `${siteUrl()}${postHref(post.slug)}`;
   const more = (latest?.data ?? []).filter((item) => item.id !== post.id).slice(0, 3);
-  const minutes = readingMinutes(post.content_html);
+  // The editor's own read time wins; otherwise it is worked out from the article.
+  const minutes = post.read_time_minutes ?? readingMinutes(post.content_html);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -72,9 +74,12 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
     url,
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     image: post.cover_image_url ? [post.cover_image_url] : undefined,
+    articleSection: post.category?.name ?? undefined,
     datePublished: post.published_at ?? undefined,
     dateModified: post.updated_at ?? post.published_at ?? undefined,
-    author: post.author ? { "@type": "Person", name: post.author.name } : { "@type": "Organization", name: siteName, url: siteUrl() },
+    author: post.author
+      ? { "@type": "Person", name: post.author.name, url: `${siteUrl()}${authorHref(post.author.slug)}`, jobTitle: post.author.designation ?? undefined }
+      : { "@type": "Organization", name: siteName, url: siteUrl() },
     publisher: {
       "@type": "Organization",
       name: siteName,
@@ -110,10 +115,20 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
         <header className="article-header">
           <h1>{post.title}</h1>
           {post.excerpt && <p className="article-lead">{post.excerpt}</p>}
+          {post.category && (
+            <p className="article-category">
+              <Link className="chip" href={`/blog?category=${post.category.slug}`}>
+                {post.category.name}
+              </Link>
+            </p>
+          )}
           <p className="article-meta">
             {post.author && (
               <>
-                By <strong>{post.author.name}</strong>
+                By{" "}
+                <Link href={authorHref(post.author.slug)} className="article-byline">
+                  <strong>{post.author.name}</strong>
+                </Link>
                 <span aria-hidden="true"> · </span>
               </>
             )}

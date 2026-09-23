@@ -34,3 +34,14 @@ export function priceRangeKey(filters: Record<string, string>): string | undefin
     (range) => String(range.min ?? "") === (filters.min_price ?? "") && String(range.max ?? "") === (filters.max_price ?? ""),
   )?.key;
 }
+
+export type AreaRange = { key: string; label: string; min?: number; max?: number };
+
+/** Plot/house sizes as Marla, the unit DHA Gujranwala is sold in. */
+export const AREA_RANGES: AreaRange[] = [
+  { key: "0-5", label: "Up to 5 Marla", max: 5 },
+  { key: "5-10", label: "5 – 10 Marla", min: 5, max: 10 },
+  { key: "10-20", label: "10 Marla – 1 Kanal", min: 10, max: 20 },
+  { key: "20-40", label: "1 – 2 Kanal", min: 20, max: 40 },
+  { key: "40-", label: "Above 2 Kanal", min: 40 },
+];

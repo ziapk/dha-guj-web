@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AgencyCard } from "@/components/agency-card";
 import { SearchSuggest } from "@/components/search-suggest";
 import { publicApi } from "@/lib/api";
-import { openGraph } from "@/lib/seo";
+import { openGraph, robots } from "@/lib/seo";
 import type { AgencyProfile, City, Collection, Paginated } from "@/types/api";
 
 const TITLE = "Real estate agencies";
@@ -19,7 +19,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/agencies">)
     description: DESCRIPTION,
     alternates: { canonical: "/agencies" },
     openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/agencies" }),
-    robots: filtered ? { index: false, follow: true } : undefined,
+    robots: robots(filtered ? { index: false, follow: true } : undefined),
   };
 }
 
