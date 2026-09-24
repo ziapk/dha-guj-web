@@ -12,6 +12,7 @@ import { PropertyCard } from "@/components/property-card";
 import { PropertyGallery } from "@/components/property-gallery";
 import { RecordRecentlyViewed } from "@/components/recently-viewed";
 import { ViewTracker } from "@/components/view-tracker";
+import { AmenityGroups } from "@/components/amenity-groups";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import { coverOf, locationOf, mediumUrl, photosOf } from "@/lib/property";
@@ -227,11 +228,7 @@ export default async function PropertyPage({ params }: PageProps<"/properties/[s
           {(property.amenities ?? []).length > 0 && (
             <section className="detail-section">
               <h2>Amenities</h2>
-              <ul className="amenity-list">
-                {property.amenities?.map((amenity) => (
-                  <li key={amenity.id}>{amenity.name}</li>
-                ))}
-              </ul>
+              <AmenityGroups amenities={property.amenities ?? []} />
             </section>
           )}
 

@@ -126,7 +126,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
   return (
     <header className="site-header" id="top">
       <div className="container site-header-inner">
-        <SiteLogo siteName={siteName} logoUrl={settings.general.logo_url} icon={<HomeIcon />} />
+        <SiteLogo siteName={siteName} logoUrl={settings.general.logo_url} />
 
         <nav className="site-nav" aria-label="Main">
           {LINKS.map((link) => (

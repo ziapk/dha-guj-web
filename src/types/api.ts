@@ -20,7 +20,19 @@ export type ResetPeriod = "none" | "monthly" | "yearly";
 export type City = { id: number; name: string; slug: string };
 export type Society = { id: number; city_id: number; name: string; slug: string };
 export type PropertyType = { id: number; category: PropertyCategory; name: string; slug: string };
-export type Amenity = { id: number; name: string; slug: string; icon: string | null };
+export type AmenityGroup = { id: number; name: string; slug: string; sort_order: number };
+export type AmenityIconType = "none" | "preset" | "custom";
+export type Amenity = {
+  id: number;
+  name: string;
+  slug: string;
+  /** "preset": draw the built-in icon named by `icon`; "custom": show the uploaded `icon_url`; "none": no icon. */
+  icon_type?: AmenityIconType;
+  icon: string | null;
+  icon_url?: string | null;
+  amenity_group_id?: number | null;
+  group?: AmenityGroup | null;
+};
 /** thumbnail_url (≈480px) and medium_url (≈1280px) fall back to the original until the resize job has run. */
 export type PropertyMedia = {
   id: number;

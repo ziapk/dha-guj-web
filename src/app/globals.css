@@ -2492,6 +2492,25 @@ main h3 {
   color: var(--accent);
 }
 
+/* An amenity with its own icon (built-in or uploaded) shows that instead of the check mark. */
+.amenity-list li.has-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amenity-list li.has-icon::before {
+  content: none;
+}
+
+.amenity-icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--accent);
+  object-fit: contain;
+}
+
 .contact-card {
   display: flex;
   flex-direction: column;

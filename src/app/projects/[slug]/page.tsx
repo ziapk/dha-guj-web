@@ -10,6 +10,7 @@ import { ProjectCard } from "@/components/project-card";
 import { ProjectContactCard } from "@/components/project-contact-card";
 import { PropertyGallery } from "@/components/property-gallery";
 import { ViewTracker } from "@/components/view-tracker";
+import { AmenityGroups } from "@/components/amenity-groups";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { CONSTRUCTION_STATUS_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import {
@@ -457,11 +458,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           {amenities.length > 0 && (
             <section className="detail-section">
               <h2>Amenities & facilities</h2>
-              <ul className="amenity-list">
-                {amenities.map((amenity) => (
-                  <li key={amenity.id}>{amenity.name}</li>
-                ))}
-              </ul>
+              <AmenityGroups amenities={amenities} />
             </section>
           )}
 
