@@ -33,7 +33,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     if (request.nextUrl.searchParams.get("details") === "1" && result.data.length <= MAX_DETAILS) {
       const detailed = await Promise.all(
         result.data.map((property) =>
-          publicApi<Resource<PublicProperty>>(`properties/${encodeURIComponent(property.slug)}`, { revalidate: 60 })
+          publicApi<Resource<PublicProperty>>(`properties/${property.id}`, { revalidate: 60 })
             .then((response) => response.data)
             .catch(() => property),
         ),

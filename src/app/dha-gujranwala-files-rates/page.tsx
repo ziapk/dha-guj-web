@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PhoneIcon, WhatsAppIcon } from "@/components/icons";
+import { JsonLd } from "@/components/json-ld";
 import { FILE_RATES_SLUG, getFileRates } from "@/lib/file-rates";
 import { formatDate } from "@/lib/labels";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
+import { cmsPageSchemas } from "@/lib/page-schema";
+import { metaText, openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { RateTrend } from "@/types/api";
 
@@ -47,16 +48,8 @@ export default async function FileRatesPage() {
   const siteName = siteNameOf(settings);
   const phone = sections.cta.phone ?? settings.contact.phone;
   const whatsapp = whatsappNumber(sections.cta.whatsapp ?? settings.contact.whatsapp);
-  const url = `${siteUrl()}/${FILE_RATES_SLUG}`;
 
-  const breadcrumbs = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl() },
-      { "@type": "ListItem", position: 2, name: page.title, item: url },
-    ],
-  };
+  const pageSchema = { "@type": "WebPage", name: page.meta_title ?? page.title, dateModified: page.updated_at ?? undefined };
 
   const faqSchema =
     sections.faqs.length > 0
@@ -88,9 +81,7 @@ export default async function FileRatesPage() {
 
   return (
     <div className="container page-section">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
-      {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema) }} />}
-      {howToSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(howToSchema) }} />}
+      <JsonLd data={[...cmsPageSchemas(page, `/${FILE_RATES_SLUG}`, pageSchema), faqSchema, howToSchema]} />
 
       <nav className="breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>

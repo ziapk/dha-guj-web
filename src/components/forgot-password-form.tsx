@@ -1,9 +1,10 @@
 "use client";
 
-import { MailOutlined } from "@ant-design/icons";
-import { Alert, Button, Form, Input, Typography } from "antd";
+import { Alert, Button, Form, Input } from "antd";
 import Link from "next/link";
 import { useState } from "react";
+import { AuthCard, AuthDivider } from "@/components/auth-card";
+import { ArrowLeftIcon, ArrowRightIcon, MailIcon } from "@/components/icons";
 
 type ForgotValues = { email: string };
 
@@ -47,60 +48,67 @@ export function ForgotPasswordForm() {
     }
   }
 
+  if (sentTo) {
+    return (
+      <AuthCard title="Check your email" intro={sentTo.message}>
+        <p className="auth-intro">
+          The link is valid for a limited time. Open it to choose a new password, then log in here with it. No email? Check your spam folder or{" "}
+          <button type="button" className="link-button" onClick={() => setSentTo(null)}>
+            try again
+          </button>
+          .
+        </p>
+        <BackToLogin />
+      </AuthCard>
+    );
+  }
+
   return (
-    <div className="container">
-      <div className="auth-card">
-        <Typography.Title level={2} style={{ marginTop: 0 }}>
-          Forgot your password?
-        </Typography.Title>
+    <AuthCard title="Forgot Password?" intro="Enter your registered email address and we'll send you a link to reset your password.">
+      {error && <Alert type="error" showIcon title={error} style={{ marginBottom: 16 }} />}
 
-        {sentTo ? (
+      <Form
+        form={form}
+        layout="vertical"
+        size="large"
+        className="auth-form"
+        requiredMark={(label, { required }) => (
           <>
-            <Alert type="success" showIcon title="Check your email" description={sentTo.message} style={{ marginBottom: 16 }} />
-            <Typography.Paragraph type="secondary">
-              The link is valid for a limited time. Open it to choose a new password, then log in here with it. No email? Check your spam folder or{" "}
-              <button type="button" className="link-button" onClick={() => setSentTo(null)}>
-                try again
-              </button>
-              .
-            </Typography.Paragraph>
-            <Link href="/login">
-              <Button type="primary" size="large" block>
-                Back to log in
-              </Button>
-            </Link>
-          </>
-        ) : (
-          <>
-            <Typography.Paragraph type="secondary">Enter the email address on your account and we will send you a link to reset your password.</Typography.Paragraph>
-
-            {error && <Alert type="error" showIcon title={error} style={{ marginBottom: 16 }} />}
-
-            <Form form={form} layout="vertical" size="large" requiredMark={false} onFinish={onFinish}>
-              <Form.Item
-                name="email"
-                label="Email address"
-                rules={[
-                  { required: true, message: "Enter your email address" },
-                  { type: "email", message: "Enter a valid email address" },
-                ]}
-              >
-                <Input prefix={<MailOutlined />} type="email" autoComplete="email" inputMode="email" maxLength={255} autoFocus />
-              </Form.Item>
-              <Button type="primary" htmlType="submit" block loading={submitting}>
-                Send reset link
-              </Button>
-            </Form>
-
-            <Typography.Paragraph style={{ marginTop: 20, textAlign: "center" }}>
-              Remembered it? <Link href="/login">Log in</Link>
-            </Typography.Paragraph>
-            <Typography.Paragraph type="secondary" style={{ marginBottom: 0, textAlign: "center" }}>
-              Signed up with a phone number only? <Link href="/contact">Contact us</Link> and we will help you back in.
-            </Typography.Paragraph>
+            {label}
+            {required && <span className="auth-required">*</span>}
           </>
         )}
-      </div>
-    </div>
+        onFinish={onFinish}
+      >
+        <Form.Item
+          name="email"
+          label="Email Address"
+          rules={[
+            { required: true, message: "Enter your email address" },
+            { type: "email", message: "Enter a valid email address" },
+          ]}
+        >
+          <Input prefix={<MailIcon className="icon auth-input-icon" />} placeholder="Enter your email address" type="email" autoComplete="email" inputMode="email" maxLength={255} autoFocus />
+        </Form.Item>
+        <Button type="primary" htmlType="submit" block loading={submitting} icon={<ArrowRightIcon className="icon" />} iconPlacement="end">
+          Send Reset Link
+        </Button>
+      </Form>
+
+      <AuthDivider>OR</AuthDivider>
+      <BackToLogin />
+
+      <p className="auth-footnote">
+        Signed up with a phone number only? <Link href="/contact">Contact us</Link> and we will help you back in.
+      </p>
+    </AuthCard>
+  );
+}
+
+function BackToLogin() {
+  return (
+    <Link href="/login" className="auth-secondary-button">
+      <ArrowLeftIcon className="icon" /> Back to Login
+    </Link>
   );
 }

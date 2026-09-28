@@ -4,11 +4,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AgencyCard } from "@/components/agency-card";
 import { ContactForm } from "@/components/contact-form";
+import { JsonLd } from "@/components/json-ld";
 import { SectionIcon } from "@/components/section-icon";
 import { ContactList, SocialLinks } from "@/components/site-contact";
 import { publicApi } from "@/lib/api";
 import { CONTACT_SLUG, getContactPage } from "@/lib/cms-sections";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { cmsPageSchemas } from "@/lib/page-schema";
+import { metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, hasContactDetails, siteNameOf } from "@/lib/site-data";
 import type { AgencyProfile, Paginated } from "@/types/api";
@@ -94,8 +96,7 @@ export default async function ContactPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
-      {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema) }} />}
+      <JsonLd data={[...cmsPageSchemas(page, `/${CONTACT_SLUG}`, structuredData), faqSchema]} />
 
       <section className={`page-banner${sections.hero.image_url ? " has-image" : ""}`}>
         {sections.hero.image_url && <Image src={sections.hero.image_url} alt="" fill priority sizes="100vw" style={{ objectFit: "cover" }} />}

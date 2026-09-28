@@ -4,7 +4,7 @@ import { CompareButton } from "@/components/compare-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, CameraIcon, FlameIcon, HomeIcon, PinIcon, PlotIcon } from "@/components/icons";
 import { PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice } from "@/lib/labels";
-import { coverOf, locationOf, photosOf, thumbnailUrl } from "@/lib/property";
+import { coverOf, locationOf, photosOf, propertyHref, thumbnailUrl } from "@/lib/property";
 import type { PublicProperty } from "@/types/api";
 
 type CardLayout = "grid" | "list";
@@ -34,7 +34,7 @@ export function PropertyCard({ property, priority = false, layout = "grid" }: { 
 
   return (
     <article className={`property-card${isList ? " is-list" : ""}`}>
-      <Link href={`/properties/${property.slug}`} className="property-card-link">
+      <Link href={propertyHref(property)} className="property-card-link">
         <div className="property-card-cover">
           {cover ? (
             <Image
@@ -54,7 +54,9 @@ export function PropertyCard({ property, priority = false, layout = "grid" }: { 
                 <FlameIcon /> Hot
               </span>
             )}
+            {property.is_premium && <span className="badge badge-premium">Premium</span>}
             {property.is_featured && <span className="badge badge-featured">Featured</span>}
+            {property.is_urgent && <span className="badge badge-urgent">Urgent</span>}
             <span className={`badge badge-purpose badge-${badge.tone}`}>{badge.label}</span>
           </div>
           {photoCount > 1 && (

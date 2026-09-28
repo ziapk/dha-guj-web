@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { publicApi } from "@/lib/api";
 import { postHref } from "@/lib/blog";
+import { developerHref } from "@/lib/developers";
 import { projectHref } from "@/lib/project";
 import { siteUrl } from "@/lib/site";
 import { cmsPageHref, getCmsPages } from "@/lib/site-data";
-import type { AgencyProfile, BlogPostSummary, Paginated, PublicProject, PublicProperty } from "@/types/api";
+import type { AgencyProfile, BlogPostSummary, Paginated, PublicDeveloper, PublicProject } from "@/types/api";
 
 /** Rebuild the sitemap at most once an hour. */
 export const revalidate = 3600;
@@ -12,10 +13,10 @@ export const revalidate = 3600;
 /** The public API returns at most 48 items per page. */
 const PER_PAGE = 48;
 
-/** Safety limits: 48 × 200 = 9,600 listings, 48 × 20 = 960 projects, 48 × 20 = 960 agencies and 48 × 50 = 2,400 posts. A sitemap file may hold 50,000 URLs. */
-const MAX_LISTING_PAGES = 200;
+/** Safety limits: 48 × 20 = 960 projects, 48 × 20 = 960 agencies, 48 × 10 = 480 developers and 48 × 50 = 2,400 posts. A sitemap file may hold 50,000 URLs. */
 const MAX_PROJECT_PAGES = 20;
 const MAX_AGENCY_PAGES = 20;
+const MAX_DEVELOPER_PAGES = 10;
 const MAX_POST_PAGES = 50;
 
 /**
@@ -45,10 +46,14 @@ async function collect<T>(path: string, query: Record<string, string | number>, 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const site = siteUrl();
 
-  const [properties, projects, agencies, posts, pages] = await Promise.all([
-    collect<PublicProperty>("properties", { sort: "newest" }, MAX_LISTING_PAGES),
+  const [properties, projects, agencies, developers, posts, pages] = await Promise.all([
+    // The API decides which listings belong: live ones (sold included), expired ones worth keeping, and admin overrides.
+    publicApi<{ data: { path: string; last_modified: string | null }[] }>("sitemap/properties", { revalidate })
+      .then((response) => response.data)
+      .catch(() => []),
     collect<PublicProject>("projects", {}, MAX_PROJECT_PAGES),
     collect<AgencyProfile>("agencies", {}, MAX_AGENCY_PAGES),
+    collect<PublicDeveloper>("developers", {}, MAX_DEVELOPER_PAGES),
     collect<BlogPostSummary>("posts", {}, MAX_POST_PAGES),
     getCmsPages(),
   ]);
@@ -60,12 +65,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/properties?purpose=rent`, changeFrequency: "hourly", priority: 0.8 },
     { url: `${site}/projects`, changeFrequency: "daily", priority: 0.7 },
     { url: `${site}/agencies`, changeFrequency: "daily", priority: 0.6 },
+    { url: `${site}/developers`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${site}/wanted`, changeFrequency: "daily", priority: 0.5 },
     { url: `${site}/blog`, changeFrequency: "weekly", priority: 0.5 },
     { url: `${site}/pricing`, changeFrequency: "monthly", priority: 0.5 },
     ...properties.map((property) => ({
-      url: `${site}/properties/${property.slug}`,
-      lastModified: property.refreshed_at ?? property.published_at ?? undefined,
+      url: `${site}${property.path}`,
+      lastModified: property.last_modified ?? undefined,
       changeFrequency: "daily" as const,
       priority: 0.8,
     })),
@@ -77,6 +83,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...agencies.map((agency) => ({
       url: `${site}/agencies/${agency.slug}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
+    ...developers.map((developer) => ({
+      url: `${site}${developerHref(developer.slug)}`,
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })),

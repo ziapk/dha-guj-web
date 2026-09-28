@@ -17,6 +17,7 @@ import type { SiteSettings } from "@/types/api";
 const LINKS = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
+  { href: "/developers", label: "Developers" },
   { href: "/maps", label: "Maps" },
   { href: "/agencies", label: "Dealers" },
   { href: "/agents", label: "Agents" },

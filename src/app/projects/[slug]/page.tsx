@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { AgencyLogo } from "@/components/agency-card";
 import { BannerSlot } from "@/components/banner-slot";
 import { BuildingIcon, CalendarIcon, HomeIcon, PinIcon } from "@/components/icons";
 import { InquiryForm } from "@/components/inquiry-form";
@@ -12,6 +13,7 @@ import { PropertyGallery } from "@/components/property-gallery";
 import { ViewTracker } from "@/components/view-tracker";
 import { AmenityGroups } from "@/components/amenity-groups";
 import { NotFoundError, publicApi } from "@/lib/api";
+import { developerHref } from "@/lib/developers";
 import { CONSTRUCTION_STATUS_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import {
   UNIT_AVAILABILITY_LABELS,
@@ -177,7 +179,11 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
     description: project.short_description ?? project.description,
     url: projectUrl,
     image: photos.map((photo) => mediumUrl(photo)),
-    brand: { "@type": "Organization", name: project.developer_name, url: project.developer_website ?? undefined },
+    brand: {
+      "@type": "Organization",
+      name: project.developer_name,
+      url: project.developer ? `${siteUrl()}${developerHref(project.developer.slug)}` : (project.developer_website ?? undefined),
+    },
     ...(units.length > 0
       ? {
           offers: {
@@ -229,7 +235,8 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
             {price && <div className="detail-price">{price}</div>}
             <h1>{project.name}</h1>
             <p className="detail-location">
-              <BuildingIcon className="icon" /> By {project.developer_name}
+              <BuildingIcon className="icon" /> By{" "}
+              {project.developer ? <Link href={developerHref(project.developer.slug)}>{project.developer_name}</Link> : project.developer_name}
             </p>
             <p className="detail-location">
               <PinIcon className="icon" /> {projectLocationOf(project)}
@@ -433,9 +440,18 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
             <p className="detail-description">{project.description}</p>
           </section>
 
-          {developerFacts.length > 1 && (
+          {(developerFacts.length > 1 || project.developer) && (
             <section className="detail-section">
               <h2>Developer & team</h2>
+              {project.developer && (
+                <Link href={developerHref(project.developer.slug)} className="developer-link">
+                  <AgencyLogo name={project.developer.name} logoUrl={project.developer.logo_url} size={52} />
+                  <span style={{ minWidth: 0 }}>
+                    <strong>{project.developer.name}</strong>
+                    <small>View company profile & all projects →</small>
+                  </span>
+                </Link>
+              )}
               <dl className="detail-list">
                 {developerFacts.map((fact) => (
                   <div key={fact.label}>

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/json-ld";
 import { ContactList, SocialLinks } from "@/components/site-contact";
 import { formatDate } from "@/lib/labels";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { cmsPageSchemas } from "@/lib/page-schema";
+import { metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { cmsPageHref, getCmsPage, getCmsPages, getSiteSettings, hasContactDetails, siteNameOf } from "@/lib/site-data";
 
@@ -82,7 +84,7 @@ export default async function CmsPageView({ params }: PageProps<"/[page]">) {
 
   return (
     <div className="container page-section">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
+      <JsonLd data={cmsPageSchemas(page, cmsPageHref(page.slug), structuredData)} />
 
       <nav className="breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>

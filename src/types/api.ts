@@ -44,9 +44,29 @@ export type PropertyMedia = {
   is_cover: boolean;
 };
 
+/** Whether the property is still on the market; separate from whether the listing is live. */
+export type PropertyAvailability = "available" | "under_offer" | "sold" | "rented";
+
+/** Head and status data for a listing page (only on GET /public/properties/{id}). */
+export type PropertySeo = {
+  title: string;
+  description: string;
+  /** Permanent path: /property/{id}/{slug}. */
+  path: string;
+  canonical_url: string;
+  index: boolean;
+  follow: boolean;
+  sitemap: boolean;
+  /** Shown instead of the contact box: the property is sold / rented, or the listing expired. */
+  notice: "sold" | "rented" | "expired" | null;
+};
+
 export type PublicProperty = {
   id: number;
   slug: string;
+  /** Permanent path: /property/{id}/{slug}. */
+  url?: string;
+  property_status?: PropertyAvailability;
   purpose: PropertyPurpose;
   title: string;
   description: string;
@@ -76,6 +96,9 @@ export type PublicProperty = {
   is_featured: boolean;
   /** Hot (premium) promotion; older API responses may leave it out. */
   is_hot?: boolean;
+  is_premium?: boolean;
+  is_urgent?: boolean;
+  seo?: PropertySeo;
   published_at: string | null;
   refreshed_at: string | null;
   views_count: number;
@@ -220,6 +243,8 @@ export type CmsPageSummary = {
   template?: string;
   meta_title: string | null;
   meta_description: string | null;
+  /** Schema.org page type the admin picked; null = the layout's default, "none" = no automatic page block. */
+  schema_type?: string | null;
   is_published: boolean;
   show_in_footer: boolean;
   sort_order: number;
@@ -227,7 +252,13 @@ export type CmsPageSummary = {
 };
 
 /** GET /public/pages/{slug} — content_html is sanitised by the API and safe to render. */
-export type CmsPage = CmsPageSummary & { content: string; content_html: string; sections?: Record<string, unknown> };
+export type CmsPage = CmsPageSummary & {
+  content: string;
+  content_html: string;
+  sections?: Record<string, unknown>;
+  /** Extra JSON-LD the admin pasted in (validated by the API to be objects with an "@type"). */
+  schema_custom?: Record<string, unknown> | Record<string, unknown>[] | null;
+};
 
 /** Icons the website can draw for CMS-chosen section icons. */
 export type PageIcon =
@@ -304,6 +335,49 @@ export type PostCategory = { id: number; name: string; slug: string; description
 export type PostAuthor = { id: number; name: string; slug: string; designation: string | null; photo_url: string | null };
 
 /** A blog byline with its own public page. GET /public/authors and /public/authors/{slug}. */
+export type DeveloperType = "developer" | "construction" | "developer_builder";
+
+export type DeveloperSummary = {
+  id: number;
+  slug: string;
+  name: string;
+  company_type: DeveloperType;
+  logo_url: string | null;
+  public_url: string;
+};
+
+/** A developer or construction company in the directory (GET /public/developers). */
+export type PublicDeveloper = {
+  id: number;
+  slug: string;
+  name: string;
+  company_type: DeveloperType;
+  tagline: string | null;
+  short_description: string | null;
+  /** Sanitised HTML; only on the company's own page. */
+  description?: string;
+  logo_url: string | null;
+  cover_url: string | null;
+  established_year: number | null;
+  registration_number: string | null;
+  city?: City | null;
+  address: string | null;
+  highlights: string[];
+  phone: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  website: string | null;
+  facebook: string | null;
+  instagram: string | null;
+  linkedin: string | null;
+  youtube: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  /** Live projects. */
+  projects_count?: number;
+  is_featured: boolean;
+};
+
 export type PublicAuthor = {
   id: number;
   slug: string;
@@ -512,6 +586,8 @@ export type PublicProject = {
   video_url: string | null;
   virtual_tour_url: string | null;
 
+  /** The directory company behind the project, only while its page is live. */
+  developer?: DeveloperSummary | null;
   developer_name: string;
   developer_description: string | null;
   developer_website: string | null;

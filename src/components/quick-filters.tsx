@@ -123,7 +123,7 @@ export function QuickFilters({ cities, societies, propertyTypes, filters }: Prop
           apply({ min_price: range?.min ? String(range.min) : undefined, max_price: range?.max ? String(range.max) : undefined });
         }}
       />
-      <Badge count={moreCount} size="small" color="#3a307f">
+      <Badge count={moreCount} size="small" color="#1a73e8">
         <Button className="pill-button" icon={<FilterOutlined />} onClick={() => setMoreOpen(true)}>
           More filters
         </Button>

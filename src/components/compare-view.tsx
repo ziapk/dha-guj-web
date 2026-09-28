@@ -8,7 +8,7 @@ import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { HomeIcon } from "@/components/icons";
 import { compareStore } from "@/lib/id-store";
 import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice, formatPrice } from "@/lib/labels";
-import { coverOf, locationOf, thumbnailUrl } from "@/lib/property";
+import { coverOf, locationOf, propertyHref, thumbnailUrl } from "@/lib/property";
 import { useListingsByIds } from "@/lib/use-listings";
 import type { PublicProperty } from "@/types/api";
 
@@ -124,7 +124,7 @@ export function CompareView() {
                           <CloseOutlined />
                         </button>
                       </div>
-                      <Link href={`/properties/${property.slug}`} className="compare-title">
+                      <Link href={propertyHref(property)} className="compare-title">
                         {property.title}
                       </Link>
                     </div>
@@ -146,7 +146,7 @@ export function CompareView() {
               <th scope="row">Listing</th>
               {items.map((property) => (
                 <td key={property.id}>
-                  <Link href={`/properties/${property.slug}`} className="btn btn-outline">
+                  <Link href={propertyHref(property)} className="btn btn-outline">
                     View details
                   </Link>
                 </td>

@@ -1,5 +1,10 @@
 import type { City, PropertyMedia, PropertyType, PublicProperty } from "@/types/api";
 
+/** The listing's permanent page: /property/{id}/{slug}. The id never changes; an outdated slug is redirected. */
+export function propertyHref(property: Pick<PublicProperty, "id" | "slug" | "url">): string {
+  return property.url ?? `/property/${property.id}/${property.slug}`;
+}
+
 export function photosOf(property: PublicProperty): PropertyMedia[] {
   const photos = (property.media ?? []).filter((media) => media.type === "image");
 

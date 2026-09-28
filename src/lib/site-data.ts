@@ -27,6 +27,7 @@ export const RESERVED_SLUGS = new Set([
   "blog",
   "compare",
   "contact",
+  "developers",
   "dha-gujranwala-files-rates",
   "forgot-password",
   "login",

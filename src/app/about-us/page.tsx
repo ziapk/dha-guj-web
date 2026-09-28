@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/json-ld";
 import { SectionIcon } from "@/components/section-icon";
 import { ABOUT_SLUG, getAboutPage } from "@/lib/cms-sections";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { cmsPageSchemas } from "@/lib/page-schema";
+import { metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
@@ -82,7 +84,7 @@ export default async function AboutPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
+      <JsonLd data={cmsPageSchemas(page, `/${ABOUT_SLUG}`, structuredData)} />
 
       <section className={`page-banner${sections.hero.image_url ? " has-image" : ""}`}>
         {sections.hero.image_url && <Image src={sections.hero.image_url} alt="" fill priority sizes="100vw" style={{ objectFit: "cover" }} />}

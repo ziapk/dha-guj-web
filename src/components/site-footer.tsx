@@ -9,6 +9,7 @@ import type { CmsPageSummary, SiteSettings } from "@/types/api";
 
 const QUICK_LINKS = [
   { href: "/projects", label: "Projects" },
+  { href: "/developers", label: "Developers" },
   { href: "/agencies", label: "Dealers" },
   { href: "/agents", label: "Agents" },
   { href: "/blog", label: "Blog" },
