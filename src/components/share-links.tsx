@@ -4,7 +4,7 @@ import { FacebookFilled, LinkOutlined, LinkedinFilled, WhatsAppOutlined, XOutlin
 import { App } from "antd";
 
 /** Share an article on social networks or copy its link. `url` must be absolute. */
-export function ShareLinks({ url, title }: { url: string; title: string }) {
+export function ShareLinks({ url, title, brand = false }: { url: string; title: string; brand?: boolean }) {
   const { message } = App.useApp();
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
@@ -26,11 +26,11 @@ export function ShareLinks({ url, title }: { url: string; title: string }) {
   }
 
   return (
-    <div className="share-links">
-      <span className="share-links-label">Share</span>
+    <div className={`share-links${brand ? " is-brand" : ""}`}>
+      <span className="share-links-label">Share{brand ? ":" : ""}</span>
       <ul>
         {networks.map((network) => (
-          <li key={network.name}>
+          <li key={network.name} data-network={network.name.toLowerCase()}>
             <a href={network.href} target="_blank" rel="noopener noreferrer" aria-label={`Share on ${network.name} (opens in a new tab)`}>
               {network.icon}
             </a>

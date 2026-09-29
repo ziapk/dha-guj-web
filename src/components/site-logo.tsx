@@ -11,7 +11,7 @@ export function SiteLogo({ siteName, logoUrl, onClick }: { siteName: string; log
       {logoUrl ? (
         <Image src={logoUrl} alt={siteName} width={180} height={44} className="site-logo-img" unoptimized priority />
       ) : (
-        <Image src="/brand/logo-wide.png" alt={siteName} width={515} height={160} className="site-logo-img" priority />
+        <Image src="/brand/logo-wide.png" alt={siteName} width={515} height={160} className="site-logo-img" priority unoptimized />
       )}
     </Link>
   );

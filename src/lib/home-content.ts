@@ -19,14 +19,6 @@ export const HERO_TRUST: TrustItem[] = [
   { icon: "chart", title: "Expert Support", text: "We're Here to Help" },
 ];
 
-export type ProjectHighlight = { title: string; icon: "chart" | "shield" | "pin" };
-
-/** The three badges in the Featured Projects panel. */
-export const PROJECT_HIGHLIGHTS: ProjectHighlight[] = [
-  { icon: "chart", title: "Prime Locations" },
-  { icon: "shield", title: "Trusted Developers" },
-  { icon: "pin", title: "High Investment Value" },
-];
 
 export type SectorMap = {
   slug: string;

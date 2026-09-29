@@ -16,6 +16,8 @@ import type { SiteSettings } from "@/types/api";
 
 const LINKS = [
   { href: "/", label: "Home" },
+  { href: "/buy", label: "Buy" },
+  { href: "/rent", label: "Rent" },
   { href: "/projects", label: "Projects" },
   { href: "/developers", label: "Developers" },
   { href: "/maps", label: "Maps" },
@@ -27,8 +29,6 @@ const LINKS = [
 
 /** The links that only appear in the mobile drawer, where there is room for the full site. */
 const MORE_LINKS = [
-  { href: "/properties?purpose=sale", label: "Buy" },
-  { href: "/properties?purpose=rent", label: "Rent" },
   { href: "/properties?category=plot", label: "Plots" },
   { href: "/properties?category=commercial", label: "Commercial" },
   { href: "/wanted", label: "Wanted" },

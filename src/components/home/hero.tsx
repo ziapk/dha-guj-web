@@ -24,7 +24,24 @@ const TRUST_ICONS: Record<TrustItem["icon"], typeof ShieldIcon> = {
  * An admin-uploaded URL wins; otherwise the local file above is tried and the gradient covers it
  * if the file is not there yet. Only http(s) URLs are accepted from the API.
  */
-function heroStyle(imageUrl: string | null): CSSProperties {
+/** Colours the place name in an admin-written title too, the way the default title shows it. */
+function withHighlight(title: string) {
+  const at = title.indexOf(DEFAULT_HERO_HIGHLIGHT);
+
+  if (at === -1) {
+    return title;
+  }
+
+  return (
+    <>
+      {title.slice(0, at)}
+      <span>{DEFAULT_HERO_HIGHLIGHT}</span>
+      {title.slice(at + DEFAULT_HERO_HIGHLIGHT.length)}
+    </>
+  );
+}
+
+export function heroStyle(imageUrl: string | null): CSSProperties {
   const image = imageUrl && /^https?:\/\//i.test(imageUrl) ? imageUrl : DEFAULT_HERO_IMAGE;
 
   return { backgroundImage: `url(${JSON.stringify(image)})` };
@@ -49,7 +66,9 @@ export function HomeHero({
       <div className="container home-hero-inner">
         <p className="hero-eyebrow">{DEFAULT_HERO_EYEBROW}</p>
         <h1>
-          {title ?? (
+          {title ? (
+            withHighlight(title)
+          ) : (
             <>
               {DEFAULT_HERO_TITLE} <span>{DEFAULT_HERO_HIGHLIGHT}</span>
             </>

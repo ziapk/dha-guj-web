@@ -12,7 +12,7 @@ export function AuthCard({ title, intro, children }: { title: string; intro?: Re
           <CloseOutlined />
         </Link>
         <Link href="/" className="auth-logo" aria-label="Home">
-          <Image src="/brand/logo-wide.png" alt="DHA Gujranwala Properties" width={515} height={160} priority />
+          <Image src="/brand/logo-wide.png" alt="DHA Gujranwala Properties" width={515} height={160} priority unoptimized />
         </Link>
         <h1 className="auth-title">{title}</h1>
         {intro && <p className="auth-intro">{intro}</p>}

@@ -10,13 +10,30 @@ export function agentHref(slug: string): string {
   return `/agents/${slug}`;
 }
 
+export type AgentFilters = {
+  /** Part of the agent's name. */
+  name?: string;
+  /** Part of their agency's name. */
+  agency?: string;
+  /** Only agents an admin tagged as Superstars. */
+  superstar?: boolean;
+};
+
 /**
  * Approved agents, most active first. Returns an empty page rather than throwing, so the
  * directory and the home page still render when the API is unavailable.
  */
-export const getAgents = cache(async (page = 1, perPage = AGENTS_PER_PAGE): Promise<Paginated<PublicAgent> | null> => {
+export const getAgents = cache(async (page = 1, perPage = AGENTS_PER_PAGE, filters: AgentFilters = {}): Promise<Paginated<PublicAgent> | null> => {
+  const query = {
+    page,
+    per_page: perPage,
+    name: filters.name || undefined,
+    agency: filters.agency || undefined,
+    superstar: filters.superstar ? 1 : undefined,
+  };
+
   try {
-    return await publicApi<Paginated<PublicAgent>>("agents", { query: { page, per_page: perPage }, revalidate: AGENTS_REVALIDATE });
+    return await publicApi<Paginated<PublicAgent>>("agents", { query, revalidate: AGENTS_REVALIDATE });
   } catch {
     return null;
   }

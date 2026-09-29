@@ -2,17 +2,20 @@
 
 import { Image } from "antd";
 import type { CSSProperties } from "react";
-import { HomeIcon } from "@/components/icons";
+import { CameraIcon, HomeIcon } from "@/components/icons";
 import { mediumUrl, thumbnailUrl, type Photo } from "@/lib/property";
 
-const VISIBLE = 5;
+/** "mosaic": main photo + a 2×2 grid (projects). "stack": main photo + three stacked tiles, the last one showing the photo count (listings). */
+type GalleryLayout = "mosaic" | "stack";
 
 /**
  * Photo mosaic; every photo (including hidden ones) opens in the lightbox.
  * The main photo and the lightbox use the medium (≈1280px) copy, which carries the site watermark; the original is never shown.
  * The side tiles use the thumbnail size, unless there are only a few wide tiles.
  */
-export function PropertyGallery({ photos, title }: { photos: Photo[]; title: string }) {
+export function PropertyGallery({ photos, title, layout = "mosaic" }: { photos: Photo[]; title: string; layout?: GalleryLayout }) {
+  const VISIBLE = layout === "stack" ? 4 : 5;
+
   if (photos.length === 0) {
     return (
       <div className="gallery-empty">
@@ -28,7 +31,7 @@ export function PropertyGallery({ photos, title }: { photos: Photo[]; title: str
   return (
     <Image.PreviewGroup>
       <div
-        className={`gallery${small ? " gallery-small" : ""}`}
+        className={`gallery${layout === "stack" ? " gallery-stack" : ""}${small ? " gallery-small" : ""}`}
         style={small ? ({ "--gallery-columns": visible.length } as CSSProperties) : undefined}
       >
         {visible.map((photo, index) => (
@@ -38,7 +41,15 @@ export function PropertyGallery({ photos, title }: { photos: Photo[]; title: str
               alt={`${title} — photo ${index + 1}`}
               preview={{ src: mediumUrl(photo) }}
             />
-            {index === VISIBLE - 1 && hidden.length > 0 && <span className="gallery-more">+{hidden.length}</span>}
+            {index === VISIBLE - 1 &&
+              hidden.length > 0 &&
+              (layout === "stack" ? (
+                <span className="gallery-count">
+                  <CameraIcon /> {photos.length}
+                </span>
+              ) : (
+                <span className="gallery-more">+{hidden.length}</span>
+              ))}
           </div>
         ))}
         {hidden.map((photo, index) => (

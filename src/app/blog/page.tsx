@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PostCard } from "@/components/post-card";
-import { getPostCategories, getPosts } from "@/lib/blog";
+import Image from "next/image";
+import { ChevronDownIcon, ChevronRightIcon, HomeIcon } from "@/components/icons";
+import { longDate, PostCard } from "@/components/post-card";
+import { getPostCategories, getPosts, postHref } from "@/lib/blog";
 import { openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
@@ -51,15 +53,25 @@ export async function generateMetadata({ searchParams }: PageProps<"/blog">): Pr
   };
 }
 
+/** "Load more" keeps earlier pages on screen, so page N shows pages 1…N. Capped to keep the render bounded. */
+const MAX_LOADED_PAGES = 10;
+
 export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
   const params = await searchParams;
-  const page = pageNumber(params.page);
+  const page = Math.min(pageNumber(params.page), MAX_LOADED_PAGES);
   const category = categorySlug(params.category);
-  const [posts, categories] = await Promise.all([getPosts(page, undefined, category), getPostCategories()]);
-  const lastPage = posts?.meta.last_page ?? 1;
+  const [pages, categories] = await Promise.all([
+    Promise.all(Array.from({ length: page }, (_, index) => getPosts(index + 1, undefined, category))),
+    getPostCategories(),
+  ]);
+  const first = pages[0];
+  const lastPage = pages.at(-1)?.meta.last_page ?? first?.meta.last_page ?? 1;
+  const posts = pages.flatMap((result) => result?.data ?? []);
   const named = categories.find((item) => item.slug === category);
+  const [featured, ...rest] = posts;
+  const latest = rest.slice(0, 3);
+  const more = rest.slice(3);
 
-  /** Keeps the chosen category while paging. */
   const pageHref = (target: number) => {
     const query = new URLSearchParams();
 
@@ -75,65 +87,114 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
   };
 
   return (
-    <div className="container page-section">
-      <nav className="breadcrumbs" aria-label="Breadcrumb">
-        <Link href="/">Home</Link>
-        <span>/</span>
-        <span aria-current="page">Blog</span>
-      </nav>
-
-      <header className="cms-header">
-        <h1>{named ? named.name : "Blog"}</h1>
-        <p>{named?.description ?? "Guides, market updates and news for buyers, tenants, owners and agencies."}</p>
+    <div className="blog-index">
+      <header className="blog-hero">
+        {featured?.cover_image_url && (
+          <div className="blog-hero-art" aria-hidden="true">
+            <Image src={featured.cover_image_url} alt="" fill priority sizes="60vw" style={{ objectFit: "cover" }} />
+          </div>
+        )}
+        <div className="container blog-hero-body">
+          <nav className="blog-breadcrumbs" aria-label="Breadcrumb">
+            <Link href="/">
+              <HomeIcon /> Home
+            </Link>
+            <ChevronRightIcon />
+            {named ? (
+              <>
+                <Link href="/blog">Blog</Link>
+                <ChevronRightIcon />
+                <span aria-current="page">{named.name}</span>
+              </>
+            ) : (
+              <span aria-current="page">Blog</span>
+            )}
+          </nav>
+          <h1>{named ? named.name : "Real Estate Insights"}</h1>
+          <p>{named?.description ?? "Useful guides, market updates and expert insights about DHA Gujranwala."}</p>
+        </div>
       </header>
 
-      {categories.length > 0 && (
-        <nav className="chip-list blog-filters" aria-label="Article categories">
-          <Link className={`chip${category ? "" : " chip-active"}`} href="/blog">
-            All
-          </Link>
-          {categories.map((item) => (
-            <Link key={item.id} className={`chip${item.slug === category ? " chip-active" : ""}`} href={`/blog?category=${item.slug}`}>
-              {item.name}
-              {typeof item.posts_count === "number" && <span className="chip-count">{item.posts_count}</span>}
-            </Link>
-          ))}
-        </nav>
-      )}
-
-      {!posts ? (
-        <div className="empty-results">
-          <div style={{ fontSize: 44 }}>📰</div>
-          <h2>The blog is unavailable right now</h2>
-          <p>Please try again in a few minutes.</p>
-        </div>
-      ) : posts.data.length === 0 ? (
-        <div className="empty-results">
-          <div style={{ fontSize: 44 }}>📰</div>
-          <h2>{named ? `No articles in ${named.name}` : page > 1 ? "No more articles" : "No articles yet"}</h2>
-          <p>{named ? "Try another category." : page > 1 ? "You have reached the end of the blog." : "Check back soon for guides and market updates."}</p>
-          <Link className="btn btn-primary" href={named || page > 1 ? "/blog" : "/properties"}>
-            {named ? "All articles" : page > 1 ? "Back to the latest articles" : "Browse properties"}
-          </Link>
-        </div>
-      ) : (
-        <>
-          <div className="post-grid">
-            {posts.data.map((post) => (
-              <PostCard key={post.id} post={post} headingLevel="h2" />
-            ))}
+      <div className="container blog-index-body">
+        {!first ? (
+          <div className="empty-results">
+            <div style={{ fontSize: 44 }}>📰</div>
+            <h2>The blog is unavailable right now</h2>
+            <p>Please try again in a few minutes.</p>
           </div>
-          {lastPage > 1 && (
-            <nav className="simple-pagination" aria-label="Pagination">
-              {page > 1 ? <Link href={pageHref(page - 1)}>← Newer articles</Link> : <span />}
-              <span>
-                Page {page} of {lastPage}
-              </span>
-              {page < lastPage ? <Link href={pageHref(page + 1)}>Older articles →</Link> : <span />}
-            </nav>
-          )}
-        </>
-      )}
+        ) : !featured ? (
+          <div className="empty-results">
+            <div style={{ fontSize: 44 }}>📰</div>
+            <h2>{named ? `No articles in ${named.name}` : "No articles yet"}</h2>
+            <p>{named ? "Try another category." : "Check back soon for guides and market updates."}</p>
+            <Link className="btn btn-primary" href={named ? "/blog" : "/properties"}>
+              {named ? "All articles" : "Browse properties"}
+            </Link>
+          </div>
+        ) : (
+          <>
+            <section className="blog-section" aria-labelledby="blog-featured">
+              <h2 id="blog-featured" className="blog-section-title">
+                Featured Blog
+              </h2>
+              <article className="blog-featured">
+                <Link href={postHref(featured.slug)} className="blog-featured-link">
+                  <div className="blog-featured-cover">
+                    {featured.cover_image_url ? (
+                      <Image src={featured.cover_image_url} alt="" fill priority sizes="(max-width: 860px) 100vw, 700px" style={{ objectFit: "cover" }} />
+                    ) : (
+                      <HomeIcon className="placeholder-icon" />
+                    )}
+                  </div>
+                  <div className="blog-featured-body">
+                    {featured.published_at && (
+                      <p className="post-card-date">
+                        <time dateTime={featured.published_at}>{longDate(featured.published_at)}</time>
+                      </p>
+                    )}
+                    <h3>{featured.title}</h3>
+                    {featured.excerpt && <p className="blog-featured-excerpt">{featured.excerpt}</p>}
+                  </div>
+                </Link>
+              </article>
+            </section>
+
+            {latest.length > 0 && (
+              <section className="blog-section" aria-labelledby="blog-latest">
+                <h2 id="blog-latest" className="blog-section-title">
+                  Latest Blogs
+                </h2>
+                <div className="blog-grid">
+                  {latest.map((post) => (
+                    <PostCard key={post.id} post={post} variant="plain" />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {more.length > 0 && (
+              <section className="blog-section" aria-labelledby="blog-more">
+                <h2 id="blog-more" className="blog-section-title">
+                  More Insights
+                </h2>
+                <div className="blog-grid">
+                  {more.map((post) => (
+                    <PostCard key={post.id} post={post} variant="plain" />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {page < lastPage && page < MAX_LOADED_PAGES && (
+              <div className="blog-load-more">
+                <Link className="btn btn-primary" href={pageHref(page + 1)} scroll={false}>
+                  <ChevronDownIcon /> Load More Blogs
+                </Link>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

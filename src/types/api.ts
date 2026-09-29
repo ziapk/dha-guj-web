@@ -93,6 +93,8 @@ export type PublicProperty = {
   amenities?: Amenity[];
   media?: PropertyMedia[];
   contact?: { name: string; phone: string | null; whatsapp: string | null; account_type: AccountType; agency?: AgencyLink | null };
+  /** The agent who posted it; only on agency searches (?agency=), null when they have no public profile. */
+  agent?: { name: string; slug: string; photo_url: string | null; phone: string | null; whatsapp: string | null } | null;
   is_featured: boolean;
   /** Hot (premium) promotion; older API responses may leave it out. */
   is_hot?: boolean;
@@ -181,18 +183,52 @@ export type AgencyProfile = {
   slug: string;
   name: string;
   about: string | null;
+  established_year: number | null;
+  service_areas: string | null;
   logo_url: string | null;
+  cover_url: string | null;
   phone: string | null;
   whatsapp: string | null;
   email: string | null;
   website: string | null;
+  facebook: string | null;
+  instagram: string | null;
+  youtube: string | null;
+  tiktok: string | null;
+  linkedin: string | null;
   address: string | null;
   city?: City | null;
   is_verified: boolean;
   verified_at: string | null;
+  /** Admin-only tag; Titanium agencies lead the agencies page in their own section. */
+  is_titanium?: boolean;
   listings_count?: number;
-  agents?: { id: number; name: string }[];
+  /** Listings by the agency or its agents marked sold; only on the agencies list. */
+  sold_count?: number;
+  agents?: AgencyAgent[];
   created_at: string;
+};
+
+/**
+ * An agent on GET /public/agencies/{slug}. Slug, photo and contact details are set only when the agent has an
+ * approved public profile; the counts are always there.
+ */
+/** GET /public/agencies?stats=1 adds directory-wide totals for the page hero. */
+export type AgencyDirectoryStats = { agencies: number; listings: number; sold: number };
+
+export type AgencyAgent = {
+  id: number;
+  name: string;
+  slug: string | null;
+  designation: string | null;
+  photo_url: string | null;
+  experience_years: number | null;
+  city: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  for_sale_count?: number;
+  for_rent_count?: number;
+  closed_deals_count?: number;
 };
 
 /** GET /public/agents and /public/agents/{slug} — only admin-approved agents are returned. */
@@ -219,9 +255,14 @@ export type PublicAgent = {
   youtube: string | null;
   tiktok: string | null;
   website: string | null;
+  /** Tagged by an admin; superstars get their own section at the top of /agents. */
+  is_superstar: boolean;
   city?: City | null;
-  agency?: { name: string; slug: string } | null;
+  agency?: { name: string; slug: string; logo_url?: string | null; cover_url?: string | null; is_verified?: boolean } | null;
   listings_count?: number;
+  for_sale_count?: number;
+  for_rent_count?: number;
+  closed_deals_count?: number;
   created_at: string;
 };
 
@@ -449,6 +490,10 @@ export type BannerPlacement = "home_top" | "search_top" | "search_sidebar" | "li
 export type Banner = { id: number; title: string; image_url: string; link_url: string | null; placement: BannerPlacement };
 
 export type Phase = { id: number; society_id: number; name: string; slug: string };
+
+export type Sector = { id: number; phase_id: number; name: string; slug: string };
+
+export type Block = { id: number; sector_id: number; name: string; slug: string };
 
 export type WantedPostStatus = "active" | "closed";
 

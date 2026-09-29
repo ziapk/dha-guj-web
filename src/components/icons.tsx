@@ -233,6 +233,15 @@ export function StarIcon(props: IconProps) {
   );
 }
 
+export function CrownIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m3 7 4.5 4L12 4l4.5 7L21 7l-2 11H5L3 7z" />
+      <path d="M5 21h14" />
+    </Svg>
+  );
+}
+
 export function DiamondIcon(props: IconProps) {
   return (
     <Svg {...props}>
@@ -281,6 +290,163 @@ export function BoulevardIcon(props: IconProps) {
   return (
     <Svg {...props}>
       <path d="M6 3v18M18 3v18M12 5v3M12 11v3M12 17v3" />
+    </Svg>
+  );
+}
+
+export function HandshakeIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m11 17 2 2a1 1 0 1 0 3-3" />
+      <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" />
+      <path d="m21 3 1 11h-2M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3M3 4h8" />
+    </Svg>
+  );
+}
+
+export function DocumentIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z" />
+      <path d="M14 3v5h5M9 13h6M9 17h4" />
+    </Svg>
+  );
+}
+
+export function GlobeIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+    </Svg>
+  );
+}
+
+export function BadgeIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 2.5 14.4 4l2.85-.2.95 2.7 2.3 1.7-.85 2.75.85 2.75-2.3 1.7-.95 2.7-2.85-.2L12 20.5l-2.4-1.5-2.85.2-.95-2.7-2.3-1.7.85-2.75L3.5 9.3l2.3-1.7.95-2.7 2.85.2L12 2.5z" />
+      <path d="m9 11.5 2 2 4-4" />
+    </Svg>
+  );
+}
+
+export function ShieldCheckIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6L12 3z" />
+      <path d="m9 12 2 2 4-4" />
+    </Svg>
+  );
+}
+
+export function ChevronLeftIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m15 5-7 7 7 7" />
+    </Svg>
+  );
+}
+
+export function ChevronDownIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m5 9 7 7 7-7" />
+    </Svg>
+  );
+}
+
+export function ChevronRightIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m9 5 7 7-7 7" />
+    </Svg>
+  );
+}
+
+export function TagIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9z" />
+      <circle cx="7.5" cy="7.5" r="1.5" />
+    </Svg>
+  );
+}
+
+export function LayersIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5" />
+    </Svg>
+  );
+}
+
+export function SofaIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3v-5zM6 18v2M18 18v2" />
+    </Svg>
+  );
+}
+
+export function HashIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 9h15M4 15h15M10 3 8 21M16 3l-2 18" />
+    </Svg>
+  );
+}
+
+export function ShareIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" />
+    </Svg>
+  );
+}
+
+export function FacebookIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M15.5 4H13a3 3 0 0 0-3 3v14M7 11h7" />
+    </Svg>
+  );
+}
+
+export function InstagramIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <rect x="4" y="4" width="16" height="16" rx="5" />
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M16.5 7.5h.01" />
+    </Svg>
+  );
+}
+
+export function YouTubeIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M10 8.5v7l6-3.5-6-3.5z" fill="currentColor" />
+    </Svg>
+  );
+}
+
+export function TikTokIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M14 4v10.5a3.5 3.5 0 1 1-3.5-3.5" />
+      <path d="M14 4c.4 2.6 2.2 4.2 5 4.5" />
+    </Svg>
+  );
+}
+
+export function LinkedInIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M7 10.5V17M7 7v.01M11 17v-6.5M11 13.5a3 3 0 0 1 6 0V17" />
     </Svg>
   );
 }

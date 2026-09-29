@@ -2,14 +2,21 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BriefcaseIcon, HomeIcon, MailIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "@/components/icons";
+import { AgencyLogo } from "@/components/agency-card";
+import { BannerSlot } from "@/components/banner-slot";
+import { ArrowRightIcon, BriefcaseIcon, HandshakeIcon, HomeIcon, KeyIcon, MailIcon, PhoneIcon, PinIcon, ShieldCheckIcon, WhatsAppIcon } from "@/components/icons";
+import { ListingRowCard, type ListingOwner } from "@/components/listing-row-card";
 import { agentSocials, getAgent, getAgents } from "@/lib/agents";
+import { publicApi } from "@/lib/api";
 import { whatsappNumber } from "@/lib/property";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
+import type { Paginated, PublicProperty } from "@/types/api";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
 export const revalidate = 300;
+
+const LISTINGS_SHOWN = 12;
 
 /** Pre-render the first page of agents; anyone approved later renders on first visit. */
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
@@ -63,21 +70,33 @@ export default async function AgentPage({ params }: PageProps<"/agents/[slug]">)
     notFound();
   }
 
-  const settings = await getSiteSettings();
+  const [settings, listings] = await Promise.all([
+    getSiteSettings(),
+    publicApi<Paginated<PublicProperty>>("properties", { query: { agent: agent.slug, sort: "newest", per_page: LISTINGS_SHOWN }, revalidate: 60 }).catch(() => null),
+  ]);
   const siteName = siteNameOf(settings);
   const phone = agent.phone ?? settings.contact.phone;
-  const whatsapp = whatsappNumber(agent.whatsapp ?? settings.contact.whatsapp);
+  const whatsapp = whatsappNumber(agent.whatsapp ?? agent.phone ?? settings.contact.whatsapp);
   const socials = agentSocials(agent);
   const url = `${siteUrl()}/agents/${agent.slug}`;
+  const total = listings?.meta.total ?? 0;
+  const place = agent.city?.name ?? null;
+  const cover = agent.agency?.cover_url ?? null;
 
-  const facts = [
-    { label: "Designation", value: agent.designation },
-    { label: "Experience", value: agent.experience_years ? `${agent.experience_years} years` : null },
-    { label: "Specialisation", value: agent.specialisation },
-    { label: "City", value: agent.city?.name },
-    { label: "Languages", value: agent.languages },
-    { label: "Live listings", value: agent.listings_count ?? null },
-  ].filter((fact) => fact.value !== null && fact.value !== undefined && fact.value !== "");
+  // Listings without their own contact fall back to the agent's agency, or the site itself.
+  const owner: ListingOwner = {
+    name: agent.agency?.name ?? siteName,
+    logo_url: agent.agency?.logo_url ?? null,
+    phone,
+    whatsapp: agent.whatsapp ?? agent.phone ?? settings.contact.whatsapp,
+    is_verified: true,
+  };
+
+  const stats = [
+    { icon: <HomeIcon />, value: agent.for_sale_count ?? 0, label: "Properties for Sale" },
+    { icon: <KeyIcon />, value: agent.for_rent_count ?? 0, label: "Properties for Rent" },
+    { icon: <HandshakeIcon />, value: agent.closed_deals_count ?? 0, label: "Closed Deals" },
+  ];
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -106,55 +125,111 @@ export default async function AgentPage({ params }: PageProps<"/agents/[slug]">)
   };
 
   return (
-    <div className="container page-section">
+    <div className="agent-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
 
-      <nav className="breadcrumbs" aria-label="Breadcrumb">
-        <Link href="/">Home</Link>
-        <span>/</span>
-        <Link href="/agents">Agents</Link>
-        <span>/</span>
-        <span aria-current="page">{agent.name}</span>
-      </nav>
+      <section className={`agent-hero${cover ? " has-cover" : ""}`}>
+        {cover && <Image src={cover} alt="" fill priority sizes="100vw" className="agent-hero-cover" />}
+        <div className="container agent-hero-inner">
+          <nav className="breadcrumbs" aria-label="Breadcrumb">
+            <Link href="/">Home</Link>
+            <span>/</span>
+            <Link href="/agents">Agents</Link>
+            <span>/</span>
+            <span aria-current="page">{agent.name}</span>
+          </nav>
 
-      <div className="detail-layout">
-        <div>
-          <div className="detail-title-row">
-            <span className="agent-photo agent-photo-lg">
+          <div className="agent-hero-row">
+            <div className="agent-hero-photo">
               {agent.photo_url ? (
-                <Image src={agent.photo_url} alt={agent.name} fill sizes="160px" style={{ objectFit: "cover" }} />
+                <Image src={agent.photo_url} alt={agent.name} fill priority sizes="180px" style={{ objectFit: "cover" }} />
               ) : (
                 <span aria-hidden="true">{initials(agent.name)}</span>
               )}
-            </span>
-            <h1>{agent.name}</h1>
-            {agent.designation && <p className="detail-location">{agent.designation}</p>}
-            {agent.agency && (
-              <p className="detail-location">
-                <Link href={`/agencies/${agent.agency.slug}`}>{agent.agency.name}</Link>
+              <i className="agent-hero-online" aria-hidden="true" />
+            </div>
+
+            <div className="agent-hero-body">
+              <span className="agent-hero-badge">
+                <ShieldCheckIcon /> Verified Agent
+              </span>
+              <h1>{agent.name}</h1>
+              <p className="agent-hero-kicker">
+                {agent.designation ?? "Real Estate Agent"}
+                {place && <span>{place}</span>}
               </p>
-            )}
-            {agent.short_bio && <p className="detail-description">{agent.short_bio}</p>}
+              {(place || agent.experience_years) && (
+                <ul className="agent-hero-meta">
+                  {place && (
+                    <li>
+                      <PinIcon /> {place}
+                    </li>
+                  )}
+                  {agent.experience_years ? (
+                    <li>
+                      <BriefcaseIcon /> {agent.experience_years}+ Years Experience
+                    </li>
+                  ) : null}
+                </ul>
+              )}
+            </div>
+
+            <div className="agent-hero-actions">
+              {whatsapp && (
+                <a className="btn btn-whatsapp" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${agent.name} (opens in a new tab)`}>
+                  <WhatsAppIcon /> WhatsApp
+                </a>
+              )}
+              {phone && (
+                <a className="btn btn-primary" href={`tel:${phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${agent.name}`}>
+                  <PhoneIcon /> {phone}
+                </a>
+              )}
+            </div>
           </div>
+        </div>
+      </section>
 
-          {facts.length > 0 && (
-            <section className="detail-section">
-              <h2>Details</h2>
-              <dl className="detail-list">
-                {facts.map((fact) => (
-                  <div key={fact.label}>
-                    <dt>{fact.label}</dt>
-                    <dd>{fact.value}</dd>
+      <div className="container">
+        <ul className="agent-stat-bar">
+          {stats.map((stat) => (
+            <li key={stat.label}>
+              <span className="agent-stat-icon">{stat.icon}</span>
+              <div>
+                <strong>{stat.value.toLocaleString("en-PK")}</strong>
+                <small>{stat.label}</small>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div className="agent-intro">
+          <section className="agent-panel">
+            <h2>About {agent.name}</h2>
+            {agent.bio_html ? (
+              // bio_html is sanitised by the API before it is stored.
+              <div className="prose" dangerouslySetInnerHTML={{ __html: agent.bio_html }} />
+            ) : (
+              <p>{agent.short_bio ?? `${agent.name} is a real estate agent${place ? ` in ${place}` : ""}. Get in touch about buying, selling or renting property.`}</p>
+            )}
+            {(agent.specialisation || agent.languages) && (
+              <dl className="agent-panel-facts">
+                {agent.specialisation && (
+                  <div>
+                    <dt>Specialisation</dt>
+                    <dd>{agent.specialisation}</dd>
                   </div>
-                ))}
+                )}
+                {agent.languages && (
+                  <div>
+                    <dt>Languages</dt>
+                    <dd>{agent.languages}</dd>
+                  </div>
+                )}
               </dl>
-            </section>
-          )}
-
-          {agent.areas_of_expertise.length > 0 && (
-            <section className="detail-section">
-              <h2>Areas of expertise</h2>
+            )}
+            {agent.areas_of_expertise.length > 0 && (
               <ul className="chip-list">
                 {agent.areas_of_expertise.map((area) => (
                   <li key={area} className="chip">
@@ -162,96 +237,92 @@ export default async function AgentPage({ params }: PageProps<"/agents/[slug]">)
                   </li>
                 ))}
               </ul>
-            </section>
-          )}
-
-          {agent.bio_html && (
-            <section className="detail-section">
-              <h2>About {agent.name}</h2>
-              {/* bio_html is sanitised by the API before it is stored. */}
-              <div className="prose" dangerouslySetInnerHTML={{ __html: agent.bio_html }} />
-            </section>
-          )}
-
-          {socials.length > 0 && (
-            <section className="detail-section">
-              <h2>Find {agent.name} online</h2>
-              <ul className="chip-list">
+            )}
+            {socials.length > 0 && (
+              <ul className="agent-panel-socials">
                 {socials.map((social) => (
                   <li key={social.key}>
-                    <a className="chip" href={social.url} target="_blank" rel="noopener noreferrer">
+                    <a href={social.url} target="_blank" rel="noopener noreferrer">
                       {social.label}
                     </a>
                   </li>
                 ))}
               </ul>
-            </section>
-          )}
+            )}
+          </section>
+
+          <aside className="agent-panel">
+            {agent.agency ? (
+              <>
+                <h2>Agency</h2>
+                <div className="agent-agency">
+                  <AgencyLogo name={agent.agency.name} logoUrl={agent.agency.logo_url ?? null} size={84} />
+                  <div>
+                    <strong>{agent.agency.name}</strong>
+                    <span>Real Estate Agency</span>
+                    <Link href={`/agencies/${agent.agency.slug}`} className="agent-agency-link">
+                      View Agency Profile <ArrowRightIcon />
+                    </Link>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2>Contact</h2>
+                <ul className="agent-contact-list">
+                  {phone && (
+                    <li>
+                      <PhoneIcon /> <a href={`tel:${phone.replace(/[^\d+]/g, "")}`}>{phone}</a>
+                    </li>
+                  )}
+                  {agent.email && (
+                    <li>
+                      <MailIcon /> <a href={`mailto:${agent.email}`}>{agent.email}</a>
+                    </li>
+                  )}
+                  {place && (
+                    <li>
+                      <PinIcon /> {place}
+                    </li>
+                  )}
+                </ul>
+              </>
+            )}
+          </aside>
         </div>
 
-        <aside className="detail-sidebar">
-          <div className="contact-card">
-            <h2>Get in touch</h2>
-            <ul className="contact-list">
-              {phone && (
-                <li>
-                  <PhoneIcon className="icon" />
-                  <a href={`tel:${phone.replace(/[^\d+]/g, "")}`}>{phone}</a>
-                </li>
-              )}
-              {agent.email && (
-                <li>
-                  <MailIcon className="icon" />
-                  <a href={`mailto:${agent.email}`}>{agent.email}</a>
-                </li>
-              )}
-              {agent.city?.name && (
-                <li>
-                  <PinIcon className="icon" />
-                  {agent.city.name}
-                </li>
-              )}
-              {agent.experience_years && (
-                <li>
-                  <BriefcaseIcon className="icon" />
-                  {agent.experience_years} years experience
-                </li>
-              )}
-              <li>
-                <HomeIcon className="icon" />
-                {agent.listings_count ?? 0} live listings
-              </li>
-            </ul>
-
-            <div className="btn-wrap">
-              {phone && (
-                <a className="btn btn-primary btn-block" href={`tel:${phone.replace(/[^\d+]/g, "")}`}>
-                  <PhoneIcon className="icon" /> Call
-                </a>
-              )}
-              {whatsapp && (
-                <a
-                  className="btn btn-whatsapp btn-block"
-                  href={`https://wa.me/${whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`WhatsApp ${agent.name} (opens in a new tab)`}
-                >
-                  <WhatsAppIcon className="icon" /> WhatsApp
-                </a>
-              )}
-            </div>
+        <div className="agent-listings">
+          <div>
+            <h2 className="agent-listings-title">
+              Listings by {agent.name} <span>{total.toLocaleString("en-PK")}</span>
+            </h2>
+            {!listings || listings.data.length === 0 ? (
+              <div className="empty-results">
+                <div style={{ fontSize: 44 }}>🏠</div>
+                <h2>No live listings right now</h2>
+                <p>Contact {agent.name} directly about what you are looking for.</p>
+              </div>
+            ) : (
+              <>
+                <div className="listing-row-list">
+                  {listings.data.map((property) => (
+                    <ListingRowCard key={property.id} property={property} owner={owner} />
+                  ))}
+                </div>
+                {total > LISTINGS_SHOWN && (
+                  <div className="listing-row-more">
+                    <Link className="btn btn-outline" href={`/properties?agent=${encodeURIComponent(agent.slug)}&sort=newest`}>
+                      View all {total.toLocaleString("en-PK")} properties
+                    </Link>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-
-          {(agent.listings_count ?? 0) > 0 && agent.agency && (
-            <div className="aside-card">
-              <h2>Listings</h2>
-              <p>
-                See every live listing from <Link href={`/agencies/${agent.agency.slug}`}>{agent.agency.name}</Link>.
-              </p>
-            </div>
-          )}
-        </aside>
+          <div className="agent-listings-aside">
+            <BannerSlot key={agent.slug} placement="listing_sidebar" limit={2} />
+          </div>
+        </div>
       </div>
     </div>
   );

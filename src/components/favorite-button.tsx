@@ -4,8 +4,11 @@ import { HeartFilled, HeartOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { useSession } from "@/components/session-provider";
 
-/** Heart toggle; logged-out visitors are sent to log in and brought back afterwards. */
-export function FavoriteButton({ propertyId, variant = "overlay" }: { propertyId: number; variant?: "overlay" | "button" }) {
+/**
+ * Heart toggle; logged-out visitors are sent to log in and brought back afterwards. "overlay" sits on a photo,
+ * "square" is an outlined icon button beside Call / WhatsApp.
+ */
+export function FavoriteButton({ propertyId, variant = "overlay" }: { propertyId: number; variant?: "overlay" | "square" | "button" }) {
   const { favoriteIds, toggleFavorite } = useSession();
   const saved = favoriteIds.has(propertyId);
 
@@ -26,7 +29,7 @@ export function FavoriteButton({ propertyId, variant = "overlay" }: { propertyId
   return (
     <button
       type="button"
-      className={`fav-button${saved ? " saved" : ""}`}
+      className={`${variant === "square" ? "fav-square" : "fav-button"}${saved ? " saved" : ""}`}
       aria-pressed={saved}
       aria-label={saved ? "Remove from favourites" : "Save to favourites"}
       onClick={() => toggleFavorite(propertyId)}

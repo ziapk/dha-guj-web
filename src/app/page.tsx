@@ -6,13 +6,12 @@ import { Carousel } from "@/components/home/carousel";
 import { FeaturedProjects } from "@/components/home/featured-projects";
 import { HomeHero } from "@/components/home/hero";
 import { MapCard } from "@/components/home/map-card";
-import { PillLink } from "@/components/home/section-heading";
+import { PillLink, SectionHeading } from "@/components/home/section-heading";
 import { SeoLinks } from "@/components/home/seo-links";
-import { ChartIcon, PinIcon, ShieldIcon } from "@/components/icons";
 import { PropertyCard } from "@/components/property-card";
 import { publicApi } from "@/lib/api";
 import { getAgents } from "@/lib/agents";
-import { PROJECT_HIGHLIGHTS, SECTOR_MAPS, type ProjectHighlight } from "@/lib/home-content";
+import { SECTOR_MAPS } from "@/lib/home-content";
 import { getMasterData } from "@/lib/master-data";
 import { openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
@@ -37,10 +36,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const EMPTY_HOME: HomeData = { total_listings: 0, hot: [], featured: [], latest: [], posts: [], cities: [], popular_societies: [] };
 
-const HIGHLIGHT_ICONS: Record<ProjectHighlight["icon"], typeof ChartIcon> = { chart: ChartIcon, shield: ShieldIcon, pin: PinIcon };
-
 /** The design's 3 x 2 block of property cards; the carousel pages through one block at a time. */
 const PROPERTIES_PER_PAGE = 6;
+
+/** Two rows of five dealer tiles per page, as in the design. */
+const AGENCIES_PER_PAGE = 10;
 
 function chunk<T>(items: T[], size: number): T[][] {
   return Array.from({ length: Math.ceil(items.length / size) }, (_, page) => items.slice(page * size, page * size + size));
@@ -103,9 +103,13 @@ export default async function HomePage() {
       {titanium.length > 0 && (
         <section className="section">
           <div className="container">
-            <Carousel label="Titanium agencies" title="Titanium" highlight="Agencies" subtitle="Trusted real estate agencies in DHA Gujranwala." action={<PillLink href="/agencies">View All Agencies</PillLink>}>
-              {titanium.map((agency) => (
-                <AgencyLogoCard key={agency.id} agency={agency} />
+            <Carousel label="Titanium dealers" title="Titanium" highlight="Dealers" paged>
+              {chunk(titanium, AGENCIES_PER_PAGE).map((page) => (
+                <div key={page[0].id} className="agency-grid carousel-page">
+                  {page.map((agency) => (
+                    <AgencyLogoCard key={agency.id} agency={agency} />
+                  ))}
+                </div>
               ))}
             </Carousel>
           </div>
@@ -115,31 +119,14 @@ export default async function HomePage() {
       {projects.length > 0 && (
         <section className="section">
           <div className="container">
+            <SectionHeading
+              title="Featured"
+              highlight="Projects"
+              subtitle="Explore the top real estate projects in DHA Gujranwala with modern living and prime investment opportunities."
+            >
+              <PillLink href="/projects">View All Projects</PillLink>
+            </SectionHeading>
             <div className="projects-panel">
-              <div className="projects-intro">
-                <p className="home-eyebrow home-eyebrow-plain">Exclusive Opportunities</p>
-                <h2>
-                  Featured Projects <span>in DHA Gujranwala</span>
-                </h2>
-                <p className="projects-intro-text">
-                  Explore the most promising and newly launched projects in DHA Gujranwala. Find the perfect investment opportunity today.
-                </p>
-                <ul className="projects-highlights">
-                  {PROJECT_HIGHLIGHTS.map((highlight) => {
-                    const Icon = HIGHLIGHT_ICONS[highlight.icon];
-
-                    return (
-                      <li key={highlight.title}>
-                        <span>
-                          <Icon className="icon" />
-                        </span>
-                        {highlight.title}
-                      </li>
-                    );
-                  })}
-                </ul>
-                <PillLink href="/projects">View All Projects</PillLink>
-              </div>
               <FeaturedProjects projects={projects} />
             </div>
           </div>
@@ -169,6 +156,25 @@ export default async function HomePage() {
         </section>
       )}
 
+      {agents.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <Carousel
+              label="Top rated agents"
+              title="Top Rated"
+              highlight="Agents"
+              subtitle="Our professional real estate agents are here to help you find the best properties in DHA Gujranwala."
+              action={<PillLink href="/agents">View All Agents</PillLink>}
+              dots
+            >
+              {agents.map((agent) => (
+                <AgentCard key={agent.id} agent={agent} fallbackPhone={settings.contact.phone} fallbackWhatsapp={settings.contact.whatsapp} layout="row" />
+              ))}
+            </Carousel>
+          </div>
+        </section>
+      )}
+
       <section className="section section-tint">
         <div className="container">
           <Carousel
@@ -187,25 +193,6 @@ export default async function HomePage() {
           </Carousel>
         </div>
       </section>
-
-      {agents.length > 0 && (
-        <section className="section">
-          <div className="container">
-            <Carousel
-              label="Our agents"
-              title="Our"
-              highlight="Agents"
-              subtitle="Trusted Real Estate Professionals in DHA Gujranwala."
-              action={<PillLink href="/agents">View All Agents</PillLink>}
-              dots
-            >
-              {agents.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} fallbackPhone={settings.contact.phone} fallbackWhatsapp={settings.contact.whatsapp} />
-              ))}
-            </Carousel>
-          </div>
-        </section>
-      )}
 
       <section className="section section-seo">
         <div className="container">

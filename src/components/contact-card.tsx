@@ -1,8 +1,10 @@
 "use client";
 
-import { PhoneOutlined, ShareAltOutlined, WhatsAppOutlined } from "@ant-design/icons";
-import { App, Avatar, Button } from "antd";
+import { PhoneOutlined, WhatsAppOutlined } from "@ant-design/icons";
+import { Avatar, Button } from "antd";
+import Image from "next/image";
 import Link from "next/link";
+import { BadgeIcon, ChevronRightIcon } from "@/components/icons";
 import { useState } from "react";
 import { ACCOUNT_TYPE_LABELS } from "@/lib/labels";
 import { whatsappNumber } from "@/lib/property";
@@ -17,87 +19,79 @@ function track(slug: string, event: "phone" | "whatsapp") {
   }).catch(() => undefined);
 }
 
+/** The lister's card on a listing page: who they are, Call / WhatsApp side by side, and their agency underneath. */
 export function ContactCard({ property }: { property: PublicProperty }) {
-  const { message } = App.useApp();
   const [revealed, setRevealed] = useState(false);
   const contact = property.contact;
   const whatsapp = whatsappNumber(contact?.whatsapp);
 
-  async function share() {
-    const url = window.location.href;
-
-    if (navigator.share) {
-      await navigator.share({ title: property.title, url }).catch(() => undefined);
-
-      return;
-    }
-
-    await navigator.clipboard.writeText(url);
-    message.success("Link copied to clipboard");
+  if (!contact) {
+    return null;
   }
 
   return (
-    <div className="contact-card">
-      {contact && (
-        <div className="contact-person">
-          <Avatar size={48} className="avatar-accent">
-            {contact.name.slice(0, 1).toUpperCase()}
-          </Avatar>
-          <div>
-            <strong>{contact.name}</strong>
-            <small>{ACCOUNT_TYPE_LABELS[contact.account_type]}</small>
-          </div>
+    <div className="contact-card pd-contact">
+      <div className="pd-contact-person">
+        <Avatar size={56} className="avatar-accent">
+          {contact.name.slice(0, 1).toUpperCase()}
+        </Avatar>
+        <strong>{contact.name}</strong>
+      </div>
+
+      <span className="pd-contact-role">
+        <BadgeIcon /> {ACCOUNT_TYPE_LABELS[contact.account_type]}
+      </span>
+
+      {(contact.phone || whatsapp) && (
+        <div className="pd-contact-buttons">
+          {contact.phone &&
+            (revealed ? (
+              <Button icon={<PhoneOutlined />} href={`tel:${contact.phone}`} className="pd-call">
+                {contact.phone}
+              </Button>
+            ) : (
+              <Button
+                icon={<PhoneOutlined />}
+                className="pd-call"
+                aria-label="Show phone number"
+                onClick={() => {
+                  setRevealed(true);
+                  track(property.slug, "phone");
+                }}
+              >
+                Call
+              </Button>
+            ))}
+          {whatsapp && (
+            <Button
+              className="pd-whatsapp"
+              icon={<WhatsAppOutlined />}
+              href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hi, I am interested in your listing: ${property.title}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => track(property.slug, "whatsapp")}
+            >
+              WhatsApp
+            </Button>
+          )}
         </div>
       )}
 
-      {contact?.agency && (
-        <Link href={`/agencies/${contact.agency.slug}`} className="contact-agency">
+      {contact.agency && (
+        <Link href={`/agencies/${contact.agency.slug}`} className="pd-contact-agency">
+          {contact.agency.logo_url ? (
+            <Image src={contact.agency.logo_url} alt={contact.agency.name} width={96} height={32} unoptimized />
+          ) : (
+            <strong>
+              {contact.agency.name}
+              {contact.agency.is_verified ? " ✓" : ""}
+            </strong>
+          )}
           <span>
-            Listed by <strong>{contact.agency.name}</strong>
-            {contact.agency.is_verified ? " ✓" : ""}
+            View all properties <ChevronRightIcon />
           </span>
-          <span aria-hidden="true">→</span>
         </Link>
       )}
-
-      {contact?.phone &&
-        (revealed ? (
-          <Button type="primary" size="large" block icon={<PhoneOutlined />} href={`tel:${contact.phone}`}>
-            {contact.phone}
-          </Button>
-        ) : (
-          <Button
-            type="primary"
-            size="large"
-            block
-            icon={<PhoneOutlined />}
-            onClick={() => {
-              setRevealed(true);
-              track(property.slug, "phone");
-            }}
-          >
-            Show phone number
-          </Button>
-        ))}
-
-      {whatsapp && (
-        <Button
-          size="large"
-          block
-          className="btn-whatsapp"
-          icon={<WhatsAppOutlined />}
-          href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hi, I am interested in your listing: ${property.title}`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => track(property.slug, "whatsapp")}
-        >
-          Chat on WhatsApp
-        </Button>
-      )}
-
-      <Button type="text" block icon={<ShareAltOutlined />} onClick={share}>
-        Share this listing
-      </Button>
     </div>
   );
 }

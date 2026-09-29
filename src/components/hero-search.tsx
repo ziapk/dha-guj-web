@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react";
 import { SearchIcon } from "@/components/icons";
 import { SearchSuggest, suggestionHref } from "@/components/search-suggest";
 import { PROPERTY_CATEGORY_LABELS } from "@/lib/labels";
+import { PURPOSE_PAGES } from "@/lib/purpose-search";
 import { AREA_RANGES, BED_OPTIONS, priceRangesFor } from "@/lib/search-options";
 import type { PropertyCategory, PropertyType, Society } from "@/types/api";
 
@@ -24,7 +25,7 @@ const CATEGORY_OPTIONS = (Object.keys(PROPERTY_CATEGORY_LABELS) as PropertyCateg
 
 /**
  * The hero search card: Buy / Rent / Commercial tabs over a keyword box and a row of filter pills.
- * Everything it sets is a real filter on /properties, so the results page opens on the same search.
+ * Everything it sets is a real filter on /buy or /rent, so the results page opens on the same search.
  */
 export function HeroSearch({ societies, propertyTypes }: { societies: Society[]; propertyTypes: PropertyType[] }) {
   const router = useRouter();
@@ -116,7 +117,9 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
       params.set("q", term);
     }
 
-    router.push(`/properties?${params.toString()}`);
+    // The purpose picks the page (/buy or /rent), so it is not repeated in the query.
+    params.delete("purpose");
+    router.push(`${PURPOSE_PAGES[purpose].path}?${params.toString()}`);
   }
 
   return (

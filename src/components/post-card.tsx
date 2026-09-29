@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import { CalendarIcon, HomeIcon } from "@/components/icons";
@@ -5,8 +6,49 @@ import { postHref } from "@/lib/blog";
 import { formatDate } from "@/lib/labels";
 import type { BlogPostSummary } from "@/types/api";
 
-export function PostCard({ post, headingLevel = "h3" }: { post: BlogPostSummary; headingLevel?: "h2" | "h3" }) {
+/** "September 25, 2026" — the long date used on the blog index. */
+export function longDate(value: string): string {
+  return dayjs(value).format("MMMM D, YYYY");
+}
+
+/**
+ * A blog card. The "plain" variant is the blog index's: a long date, title and excerpt only.
+ */
+export function PostCard({
+  post,
+  headingLevel = "h3",
+  variant = "default",
+}: {
+  post: BlogPostSummary;
+  headingLevel?: "h2" | "h3";
+  variant?: "default" | "plain";
+}) {
   const Heading = headingLevel;
+
+  if (variant === "plain") {
+    return (
+      <article className="post-card post-card-plain">
+        <Link href={postHref(post.slug)} className="post-card-link">
+          <div className="post-card-cover">
+            {post.cover_image_url ? (
+              <Image src={post.cover_image_url} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
+            ) : (
+              <HomeIcon className="placeholder-icon" />
+            )}
+          </div>
+          <div className="post-card-body">
+            {post.published_at && (
+              <p className="post-card-date">
+                <time dateTime={post.published_at}>{longDate(post.published_at)}</time>
+              </p>
+            )}
+            <Heading className="post-card-title">{post.title}</Heading>
+            {post.excerpt && <p className="post-card-excerpt">{post.excerpt}</p>}
+          </div>
+        </Link>
+      </article>
+    );
+  }
 
   return (
     <article className="post-card">

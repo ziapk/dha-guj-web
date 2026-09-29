@@ -23,9 +23,9 @@ const SORT_OPTIONS = [
   { value: "area_desc", label: "Largest area" },
 ];
 
-function pushFilters(router: ReturnType<typeof useRouter>, filters: Record<string, string>) {
+function pushFilters(router: ReturnType<typeof useRouter>, filters: Record<string, string>, basePath = "/properties") {
   const query = new URLSearchParams(filters).toString();
-  router.push(query ? `/properties?${query}` : "/properties");
+  router.push(query ? `${basePath}?${query}` : basePath);
 }
 
 /** The filter form; state is local until "Show results" updates the URL. */
@@ -260,7 +260,8 @@ export function KeywordSearch({ filters }: { filters: Record<string, string> }) 
   );
 }
 
-export function SortSelect({ filters }: { filters: Record<string, string> }) {
+/** `basePath` is the results page to reload: /properties, or /buy and /rent, which fix the purpose themselves. */
+export function SortSelect({ filters, basePath }: { filters: Record<string, string>; basePath?: string }) {
   const router = useRouter();
 
   return (
@@ -279,7 +280,7 @@ export function SortSelect({ filters }: { filters: Record<string, string> }) {
           next.sort = sort;
         }
 
-        pushFilters(router, next);
+        pushFilters(router, next, basePath);
       }}
     />
   );

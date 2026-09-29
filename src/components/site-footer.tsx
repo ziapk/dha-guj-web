@@ -20,8 +20,8 @@ const QUICK_LINKS = [
 ];
 
 const PROPERTY_LINKS = [
-  { href: "/properties?purpose=sale", label: "Buy Property" },
-  { href: "/properties?purpose=rent", label: "Rent Property" },
+  { href: "/buy", label: "Buy Property" },
+  { href: "/rent", label: "Rent Property" },
   { href: "/properties?category=residential", label: "Houses" },
   { href: "/properties?category=plot", label: "Plots" },
   { href: "/properties?category=commercial", label: "Commercial" },

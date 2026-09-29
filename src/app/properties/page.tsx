@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { permanentRedirect } from "next/navigation";
 import { BannerSlot } from "@/components/banner-slot";
 import { BellIcon, KeyIcon } from "@/components/icons";
 import { PropertyCard } from "@/components/property-card";
@@ -9,6 +10,7 @@ import { SaveSearchButton } from "@/components/save-search-button";
 import { KeywordSearch, ResultsPagination, SortSelect } from "@/components/search-controls";
 import { ValidationError, publicApi } from "@/lib/api";
 import { pickFilters, searchHeading } from "@/lib/property";
+import { PURPOSE_PAGES, purposeHref } from "@/lib/purpose-search";
 import { openGraph, robots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PropertyType, PublicProperty, Society } from "@/types/api";
@@ -52,6 +54,13 @@ const PAGE_SIZE = 24;
 
 export default async function PropertiesPage({ searchParams }: PageProps<"/properties">) {
   const filters = pickFilters(await searchParams);
+
+  // Buy and rent searches have their own pages; old links, saved searches and the filter bar land there.
+  // Agency and agent listings keep this page, which can list both purposes together.
+  if ((filters.purpose === "sale" || filters.purpose === "rent") && !filters.agency && !filters.agent) {
+    const { purpose, ...rest } = filters;
+    permanentRedirect(purposeHref(PURPOSE_PAGES[purpose].path, rest));
+  }
 
   const [cities, societies, propertyTypes] = await Promise.all([
     publicApi<Collection<City>>("cities", { revalidate: 3600 }).then((response) => response.data),

@@ -72,3 +72,22 @@ export function stripHtml(html: string): string {
 export function readingMinutes(html: string): number {
   return Math.max(1, Math.round(stripHtml(html).split(" ").filter(Boolean).length / 220));
 }
+
+/**
+ * Splits an article at the second-level heading nearest its middle, so something can be shown between the halves.
+ * The second half is empty when the article has no heading past its opening.
+ */
+export function splitArticle(html: string): [string, string] {
+  const middle = html.length / 2;
+  let best = -1;
+
+  for (const match of html.matchAll(/<h2[\s>]/gi)) {
+    const index = match.index ?? 0;
+
+    if (index > 0 && (best === -1 || Math.abs(index - middle) < Math.abs(best - middle))) {
+      best = index;
+    }
+  }
+
+  return best === -1 ? [html, ""] : [html.slice(0, best), html.slice(best)];
+}

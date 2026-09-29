@@ -118,11 +118,6 @@ export function FeaturedProjects({ projects }: { projects: PublicProject[] }) {
 
   return (
     <div className="project-showcase">
-      <p className="project-tagline">
-        Shaping a brighter
-        <strong>DHA Gujranwala</strong>
-      </p>
-
       {/* The deck only reserves room to its right for the cards it actually has. */}
       <div className="project-stack" style={{ "--peeks": behind.length } as CSSProperties}>
         <div className="project-front">

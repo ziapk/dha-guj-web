@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PinIcon } from "@/components/icons";
 import type { AgencyProfile } from "@/types/api";
 
 function initials(name: string): string {
@@ -12,20 +13,26 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-/** An agency as a logo tile: the plate holds the logo, the name sits underneath. */
+/** An agency as a compact row: the logo on the left, the name and area beside it. */
 export function AgencyLogoCard({ agency }: { agency: AgencyProfile }) {
   return (
     <Link href={`/agencies/${agency.slug}`} className="agency-tile">
       <span className="agency-tile-plate">
         {agency.logo_url ? (
-          <Image src={agency.logo_url} alt={`${agency.name} logo`} width={200} height={160} className="agency-tile-logo" />
+          <Image src={agency.logo_url} alt={`${agency.name} logo`} width={120} height={120} className="agency-tile-logo" />
         ) : (
           <span className="agency-tile-initials" aria-hidden="true">
             {initials(agency.name)}
           </span>
         )}
       </span>
-      <strong>{agency.name}</strong>
+      <span className="agency-tile-body">
+        <strong>{agency.name}</strong>
+        <small>
+          <PinIcon className="icon" />
+          {agency.city?.name ? `DHA ${agency.city.name}` : "DHA Gujranwala"}
+        </small>
+      </span>
     </Link>
   );
 }
