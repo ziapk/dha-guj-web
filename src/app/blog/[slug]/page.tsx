@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FacebookFilled, GlobalOutlined, InstagramOutlined, LinkedinFilled, TikTokOutlined, XOutlined, YoutubeFilled } from "@ant-design/icons";
-import type { ReactNode } from "react";
 import { AgencyCard } from "@/components/agency-card";
 import { BannerSlot } from "@/components/banner-slot";
 import { PillLink, SectionHeading } from "@/components/home/section-heading";
@@ -13,6 +11,7 @@ import { ProjectCard } from "@/components/project-card";
 import { PropertyCard } from "@/components/property-card";
 import { Rail } from "@/components/rail";
 import { ShareLinks } from "@/components/share-links";
+import { SocialIcon } from "@/components/social-icon";
 import { publicApi } from "@/lib/api";
 import { getPost, getPosts, postHref, readingMinutes, splitArticle, stripHtml } from "@/lib/blog";
 import { authorHref, authorSocials, getAuthor } from "@/lib/authors";
@@ -63,16 +62,6 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
 }
 
 const RELATED_COUNT = 8;
-
-const SOCIAL_ICONS: Record<string, ReactNode> = {
-  facebook: <FacebookFilled />,
-  instagram: <InstagramOutlined />,
-  linkedin: <LinkedinFilled />,
-  x: <XOutlined />,
-  youtube: <YoutubeFilled />,
-  tiktok: <TikTokOutlined />,
-  website: <GlobalOutlined />,
-};
 
 function initials(name: string): string {
   return name
@@ -268,7 +257,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
                     {socials.map((social) => (
                       <li key={social.key} data-network={social.key}>
                         <a href={social.url} target="_blank" rel="noopener noreferrer me" aria-label={`${post.author!.name} on ${social.label} (opens in a new tab)`}>
-                          {SOCIAL_ICONS[social.key]}
+                          <SocialIcon network={social.key} />
                         </a>
                       </li>
                     ))}
