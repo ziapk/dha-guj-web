@@ -10684,3 +10684,25 @@ main:has(> .section-seo:last-child) + .site-footer {
     width: 100%;
   }
 }
+
+/* Listing descriptions are HTML from the rich text editor. */
+.detail-description.is-html {
+  white-space: normal;
+}
+.detail-description.is-html > :first-child {
+  margin-top: 0;
+}
+.detail-description.is-html p,
+.detail-description.is-html ul,
+.detail-description.is-html ol {
+  margin: 0 0 12px;
+}
+.detail-description.is-html ul,
+.detail-description.is-html ol {
+  padding-left: 22px;
+}
+.detail-description.is-html h3,
+.detail-description.is-html h4 {
+  margin: 16px 0 8px;
+  font-size: 16px;
+}

@@ -34,7 +34,7 @@ import { AmenityGroups } from "@/components/amenity-groups";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import { JsonLd } from "@/components/json-ld";
-import { coverOf, locationOf, mediumUrl, photosOf, propertyHref, thumbnailUrl } from "@/lib/property";
+import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref, thumbnailUrl } from "@/lib/property";
 import { openGraph, robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
@@ -66,7 +66,7 @@ function seoOf(property: PublicProperty): PropertySeo {
   return (
     property.seo ?? {
       title: property.title,
-      description: property.description.slice(0, 160),
+      description: descriptionText(property.description).slice(0, 160),
       path: propertyHref(property),
       canonical_url: `${siteUrl()}${propertyHref(property)}`,
       index: true,
@@ -203,7 +203,7 @@ export default async function PropertyPage({ params }: PageProps<"/property/[id]
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
     name: property.title,
-    description: property.description,
+    description: descriptionText(property.description),
     url: listingUrl,
     datePosted: property.published_at ?? undefined,
     dateModified: property.refreshed_at ?? undefined,
@@ -336,7 +336,8 @@ export default async function PropertyPage({ params }: PageProps<"/property/[id]
           <section className="pd-section">
             <h2>Property Description</h2>
             <Expandable collapsedHeight={170}>
-              <p className="detail-description pd-description">{property.description}</p>
+              {/* HTML from the listing editor, sanitised by the API when it was saved. */}
+              <div className="detail-description pd-description is-html" dangerouslySetInnerHTML={{ __html: property.description }} />
             </Expandable>
           </section>
 

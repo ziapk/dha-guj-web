@@ -4,7 +4,7 @@ import { CompareButton } from "@/components/compare-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, CameraIcon, FlameIcon, HomeIcon, PinIcon, PlotIcon } from "@/components/icons";
 import { PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice } from "@/lib/labels";
-import { coverOf, locationOf, photosOf, propertyHref, thumbnailUrl } from "@/lib/property";
+import { coverOf, descriptionText, locationOf, photosOf, propertyHref, thumbnailUrl } from "@/lib/property";
 import type { PublicProperty } from "@/types/api";
 
 type CardLayout = "grid" | "list";
@@ -101,7 +101,7 @@ export function PropertyCard({ property, priority = false, layout = "grid" }: { 
               </>
             )}
           </ul>
-          {isList && <p className="property-card-description">{property.description}</p>}
+          {isList && <p className="property-card-description">{descriptionText(property.description)}</p>}
           <div className="property-card-price">
             {formatCompactPrice(property.price)}
             {property.purpose === "rent" && <small> / Month</small>}

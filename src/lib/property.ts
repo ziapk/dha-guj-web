@@ -92,3 +92,21 @@ export function searchHeading(filters: Record<string, string>, cities: City[], p
 
   return `${promoted}${purpose}${city ? ` in ${city.name}` : ""}`;
 }
+
+/**
+ * A listing description as plain text, for meta tags, structured data and card previews. Descriptions are HTML
+ * from the listing editor (cleaned by the API); older plain-text ones pass through unchanged.
+ */
+export function descriptionText(html: string): string {
+  return html
+    .replace(/<(br|\/p|\/li|\/h[1-6])\s*\/?>/gi, " ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
