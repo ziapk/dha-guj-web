@@ -450,3 +450,19 @@ export function LinkedInIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function PlusIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M12 5v14M5 12h14" />
+    </Svg>
+  );
+}
+
+export function QuoteIcon({ className = "icon" }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M4 18v-5.5C4 8.4 6.1 5.8 10 5l.8 1.8C8.6 7.5 7.6 9 7.5 11H10v7H4zm10 0v-5.5c0-4.1 2.1-6.7 6-7.5l.8 1.8c-2.2.7-3.2 2.2-3.3 4.2H20v7h-6z" />
+    </svg>
+  );
+}

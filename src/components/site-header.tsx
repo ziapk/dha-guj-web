@@ -15,7 +15,6 @@ import { useThemeSettings } from "@/theme/theme-provider";
 import type { SiteSettings } from "@/types/api";
 
 const LINKS = [
-  { href: "/", label: "Home" },
   { href: "/buy", label: "Buy" },
   { href: "/rent", label: "Rent" },
   { href: "/projects", label: "Projects" },
@@ -167,7 +166,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
 
       <Drawer title="Menu" placement="right" size={290} open={menuOpen} onClose={() => setMenuOpen(false)}>
         <nav className="mobile-nav" aria-label="Mobile">
-          {[...LINKS, ...MORE_LINKS].map((link) => (
+          {[{ href: "/", label: "Home" }, ...LINKS, ...MORE_LINKS].map((link) => (
             <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
               {link.label}
             </Link>

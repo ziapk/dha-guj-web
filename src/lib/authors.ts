@@ -11,6 +11,16 @@ export function authorHref(slug: string): string {
   return `/author/${slug}`;
 }
 
+export function authorInitials(name: string): string {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
 /**
  * The author directory. Returns null rather than throwing, so a page still renders when the
  * API is unavailable.
@@ -22,6 +32,15 @@ export const getAuthors = cache(async (perPage = 24): Promise<PublicAuthor[]> =>
     return data;
   } catch {
     return [];
+  }
+});
+
+/** One page of the author directory, or null when the API is unavailable. */
+export const getAuthorsPage = cache(async (page: number, perPage = 12): Promise<Paginated<PublicAuthor> | null> => {
+  try {
+    return await publicApi<Paginated<PublicAuthor>>("authors", { query: { page, per_page: perPage }, revalidate: AUTHORS_REVALIDATE });
+  } catch {
+    return null;
   }
 });
 
