@@ -24,6 +24,7 @@ export const RESERVED_SLUGS = new Set([
   "agents",
   "api",
   "author",
+  "authors",
   "blog",
   "buy",
   "compare",

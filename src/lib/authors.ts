@@ -1,11 +1,18 @@
 import { cache } from "react";
 import { NotFoundError, publicApi } from "@/lib/api";
-import type { BlogPostSummary, Paginated, PublicAuthor, Resource } from "@/types/api";
+import type {
+  BlogPostSummary,
+  Paginated,
+  PublicAuthor,
+  Resource,
+} from "@/types/api";
 
 const AUTHORS_REVALIDATE = 300;
 
 /** GET /public/authors/{slug} returns the author plus a page of their published articles. */
-type AuthorPage = Resource<PublicAuthor> & { posts: Paginated<BlogPostSummary> };
+type AuthorPage = Resource<PublicAuthor> & {
+  posts: Paginated<BlogPostSummary>;
+};
 
 export function authorHref(slug: string): string {
   return `/author/${slug}`;
@@ -25,39 +32,59 @@ export function authorInitials(name: string): string {
  * The author directory. Returns null rather than throwing, so a page still renders when the
  * API is unavailable.
  */
-export const getAuthors = cache(async (perPage = 24): Promise<PublicAuthor[]> => {
-  try {
-    const { data } = await publicApi<Paginated<PublicAuthor>>("authors", { query: { per_page: perPage }, revalidate: AUTHORS_REVALIDATE });
+export const getAuthors = cache(
+  async (perPage = 24): Promise<PublicAuthor[]> => {
+    try {
+      const { data } = await publicApi<Paginated<PublicAuthor>>("authors", {
+        query: { per_page: perPage },
+        revalidate: AUTHORS_REVALIDATE,
+      });
 
-    return data;
-  } catch {
-    return [];
-  }
-});
+      return data;
+    } catch {
+      return [];
+    }
+  },
+);
 
 /** One page of the author directory, or null when the API is unavailable. */
-export const getAuthorsPage = cache(async (page: number, perPage = 12): Promise<Paginated<PublicAuthor> | null> => {
-  try {
-    return await publicApi<Paginated<PublicAuthor>>("authors", { query: { page, per_page: perPage }, revalidate: AUTHORS_REVALIDATE });
-  } catch {
-    return null;
-  }
-});
-
-export const getAuthor = cache(async (slug: string, page = 1): Promise<AuthorPage | null> => {
-  try {
-    return await publicApi<AuthorPage>(`authors/${encodeURIComponent(slug)}`, { query: { page }, revalidate: AUTHORS_REVALIDATE });
-  } catch (error) {
-    if (error instanceof NotFoundError) {
+export const getAuthorsPage = cache(
+  async (
+    page: number,
+    perPage = 12,
+  ): Promise<Paginated<PublicAuthor> | null> => {
+    try {
+      return await publicApi<Paginated<PublicAuthor>>("authors", {
+        query: { page, per_page: perPage },
+        revalidate: AUTHORS_REVALIDATE,
+      });
+    } catch {
       return null;
     }
+  },
+);
 
-    throw error;
-  }
-});
+export const getAuthor = cache(
+  async (slug: string, page = 1): Promise<AuthorPage | null> => {
+    try {
+      return await publicApi<AuthorPage>(
+        `authors/${encodeURIComponent(slug)}`,
+        { query: { page }, revalidate: AUTHORS_REVALIDATE },
+      );
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        return null;
+      }
+
+      throw error;
+    }
+  },
+);
 
 /** The author's links, in the order they are shown, skipping the ones left empty. */
-export function authorSocials(author: PublicAuthor): { key: string; label: string; url: string }[] {
+export function authorSocials(
+  author: PublicAuthor,
+): { key: string; label: string; url: string }[] {
   return (
     [
       { key: "facebook", label: "Facebook", url: author.facebook },
@@ -69,6 +96,12 @@ export function authorSocials(author: PublicAuthor): { key: string; label: strin
       { key: "website", label: "Website", url: author.website },
     ] as const
   )
-    .filter((social): social is typeof social & { url: string } => Boolean(social.url))
-    .map((social) => ({ key: social.key, label: social.label, url: social.url }));
+    .filter((social): social is typeof social & { url: string } =>
+      Boolean(social.url),
+    )
+    .map((social) => ({
+      key: social.key,
+      label: social.label,
+      url: social.url,
+    }));
 }
