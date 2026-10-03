@@ -709,3 +709,109 @@ export type SearchSuggestions = {
   projects: { id: number; name: string; slug: string; developer_name: string; city: string | null }[];
   agencies: { id: number; name: string; slug: string; city: string | null; is_verified: boolean }[];
 };
+
+/* ---------- Plot Finder (GET /public/map/*) ---------- */
+
+export type PlotType = "residential" | "commercial" | "park" | "mosque" | "school" | "hospital" | "graveyard" | "utility" | "other";
+
+export type GeoPolygon = { type: "Polygon"; coordinates: [number, number][][] };
+
+/** One base map from the provider chosen in the admin's Settings → Map. Leaflet tile URL templates. */
+export type MapLayer = {
+  key: "satellite" | "streets";
+  label: string;
+  url: string;
+  attribution: string;
+  max_native_zoom: number;
+  /** Place names drawn over the imagery, for providers whose satellite tiles have none. */
+  labels_url: string | null;
+};
+
+export type MapConfig = { provider: string; center: { lat: number; lng: number }; zoom: number; layers: MapLayer[] };
+
+export type MapArea = { id: number; name: string; slug: string; boundary: GeoPolygon | null };
+
+export type MapBlock = MapArea & { plots_count: number };
+
+export type MapSector = MapArea & { plots_count: number; blocks: MapBlock[] };
+
+export type MapPhase = MapArea & { sectors: MapSector[] };
+
+export type MapSociety = { id: number; name: string; slug: string; phases: MapPhase[] };
+
+/** A scanned society map placed on the satellite view by its top-left, top-right and bottom-left corners. */
+export type MapOverlay = {
+  id: number;
+  name: string;
+  sector_id: number | null;
+  block_id: number | null;
+  image_url: string;
+  corners: Record<"top_left" | "top_right" | "bottom_left", { lat: number; lng: number }>;
+  opacity: number;
+};
+
+export type MapAreas = { societies: MapSociety[]; overlays: MapOverlay[] };
+
+export type PlotProperties = {
+  id: number;
+  plot_number: string;
+  type: PlotType;
+  size_label: string | null;
+  street: string | null;
+  is_corner: boolean;
+  is_park_facing: boolean;
+  sector_id: number;
+  block_id: number | null;
+};
+
+export type PlotFeatureCollection = {
+  type: "FeatureCollection";
+  features: { type: "Feature"; id: number; geometry: GeoPolygon; properties: PlotProperties }[];
+  truncated: boolean;
+};
+
+export type PlotSearchResult = PlotProperties & { label: string; center: { lat: number; lng: number } };
+
+export type PlotDetail = PlotSearchResult & {
+  society: { id: number; name: string; slug: string } | null;
+  phase: { id: number; name: string; slug: string } | null;
+  sector: { id: number; name: string; slug: string };
+  block: { id: number; name: string; slug: string } | null;
+  geometry: GeoPolygon;
+  listings: PublicProperty[];
+};
+
+/* ---------- Society maps (GET /public/society-maps) ---------- */
+
+export type SocietyMapCategory = "master_plan" | "sector" | "block" | "commercial" | "location" | "other";
+
+export type PublicSocietyMap = {
+  id: number;
+  title: string;
+  slug: string;
+  category: SocietyMapCategory;
+  category_label: string;
+  description: string | null;
+  society: { id: number; name: string; slug: string } | null;
+  phase: { id: number; name: string; slug: string } | null;
+  sector: { id: number; name: string; slug: string } | null;
+  image_url: string;
+  image_width: number;
+  image_height: number;
+  /** The PDF (or original) to download, or the image when no separate file was uploaded. */
+  download_url: string;
+  download_name: string;
+  download_type: string;
+  download_size: number | null;
+  has_file: boolean;
+  meta_title: string | null;
+  meta_description: string | null;
+  is_featured: boolean;
+  published_at: string | null;
+  updated_at: string | null;
+};
+
+export type SocietyMapFilters = {
+  categories: { value: SocietyMapCategory; label: string; count: number }[];
+  societies: { id: number; name: string; slug: string }[];
+};

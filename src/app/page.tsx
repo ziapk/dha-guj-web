@@ -5,13 +5,14 @@ import { AgentCard } from "@/components/home/agent-card";
 import { Carousel } from "@/components/home/carousel";
 import { FeaturedProjects } from "@/components/home/featured-projects";
 import { HomeHero } from "@/components/home/hero";
-import { MapCard } from "@/components/home/map-card";
+import { MapCard, sectorMapCard, societyMapCard } from "@/components/home/map-card";
 import { PillLink, SectionHeading } from "@/components/home/section-heading";
 import { SeoLinks } from "@/components/home/seo-links";
 import { PropertyCard } from "@/components/property-card";
 import { publicApi } from "@/lib/api";
 import { getAgents } from "@/lib/agents";
 import { SECTOR_MAPS } from "@/lib/home-content";
+import { getSocietyMaps } from "@/lib/society-maps";
 import { getMasterData } from "@/lib/master-data";
 import { openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
@@ -68,14 +69,17 @@ function rankAgencies(agencies: AgencyProfile[]): AgencyProfile[] {
 
 export default async function HomePage() {
   // The page still renders (with empty sections) if the API is briefly unavailable; it refreshes within a minute.
-  const [home, master, settings, agencies, projects, agentPage] = await Promise.all([
+  const [home, master, settings, agencies, projects, agentPage, societyMaps] = await Promise.all([
     publicApi<Resource<HomeData>>("home").then((response) => response.data).catch(() => EMPTY_HOME),
     getMasterData(),
     getSiteSettings(),
     publicApi<Paginated<AgencyProfile>>("agencies", { query: { per_page: 12 }, revalidate: 300 }).then((response) => response.data).catch(() => [] as AgencyProfile[]),
     publicApi<Paginated<PublicProject>>("projects", { query: { per_page: 6 }, revalidate: 300 }).then((response) => response.data).catch(() => [] as PublicProject[]),
     getAgents(1, 12),
+    getSocietyMaps(1, {}, 8),
   ]);
+  // Maps published from the admin; the built-in placeholders until there are some.
+  const mapCards = societyMaps?.data.length ? societyMaps.data.map(societyMapCard) : SECTOR_MAPS.map(sectorMapCard);
 
   const sections = sectionsOf(home);
   // Promoted listings first, newest ones when nothing is promoted, so the row is never empty.
@@ -183,12 +187,12 @@ export default async function HomePage() {
             title="DHA Gujranwala"
             highlight="Maps"
             subtitle="Browse and download sector maps, commercial zones and key locations of DHA Gujranwala."
-            action={<PillLink href="/maps">View All Maps</PillLink>}
+            action={<PillLink href="/society-maps">View All Maps</PillLink>}
             arrows="head"
             dots
           >
-            {SECTOR_MAPS.map((map) => (
-              <MapCard key={map.slug} map={map} />
+            {mapCards.map((map) => (
+              <MapCard key={map.key} map={map} />
             ))}
           </Carousel>
         </div>

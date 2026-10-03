@@ -42,6 +42,7 @@ export const RESERVED_SLUGS = new Set([
   "rent",
   "robots.txt",
   "sitemap.xml",
+  "society-maps",
   "wanted",
 ]);
 
