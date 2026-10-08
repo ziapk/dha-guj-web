@@ -1,3 +1,4 @@
+import { PROPERTY_PURPOSE_LABELS } from "@/lib/labels";
 import type { City, PropertyMedia, PropertyType, PublicProperty } from "@/types/api";
 
 /** The listing's permanent page: /property/{slug}-{ref}. The ref never changes; an outdated slug is redirected. */
@@ -33,6 +34,21 @@ export function locationOf(property: PublicProperty): string {
 }
 
 /** Pakistani mobile number → international digits for wa.me links (03001234567 → 923001234567). */
+/** The purpose tag shown on every listing: For Sale / For Rent, or Plot / Commercial for sale listings of those kinds. */
+export function purposeTagOf(property: PublicProperty): { tone: "sale" | "rent" | "plot" | "commercial"; label: string } {
+  const category = property.property_type?.category;
+
+  if (property.purpose === "rent") {
+    return { tone: "rent", label: PROPERTY_PURPOSE_LABELS.rent };
+  }
+
+  if (category === "commercial") {
+    return { tone: "commercial", label: "Commercial" };
+  }
+
+  return { tone: category === "plot" ? "plot" : "sale", label: PROPERTY_PURPOSE_LABELS.sale };
+}
+
 export function whatsappNumber(phone: string | null | undefined): string | null {
   const digits = (phone ?? "").replace(/\D/g, "");
   const international = digits.startsWith("0") ? `92${digits.slice(1)}` : digits;

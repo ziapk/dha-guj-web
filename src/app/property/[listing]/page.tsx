@@ -34,7 +34,7 @@ import { AmenityGroups } from "@/components/amenity-groups";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import { JsonLd } from "@/components/json-ld";
-import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref, thumbnailUrl } from "@/lib/property";
+import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref, purposeTagOf, thumbnailUrl } from "@/lib/property";
 import { openGraph, robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
@@ -298,7 +298,7 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
               {property.is_featured && <span className="badge badge-featured">Featured</span>}
               {property.is_urgent && !notice && <span className="badge badge-urgent">Urgent</span>}
               {property.property_status === "under_offer" && !notice && <span className="badge badge-outline">Under offer</span>}
-              <span className="badge badge-outline">{PROPERTY_PURPOSE_LABELS[property.purpose]}</span>
+              <span className={`badge badge-purpose badge-${purposeTagOf(property).tone}`}>{purposeTagOf(property).label}</span>
               {property.installment_available && <span className="tag">Installments available</span>}
             </div>
           </div>

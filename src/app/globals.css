@@ -12,6 +12,20 @@
   /* "Hot" / urgent highlights only — never a brand colour */
   --hot: #e23744;
   --hot-strong: #c62b37;
+  /* Status tags: one colour per meaning, used by every badge on the site. Each passes AA with its text colour. */
+  --tag-text: #fff;
+  --tag-hot: #c62b37;
+  --tag-urgent: #c2410c;
+  --tag-premium: #7c3aed;
+  --tag-featured: #f5a524;
+  --tag-featured-text: #1b1b1b;
+  --tag-verified: #15803d;
+  --tag-sale: #1a73e8;
+  --tag-rent: #0f766e;
+  --tag-plot: #4d7c0f;
+  --tag-commercial: #334155;
+  --tag-upcoming: #1a73e8;
+  --tag-building: #b45309;
   --app-bg: #ffffff;
   --app-surface: #ffffff;
   --app-surface-2: #f6f9fd;
@@ -1472,20 +1486,31 @@ main h3 {
   gap: 6px;
 }
 
+/* Status tags (Hot, Urgent, Featured, For Sale, Verified…): the same shape and colours everywhere. */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 9px;
+  gap: 4px;
+  padding: 4px 10px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
   color: #1a1a1a;
   background: rgba(255, 255, 255, 0.95);
 }
 
+.badge .icon {
+  width: 13px;
+  height: 13px;
+}
+
 .badge-featured {
-  background: var(--btn-bg);
-  color: #fff;
+  background: var(--tag-featured);
+  color: var(--tag-featured-text);
 }
 
 .badge-outline {
@@ -3238,19 +3263,16 @@ button.auth-close {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 10px;
-  border-radius: 999px;
+  padding: 3px 10px;
+  border-radius: 6px;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   white-space: nowrap;
-  color: #00814b;
-  background: #deffea;
-}
-
-:root[data-theme="dark"] .verified-badge {
-  color: #72e2a1;
-  background: #003c20;
+  color: var(--tag-text);
+  background: var(--tag-verified);
 }
 
 .agency-hero {
@@ -3868,14 +3890,8 @@ button.auth-close {
 
 /* Hot badge: the brand red, darkened enough for white 12px text. */
 .badge-hot {
-  gap: 4px;
-  background: var(--hot-strong);
-  color: #fff;
-}
-
-.badge-hot .icon {
-  width: 13px;
-  height: 13px;
+  background: var(--tag-hot);
+  color: var(--tag-text);
 }
 
 .wanted-banner {
@@ -5262,19 +5278,19 @@ a.feature-card {
 
 /* Developer projects */
 .project-status {
-  color: #fff;
+  color: var(--tag-text);
 }
 
 .project-status-upcoming {
-  background: var(--btn-bg);
+  background: var(--tag-upcoming);
 }
 
 .project-status-under_construction {
-  background: #b45309;
+  background: var(--tag-building);
 }
 
 .project-status-ready {
-  background: #15803d;
+  background: var(--tag-verified);
 }
 
 .project-card-date {
@@ -5967,30 +5983,29 @@ a.feature-card {
   aspect-ratio: 16 / 11;
 }
 
-.property-card-badges .badge {
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 12.5px;
-}
-
 .badge-purpose {
-  color: #fff;
+  color: var(--tag-text);
 }
 
 .badge-sale {
-  background: var(--btn-bg);
+  background: var(--tag-sale);
 }
 
 .badge-rent {
-  background: #7c4dff;
+  background: var(--tag-rent);
 }
 
 .badge-plot {
-  background: #12b76a;
+  background: var(--tag-plot);
 }
 
 .badge-commercial {
-  background: #f79009;
+  background: var(--tag-commercial);
+}
+
+.badge-verified {
+  background: var(--tag-verified);
+  color: var(--tag-text);
 }
 
 .property-card-body {
@@ -7698,12 +7713,12 @@ main:has(> .section-seo:last-child) + .site-footer {
 
 /* ---------- Listing status notices (sold / rented / expired) and promotion badges ---------- */
 .badge-premium {
-  background: #7c3aed;
-  color: #fff;
+  background: var(--tag-premium);
+  color: var(--tag-text);
 }
 .badge-urgent {
-  background: var(--hot-strong);
-  color: #fff;
+  background: var(--tag-urgent);
+  color: var(--tag-text);
 }
 .listing-notice {
   display: flex;
@@ -8208,32 +8223,6 @@ main:has(> .section-seo:last-child) + .site-footer {
   pointer-events: none;
 }
 
-.listing-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.listing-badge .icon {
-  width: 13px;
-  height: 13px;
-}
-
-.listing-badge.is-verified {
-  background: #16a34a;
-}
-
-.listing-badge.is-promo {
-  background: var(--btn-bg);
-}
-
 .listing-slider-arrow {
   position: absolute;
   top: 50%;
@@ -8325,17 +8314,6 @@ main:has(> .section-seo:last-child) + .site-footer {
 .listing-row-type {
   font-size: 14px;
   color: var(--app-muted);
-}
-
-.listing-row-featured {
-  padding: 3px 12px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-soft);
 }
 
 .listing-row-body h3 {
@@ -12491,12 +12469,6 @@ main:has(> .section-seo:last-child) + .site-footer {
   position: absolute;
   top: 12px;
   right: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #f5a524;
-  font-size: 12px;
-  font-weight: 700;
-  color: #1b1b1b;
 }
 
 .smap-card-body {
@@ -14607,20 +14579,22 @@ main:has(> .section-seo:last-child) + .site-footer {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .dv-badge-verified {
-  background: var(--accent);
-  color: #fff;
+  background: var(--tag-verified);
+  color: var(--tag-text);
 }
 
 .dv-badge-featured {
-  background: color-mix(in srgb, var(--dv-gold) 18%, transparent);
-  color: #b45309;
+  background: var(--tag-featured);
+  color: var(--tag-featured-text);
 }
 
 .dv-tagline {
@@ -15468,10 +15442,6 @@ main:has(> .section-seo:last-child) + .site-footer {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
   border-radius: var(--radius-m);
-}
-
-:root[data-theme="dark"] .dv-badge-featured {
-  color: #fbbf24;
 }
 
 :root[data-theme="dark"] .dv-hero-logo {

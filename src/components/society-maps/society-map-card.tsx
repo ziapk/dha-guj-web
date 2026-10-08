@@ -18,7 +18,7 @@ export function SocietyMapCard({ map, headingLevel = "h2" }: { map: PublicSociet
         <span className="smap-tag">
           <MapIcon className="icon" /> {map.category_label}
         </span>
-        {map.is_featured && <span className="smap-featured">Featured</span>}
+        {map.is_featured && <span className="badge badge-featured smap-featured">Featured</span>}
       </Link>
       <div className="smap-card-body">
         <Heading>

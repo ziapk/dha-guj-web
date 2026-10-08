@@ -5,7 +5,7 @@ import { ListingPhotoSlider } from "@/components/listing-photo-slider";
 import { FavoriteButton } from "@/components/favorite-button";
 import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, FlameIcon, PhoneIcon, PinIcon, PlotIcon, ShieldCheckIcon, StarIcon, WhatsAppIcon } from "@/components/icons";
 import { formatArea, formatCompactPrice } from "@/lib/labels";
-import { locationOf, photosOf, propertyHref, thumbnailUrl, whatsappNumber } from "@/lib/property";
+import { locationOf, photosOf, propertyHref, purposeTagOf, thumbnailUrl, whatsappNumber } from "@/lib/property";
 import type { PublicProperty } from "@/types/api";
 
 /**
@@ -52,17 +52,17 @@ function initials(name: string): string {
 }
 
 /** The strongest promotion on the listing, shown under the Verified badge. */
-function promotion(property: PublicProperty): { label: string; icon: React.ReactNode } | null {
+function promotion(property: PublicProperty): { tone: "hot" | "premium" | "urgent"; label: string; icon: React.ReactNode } | null {
   if (property.is_hot) {
-    return { label: "Hot", icon: <FlameIcon /> };
+    return { tone: "hot", label: "Hot", icon: <FlameIcon /> };
   }
 
   if (property.is_premium) {
-    return { label: "Premium", icon: <StarIcon /> };
+    return { tone: "premium", label: "Premium", icon: <StarIcon /> };
   }
 
   if (property.is_urgent) {
-    return { label: "Urgent", icon: <FlameIcon /> };
+    return { tone: "urgent", label: "Urgent", icon: <FlameIcon /> };
   }
 
   return null;
@@ -78,6 +78,7 @@ export function ListingRowCard({ property, owner, priority = false }: { property
   const isPlot = property.property_type?.category === "plot";
   const location = [property.sector, property.phase, locationOf(property)].filter(Boolean).join(", ");
   const badge = promotion(property);
+  const purpose = purposeTagOf(property);
   const area = formatArea(property.area_size, property.area_unit);
 
   const agent = property.agent ?? null;
@@ -96,13 +97,14 @@ export function ListingRowCard({ property, owner, priority = false }: { property
       <div className="listing-row-main">
         <ListingPhotoSlider photos={photos} href={href} title={property.title} priority={priority}>
           <div className="listing-slider-badges">
+            <span className={`badge badge-purpose badge-${purpose.tone}`}>{purpose.label}</span>
             {owner.is_verified && (
-              <span className="listing-badge is-verified">
+              <span className="badge badge-verified">
                 <ShieldCheckIcon /> Verified
               </span>
             )}
             {badge && (
-              <span className="listing-badge is-promo">
+              <span className={`badge badge-${badge.tone}`}>
                 {badge.icon} {badge.label}
               </span>
             )}
@@ -115,7 +117,7 @@ export function ListingRowCard({ property, owner, priority = false }: { property
               {property.property_type?.name ?? "Property"}
               {property.purpose === "rent" ? " for Rent" : ""}
             </span>
-            {property.is_featured && <span className="listing-row-featured">Featured</span>}
+            {property.is_featured && <span className="badge badge-featured">Featured</span>}
           </div>
           <h3>
             <Link href={href}>{property.title}</Link>

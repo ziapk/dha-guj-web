@@ -3,33 +3,18 @@ import Link from "next/link";
 import { CompareButton } from "@/components/compare-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, CameraIcon, FlameIcon, HomeIcon, PinIcon, PlotIcon } from "@/components/icons";
-import { PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice } from "@/lib/labels";
-import { coverOf, descriptionText, locationOf, photosOf, propertyHref, thumbnailUrl } from "@/lib/property";
+import { formatArea, formatCompactPrice } from "@/lib/labels";
+import { coverOf, descriptionText, locationOf, photosOf, propertyHref, purposeTagOf, thumbnailUrl } from "@/lib/property";
 import type { PublicProperty } from "@/types/api";
 
 type CardLayout = "grid" | "list";
-
-/** The purpose badge: blue for sale, violet for rent, green for plots, amber for commercial. */
-function purposeBadge(property: PublicProperty): { tone: string; label: string } {
-  const category = property.property_type?.category;
-
-  if (property.purpose === "rent") {
-    return { tone: "rent", label: PROPERTY_PURPOSE_LABELS.rent };
-  }
-
-  if (category === "commercial") {
-    return { tone: "commercial", label: "Commercial" };
-  }
-
-  return { tone: category === "plot" ? "plot" : "sale", label: PROPERTY_PURPOSE_LABELS.sale };
-}
 
 export function PropertyCard({ property, priority = false, layout = "grid" }: { property: PublicProperty; priority?: boolean; layout?: CardLayout }) {
   const cover = coverOf(property);
   const photoCount = photosOf(property).length;
   const isList = layout === "list";
   const isPlot = property.property_type?.category === "plot";
-  const badge = purposeBadge(property);
+  const badge = purposeTagOf(property);
   const location = [property.block, property.sector, property.phase, locationOf(property)].filter(Boolean).join(", ");
 
   return (
