@@ -36,6 +36,7 @@ const ROWS: Row[] = [
   { label: "Area", value: (property) => formatArea(property.area_size, property.area_unit) },
   { label: "Bedrooms", value: (property) => (property.property_type?.category === "plot" ? "—" : (property.bedrooms ?? "—")) },
   { label: "Bathrooms", value: (property) => (property.property_type?.category === "plot" ? "—" : (property.bathrooms ?? "—")) },
+  { label: "Kitchens", value: (property) => (property.property_type?.category === "plot" ? "—" : (property.kitchens ?? "—")) },
   { label: "Sector", value: (property) => property.sector ?? "—" },
   { label: "Block", value: (property) => property.block ?? "—" },
   { label: "Location", value: (property) => [property.block, property.sector, property.phase, locationOf(property)].filter(Boolean).join(", ") || "—" },

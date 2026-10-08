@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CompareButton } from "@/components/compare-button";
 import { FavoriteButton } from "@/components/favorite-button";
-import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, CameraIcon, FlameIcon, HomeIcon, PinIcon, PlotIcon } from "@/components/icons";
+import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, CameraIcon, FlameIcon, HomeIcon, KitchenIcon, PinIcon, PlotIcon } from "@/components/icons";
 import { formatArea, formatCompactPrice } from "@/lib/labels";
 import { coverOf, descriptionText, locationOf, photosOf, propertyHref, purposeTagOf, thumbnailUrl } from "@/lib/property";
 import type { PublicProperty } from "@/types/api";
@@ -78,6 +78,11 @@ export function PropertyCard({ property, priority = false, layout = "grid" }: { 
                 {property.bathrooms !== null && (
                   <li>
                     <BathIcon /> {property.bathrooms} {property.bathrooms === 1 ? "Bath" : "Baths"}
+                  </li>
+                )}
+                {property.kitchens !== null && (
+                  <li>
+                    <KitchenIcon /> {property.kitchens} {property.kitchens === 1 ? "Kitchen" : "Kitchens"}
                   </li>
                 )}
                 <li>

@@ -35,6 +35,14 @@ export function BathIcon(props: IconProps) {
   );
 }
 
+export function KitchenIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 10h14v8a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-8zM3 10h18M9 6.5c0-1 1-1.5 1-2.5M14 6.5c0-1 1-1.5 1-2.5" />
+    </Svg>
+  );
+}
+
 export function AreaIcon(props: IconProps) {
   return (
     <Svg {...props}>

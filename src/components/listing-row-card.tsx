@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AgencyLogo } from "@/components/agency-card";
 import { ListingPhotoSlider } from "@/components/listing-photo-slider";
 import { FavoriteButton } from "@/components/favorite-button";
-import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, FlameIcon, PhoneIcon, PinIcon, PlotIcon, ShieldCheckIcon, StarIcon, WhatsAppIcon } from "@/components/icons";
+import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, FlameIcon, KitchenIcon, PhoneIcon, PinIcon, PlotIcon, ShieldCheckIcon, StarIcon, WhatsAppIcon } from "@/components/icons";
 import { formatArea, formatCompactPrice } from "@/lib/labels";
 import { locationOf, photosOf, propertyHref, purposeTagOf, thumbnailUrl, whatsappNumber } from "@/lib/property";
 import type { PublicProperty } from "@/types/api";
@@ -89,6 +89,7 @@ export function ListingRowCard({ property, owner, priority = false }: { property
   const highlights = [
     !isPlot && property.bedrooms !== null ? `${property.bedrooms} ${property.bedrooms === 1 ? "Bedroom" : "Bedrooms"}` : null,
     !isPlot && property.bathrooms !== null ? `${property.bathrooms} ${property.bathrooms === 1 ? "Bathroom" : "Bathrooms"}` : null,
+    !isPlot && property.kitchens !== null ? `${property.kitchens} ${property.kitchens === 1 ? "Kitchen" : "Kitchens"}` : null,
     ...(property.amenities ?? []).slice(0, HIGHLIGHTS_SHOWN).map((amenity) => amenity.name),
   ].filter((item): item is string => Boolean(item));
 
@@ -163,6 +164,14 @@ export function ListingRowCard({ property, owner, priority = false }: { property
                     <BathIcon />
                     <span>
                       <strong>{property.bathrooms}</strong> Bathrooms
+                    </span>
+                  </li>
+                )}
+                {property.kitchens !== null && (
+                  <li>
+                    <KitchenIcon />
+                    <span>
+                      <strong>{property.kitchens}</strong> {property.kitchens === 1 ? "Kitchen" : "Kitchens"}
                     </span>
                   </li>
                 )}
