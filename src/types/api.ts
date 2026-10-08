@@ -94,7 +94,8 @@ export type PublicProperty = {
   furnished: FurnishedStatus | null;
   amenities?: Amenity[];
   media?: PropertyMedia[];
-  contact?: { name: string; phone: string | null; whatsapp: string | null; account_type: AccountType; agency?: AgencyLink | null };
+  /** photo_url: the agent's photo, else the agency logo. */
+  contact?: { name: string; photo_url?: string | null; phone: string | null; whatsapp: string | null; account_type: AccountType; agency?: AgencyLink | null };
   /** The agent who posted it; only on agency searches (?agency=), null when they have no public profile. */
   agent?: { name: string; slug: string; photo_url: string | null; phone: string | null; whatsapp: string | null } | null;
   is_featured: boolean;

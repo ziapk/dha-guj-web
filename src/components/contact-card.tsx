@@ -32,7 +32,7 @@ export function ContactCard({ property }: { property: PublicProperty }) {
   return (
     <div className="contact-card pd-contact">
       <div className="pd-contact-person">
-        <Avatar size={56} className="avatar-accent">
+        <Avatar size={56} className={contact.photo_url ? undefined : "avatar-accent"} src={contact.photo_url ?? undefined} alt={contact.name}>
           {contact.name.slice(0, 1).toUpperCase()}
         </Avatar>
         <strong>{contact.name}</strong>
