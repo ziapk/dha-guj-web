@@ -399,26 +399,63 @@ export type PublicDeveloper = {
   short_description: string | null;
   /** Sanitised HTML; only on the company's own page. */
   description?: string;
+  /** Plain text sections, only on the company's own page. */
+  history?: string | null;
+  mission?: string | null;
+  vision?: string | null;
+  core_values?: DeveloperListItem[];
+  expertise?: DeveloperListItem[];
+  team?: DeveloperTeamMember[];
+  /** Photo URLs; the first one is shown large. */
+  gallery?: string[];
   logo_url: string | null;
   cover_url: string | null;
   established_year: number | null;
   registration_number: string | null;
+  legal_name: string | null;
+  ntn_number: string | null;
+  strn_number: string | null;
+  license_number: string | null;
+  license_authority: string | null;
+  business_type: string | null;
   city?: City | null;
   address: string | null;
   highlights: string[];
   phone: string | null;
   whatsapp: string | null;
   email: string | null;
+  business_hours: string | null;
   website: string | null;
   facebook: string | null;
   instagram: string | null;
   linkedin: string | null;
   youtube: string | null;
+  tiktok: string | null;
   meta_title: string | null;
   meta_description: string | null;
   /** Live projects. */
   projects_count?: number;
+  /** Live projects that are ready / under construction; only on the company's own page. */
+  completed_projects_count?: number;
+  ongoing_projects_count?: number;
   is_featured: boolean;
+  is_verified: boolean;
+};
+
+export type DeveloperListItem = { icon: PageIcon | null; title: string; text: string | null };
+
+export type DeveloperTeamMember = {
+  name: string;
+  designation: string | null;
+  bio: string | null;
+  experience: string | null;
+  photo_url: string | null;
+  email: string | null;
+  linkedin: string | null;
+  facebook: string | null;
+  is_leader?: boolean;
+  /** Only used for the leader's card. */
+  message: string | null;
 };
 
 export type PublicAuthor = {

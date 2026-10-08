@@ -39,8 +39,20 @@ export function developerSocials(developer: PublicDeveloper): { key: string; lab
       { key: "instagram", label: "Instagram", url: developer.instagram },
       { key: "linkedin", label: "LinkedIn", url: developer.linkedin },
       { key: "youtube", label: "YouTube", url: developer.youtube },
+      { key: "tiktok", label: "TikTok", url: developer.tiktok },
     ] as const
   )
     .filter((social): social is typeof social & { url: string } => Boolean(social.url))
     .map((social) => ({ key: social.key, label: social.label, url: social.url }));
+}
+
+/** Whole years since the company was established, or null when the year is unknown or this year. */
+export function yearsInBusiness(developer: PublicDeveloper, now = new Date()): number | null {
+  if (!developer.established_year) {
+    return null;
+  }
+
+  const years = now.getFullYear() - developer.established_year;
+
+  return years > 0 ? years : null;
 }
