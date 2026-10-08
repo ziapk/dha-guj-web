@@ -12,6 +12,7 @@ import {
   BuildingIcon,
   CalendarIcon,
   ChartIcon,
+  ChevronDownIcon,
   ClockIcon,
   CrownIcon,
   DocumentIcon,
@@ -21,6 +22,7 @@ import {
   LinkedInIcon,
   FacebookIcon,
   MailIcon,
+  MapIcon,
   PhoneIcon,
   PinIcon,
   QuoteIcon,
@@ -34,16 +36,27 @@ import { ProjectCard } from "@/components/project-card";
 import { Rail } from "@/components/rail";
 import { SectionIcon } from "@/components/section-icon";
 import { SocialIcon } from "@/components/social-icon";
-import { DEVELOPER_TYPE_LABELS, developerHref, developerSocials, getDeveloper, yearsInBusiness } from "@/lib/developers";
+import { DEVELOPER_TYPE_LABELS, developerHref, developerSocials, getDeveloper, sectionHeading, yearsInBusiness } from "@/lib/developers";
 import { whatsappNumber } from "@/lib/property";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import { siteUrl } from "@/lib/site";
-import type { DeveloperTeamMember, PublicDeveloper } from "@/types/api";
+import type { DeveloperLeader, DeveloperStat, DeveloperTeamMember, PublicDeveloper } from "@/types/api";
 
 function pageOf(value: string | string[] | undefined): number {
   return Math.max(1, Number.parseInt(typeof value === "string" ? value : "", 10) || 1);
 }
+
+/** Labels and icons for the experience & statistics block, in display order. */
+const STAT_LABELS: { key: DeveloperStat; label: string; icon: (props: { className?: string }) => ReactNode }[] = [
+  { key: "years_experience", label: "Years of experience", icon: CalendarIcon },
+  { key: "total_projects", label: "Total projects", icon: BuildingIcon },
+  { key: "completed_projects", label: "Completed projects", icon: ShieldCheckIcon },
+  { key: "ongoing_projects", label: "Ongoing projects", icon: ChartIcon },
+  { key: "upcoming_projects", label: "Upcoming projects", icon: LayersIcon },
+  { key: "cities_covered", label: "Cities covered", icon: PinIcon },
+  { key: "total_units", label: "Total units developed", icon: UsersIcon },
+];
 
 /** Icons for the trust strip under the header; highlights are free text, so they take turns. */
 const HIGHLIGHT_ICONS = [ShieldCheckIcon, StarIcon, UsersIcon, LayersIcon, BuildingIcon, BadgeIcon];
@@ -134,7 +147,7 @@ function MemberLinks({ member }: { member: DeveloperTeamMember }) {
   );
 }
 
-function MemberPhoto({ member, sizes }: { member: DeveloperTeamMember; sizes: string }) {
+function MemberPhoto({ member, sizes }: { member: DeveloperTeamMember | DeveloperLeader; sizes: string }) {
   return (
     <div className="dv-member-photo">
       {member.photo_url ? (
@@ -155,7 +168,8 @@ function MemberPhoto({ member, sizes }: { member: DeveloperTeamMember; sizes: st
 /** Registration facts in the order of the "Registered & verified" grid, skipping empty ones. */
 function registrationOf(developer: PublicDeveloper): { icon: ReactNode; label: string; value: string; note: string }[] {
   const facts: { icon: ReactNode; label: string; value: string | null; note: string }[] = [
-    { icon: <BuildingIcon className="icon" />, label: "Legal company name", value: developer.legal_name, note: "Registered name" },
+    { icon: <BuildingIcon className="icon" />, label: "Legal company name", value: developer.legal_name, note: "Legal entity" },
+    { icon: <BuildingIcon className="icon" />, label: "Registered company name", value: developer.registered_name, note: "As registered with SECP" },
     { icon: <DocumentIcon className="icon" />, label: "SECP registration", value: developer.registration_number, note: "Securities and Exchange Commission of Pakistan" },
     { icon: <BriefcaseIcon className="icon" />, label: "Business type", value: developer.business_type, note: "Legal structure" },
     { icon: <HashIcon className="icon" />, label: "NTN", value: developer.ntn_number, note: "National Tax Number" },
@@ -180,28 +194,50 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
   const developer = result.data;
   const projects = result.projects;
   const siteName = siteNameOf(await getSiteSettings());
-  const total = developer.projects_count ?? projects.meta.total;
-  const completed = developer.completed_projects_count ?? 0;
-  const ongoing = developer.ongoing_projects_count ?? 0;
-  const years = yearsInBusiness(developer);
+  const figures = developer.stats;
+  const total = figures?.total_projects ?? developer.projects_count ?? projects.meta.total;
+  const years = figures ? figures.years_experience : yearsInBusiness(developer);
   const whatsapp = whatsappNumber(developer.whatsapp ?? developer.phone);
   const location = [developer.address, developer.city?.name].filter(Boolean).join(", ");
   const socials = developerSocials(developer);
   const kind = DEVELOPER_TYPE_LABELS[developer.company_type];
   const cityName = developer.city?.name;
 
+  const sections = developer.sections ?? {};
   const team = developer.team ?? [];
-  const leader = team.find((member) => member.is_leader);
+  const leaders = developer.leadership ?? [];
   const gallery = developer.gallery ?? [];
+  const faqs = developer.faqs ?? [];
   const coreValues = developer.core_values ?? [];
   const expertise = developer.expertise ?? [];
-  const overviewImage = gallery[0] ?? developer.cover_url;
+  const overviewImage = sections.overview?.image_url ?? gallery[0]?.url ?? developer.cover_url;
+  const overviewButton = {
+    label: sections.overview?.button_label?.trim() || "View Our Projects",
+    href: sections.overview?.button_url?.trim() || (total > 0 ? "#projects" : null),
+  };
   const registration = registrationOf(developer);
-  const story = [
-    { key: "history", title: "Company History", text: developer.history, icon: <ClockIcon className="icon" /> },
-    { key: "mission", title: "Our Mission", text: developer.mission, icon: <ChartIcon className="icon" /> },
-    { key: "vision", title: "Our Vision", text: developer.vision, icon: <GlobeIcon className="icon" /> },
-  ].filter((card): card is typeof card & { text: string } => Boolean(card.text));
+  const story = (
+    [
+      { key: "history", eyebrow: "Our story", title: "Company History", text: developer.history, icon: <ClockIcon className="icon" /> },
+      { key: "mission", eyebrow: "Our purpose", title: "Our Mission", text: developer.mission, icon: <ChartIcon className="icon" /> },
+      { key: "vision", eyebrow: "Looking ahead", title: "Our Vision", text: developer.vision, icon: <GlobeIcon className="icon" /> },
+    ] as const
+  )
+    .filter((card) => Boolean(card.text))
+    .map((card) => {
+      const typed = sections[card.key];
+
+      return {
+        ...card,
+        text: card.text as string,
+        eyebrow: typed?.label?.trim() || card.eyebrow,
+        title: typed?.heading?.trim() || card.title,
+        image: typed?.image_url ?? null,
+        icon: typed?.icon ? <SectionIcon name={typed.icon} className="icon" /> : card.icon,
+      };
+    });
+  const isVerified = developer.verification_status ? developer.verification_status === "verified" : developer.is_verified;
+  const head = (section: Parameters<typeof sectionHeading>[1], fallback: Parameters<typeof sectionHeading>[2]) => sectionHeading(developer, section, fallback);
 
   const pageUrl = `${siteUrl()}${developerHref(developer.slug)}`;
   const structuredData = {
@@ -220,8 +256,17 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
     foundingDate: developer.established_year ? String(developer.established_year) : undefined,
     sameAs: [developer.website, ...socials.map((social) => social.url)].filter(Boolean),
     address: location ? { "@type": "PostalAddress", streetAddress: developer.address ?? undefined, addressLocality: developer.city?.name, addressCountry: "PK" } : undefined,
-    employee: team.length > 0 ? team.map((member) => ({ "@type": "Person", name: member.name, jobTitle: member.designation ?? undefined })) : undefined,
+    employee:
+      leaders.length + team.length > 0 ? [...leaders, ...team].map((member) => ({ "@type": "Person", name: member.name, jobTitle: member.designation ?? undefined })) : undefined,
   };
+  const faqData =
+    faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
+        }
+      : null;
   const breadcrumbs = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -236,17 +281,22 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
     return target > 1 ? `${developerHref(developer.slug)}?page=${target}` : developerHref(developer.slug);
   }
 
-  const stats = [
-    years ? { icon: <CalendarIcon className="icon" />, value: `${years}+`, label: "Years experience" } : null,
-    { icon: <BuildingIcon className="icon" />, value: total.toLocaleString("en-PK"), label: "Total projects" },
-    completed > 0 ? { icon: <ShieldCheckIcon className="icon" />, value: completed.toLocaleString("en-PK"), label: "Completed projects" } : null,
-    ongoing > 0 ? { icon: <ChartIcon className="icon" />, value: ongoing.toLocaleString("en-PK"), label: "Ongoing projects" } : null,
-  ].filter((stat) => stat !== null);
+  // Every figure that has a value; the total always shows so the hero never looks empty.
+  const allStats = STAT_LABELS.map(({ key, label, icon: Icon }) => {
+    const value = key === "total_projects" ? total : key === "years_experience" ? years : (figures?.[key] ?? (key === "completed_projects" ? developer.completed_projects_count : key === "ongoing_projects" ? developer.ongoing_projects_count : null));
+
+    return value || key === "total_projects"
+      ? { key, icon: <Icon className="icon" />, value: `${(value ?? 0).toLocaleString("en-PK")}${key === "years_experience" ? "+" : ""}`, label }
+      : null;
+  }).filter((stat) => stat !== null);
+  // The overview repeats the four headline figures, as in the spec's "Company Overview" block.
+  const stats = allStats.filter((stat) => ["years_experience", "total_projects", "completed_projects", "ongoing_projects"].includes(stat.key));
 
   return (
     <div className="container page-section dv-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
+      {page === 1 && faqData && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(faqData) }} />}
 
       <nav className="breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>
@@ -270,7 +320,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
           <div className="dv-hero-text">
             <h1>{developer.name}</h1>
             <div className="dv-badges">
-              {developer.is_verified && (
+              {isVerified && (
                 <span className="dv-badge dv-badge-verified">
                   <ShieldCheckIcon className="icon" /> Verified {kind}
                 </span>
@@ -291,8 +341,8 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
               )}
             </div>
             <ul className="dv-hero-stats">
-              {stats.slice(0, 3).map((stat) => (
-                <Stat key={stat.label} {...stat} />
+              {stats.slice(0, 3).map(({ key, ...stat }) => (
+                <Stat key={key} {...stat} />
               ))}
             </ul>
             <div className="dv-actions">
@@ -336,7 +386,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
           {(developer.description || developer.short_description) && (
             <section className={`dv-section dv-overview${overviewImage ? "" : " dv-overview-solo"}`}>
               <div>
-                <SectionHead eyebrow="About company" title="Company Overview" />
+                <SectionHead {...head("overview", { eyebrow: "About company", title: "Company Overview" })} />
                 {developer.description ? (
                   // Sanitised by the API before it is stored.
                   <div className="prose" dangerouslySetInnerHTML={{ __html: developer.description }} />
@@ -345,21 +395,21 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                 )}
                 {stats.length > 0 && (
                   <ul className="dv-overview-stats">
-                    {stats.map((stat) => (
-                      <Stat key={stat.label} {...stat} />
+                    {stats.map(({ key, ...stat }) => (
+                      <Stat key={key} {...stat} />
                     ))}
                   </ul>
                 )}
-                {total > 0 && (
-                  <a className="btn btn-primary" href="#projects">
-                    View Our Projects <ArrowRightIcon className="icon" />
+                {overviewButton.href && (
+                  <a className="btn btn-primary" href={overviewButton.href} {...(overviewButton.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+                    {overviewButton.label} <ArrowRightIcon className="icon" />
                   </a>
                 )}
               </div>
               {overviewImage && (
                 <div className="dv-overview-image">
                   <Image src={overviewImage} alt={`${developer.name} project`} fill sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: "cover" }} />
-                  {developer.is_verified && (
+                  {isVerified && (
                     <span className="dv-float-badge">
                       <ShieldCheckIcon className="icon" />
                       <span>
@@ -377,11 +427,20 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
           {story.length > 0 && (
             <section className="dv-section dv-story">
               {story.map((card, index) => (
-                <article key={card.key} className="dv-card dv-story-card">
-                  <span className="dv-story-number" aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="dv-icon-chip">{card.icon}</span>
+                <article key={card.key} className={`dv-card dv-story-card${card.image ? " dv-story-card-image" : ""}`}>
+                  {card.image ? (
+                    <div className="dv-story-image">
+                      <Image src={card.image} alt="" fill sizes="(max-width: 900px) 100vw, 33vw" style={{ objectFit: "cover" }} />
+                    </div>
+                  ) : (
+                    <>
+                      <span className="dv-story-number" aria-hidden="true">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="dv-icon-chip">{card.icon}</span>
+                    </>
+                  )}
+                  <span className="dv-eyebrow dv-story-eyebrow">{card.eyebrow}</span>
                   <h3>{card.title}</h3>
                   <p>{card.text}</p>
                 </article>
@@ -390,11 +449,13 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
           )}
 
           {/* Values, expertise, experience */}
-          {(coreValues.length > 0 || expertise.length > 0 || years) && (
+          {(coreValues.length > 0 || expertise.length > 0) && (
             <section className="dv-section dv-pillars">
               {coreValues.length > 0 && (
                 <div className="dv-card">
-                  <SectionHead eyebrow="Our principles" title="Core Values" text="The values that guide everything we do and the long-term relationships we build." />
+                  <SectionHead
+                    {...head("values", { eyebrow: "Our principles", title: "Core Values", text: "The values that guide everything we do and the long-term relationships we build." })}
+                  />
                   <ul className="dv-values">
                     {coreValues.map((value) => (
                       <li key={value.title}>
@@ -412,7 +473,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
               )}
               {expertise.length > 0 && (
                 <div className="dv-card">
-                  <SectionHead eyebrow="What we do" title="Areas of Expertise" />
+                  <SectionHead {...head("expertise", { eyebrow: "What we do", title: "Areas of Expertise" })} />
                   <ul className="dv-expertise">
                     {expertise.map((item) => (
                       <li key={item.title}>
@@ -426,17 +487,26 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                   </ul>
                 </div>
               )}
-              {years && (
-                <div className="dv-card dv-experience">
-                  <span className="dv-eyebrow">Our experience</span>
-                  <strong className="dv-experience-number">{years}+</strong>
-                  <h3>Years of Experience</h3>
-                  <p>
-                    Since {developer.established_year}, {developer.name} has been delivering {kind.toLowerCase()} work
-                    {cityName ? ` in ${cityName}` : ""}, with {total.toLocaleString("en-PK")} project{total === 1 ? "" : "s"} live on {siteName} today.
+            </section>
+          )}
+
+          {/* Experience & statistics */}
+          {allStats.length > 1 && (
+            <section className="dv-section dv-stats-section">
+              <div className="dv-experience-intro">
+                <SectionHead {...head("stats", { eyebrow: "Our experience", title: "Experience &", accent: "Statistics" })} />
+                {years ? (
+                  <p className="dv-text">
+                    {developer.established_year ? `Since ${developer.established_year}, ` : ""}
+                    {developer.name} has been delivering {kind.toLowerCase()} work{cityName ? ` in ${cityName}` : ""}.
                   </p>
-                </div>
-              )}
+                ) : null}
+              </div>
+              <ul className="dv-stats-grid">
+                {allStats.map(({ key, ...stat }) => (
+                  <Stat key={key} {...stat} />
+                ))}
+              </ul>
             </section>
           )}
         </>
@@ -445,11 +515,13 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
       {/* Projects */}
       <section className="dv-section dv-projects" id="projects">
         <SectionHead
-          eyebrow="Our projects"
-          title="Projects /"
-          accent="Portfolio"
+          {...head("projects", {
+            eyebrow: "Our projects",
+            title: "Projects /",
+            accent: "Portfolio",
+            text: `${projects.meta.total.toLocaleString("en-PK")} live project${projects.meta.total === 1 ? "" : "s"} by ${developer.name}.`,
+          })}
           center
-          text={`${total.toLocaleString("en-PK")} live project${total === 1 ? "" : "s"} by ${developer.name}.`}
         />
         {projects.data.length === 0 ? (
           <div className="empty-results">
@@ -482,74 +554,89 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
           {/* Gallery */}
           {gallery.length > 0 && (
             <section className="dv-section">
-              <SectionHead title="Our Work" accent="Gallery" center text="Construction progress, completed homes, architectural details and development work." />
+              <SectionHead
+                {...head("gallery", { title: "Our Work", accent: "Gallery", text: "Construction progress, completed homes, architectural details and development work." })}
+                center
+              />
               <WorkGallery photos={gallery} name={developer.name} />
             </section>
           )}
 
           {/* Leadership */}
-          {leader && (
+          {leaders.length > 0 && (
             <section className="dv-section">
-              <SectionHead title="Team /" accent="Leadership" text="The people behind our success, committed to quality construction and real estate solutions." />
-              <article className="dv-leader">
-                <div className="dv-leader-photo">
-                  <MemberPhoto member={leader} sizes="(max-width: 900px) 100vw, 420px" />
-                  {leader.designation && (
-                    <span className="dv-leader-tag">
-                      <CrownIcon className="icon" /> {leader.designation}
-                    </span>
-                  )}
-                </div>
-                <div className="dv-leader-body">
-                  <h3>{leader.name}</h3>
-                  {leader.designation && <p className="dv-member-role">{leader.designation}</p>}
-                  {leader.bio && <p className="dv-text">{leader.bio}</p>}
-                  <ul className="dv-leader-facts">
-                    {leader.experience && (
-                      <li>
-                        <CalendarIcon className="icon" />
-                        <span>
-                          <strong>{leader.experience}</strong>
-                          <small>Industry experience</small>
+              <SectionHead
+                {...head("leadership", {
+                  title: "Team /",
+                  accent: "Leadership",
+                  text: "The people behind our success, committed to quality construction and real estate solutions.",
+                })}
+              />
+              <div className="dv-leaders">
+                {leaders.map((leader) => (
+                  <article key={`${leader.name}-${leader.designation ?? ""}`} className="dv-leader">
+                    <div className="dv-leader-photo">
+                      <MemberPhoto member={leader} sizes="(max-width: 900px) 100vw, 420px" />
+                      {leader.designation && (
+                        <span className="dv-leader-tag">
+                          <CrownIcon className="icon" /> {leader.designation}
                         </span>
-                      </li>
-                    )}
-                    {expertise[0] && (
-                      <li>
-                        <BriefcaseIcon className="icon" />
-                        <span>
-                          <strong>{expertise[0].title}</strong>
-                          <small>Leads</small>
-                        </span>
-                      </li>
-                    )}
-                    {total > 0 && (
-                      <li>
-                        <BuildingIcon className="icon" />
-                        <span>
-                          <strong>{total.toLocaleString("en-PK")}</strong>
-                          <small>Live project{total === 1 ? "" : "s"}</small>
-                        </span>
-                      </li>
-                    )}
-                  </ul>
-                  {leader.message && (
-                    <blockquote className="dv-quote">
-                      <QuoteIcon className="icon" />
-                      <p>{leader.message}</p>
-                      <cite>{leader.name}</cite>
-                    </blockquote>
-                  )}
-                  <MemberLinks member={leader} />
-                </div>
-              </article>
+                      )}
+                    </div>
+                    <div className="dv-leader-body">
+                      <h3>{leader.name}</h3>
+                      {leader.designation && <p className="dv-member-role">{leader.designation}</p>}
+                      {leader.bio && <p className="dv-text dv-pre">{leader.bio}</p>}
+                      {(leader.experience || leader.specialization) && (
+                        <ul className="dv-leader-facts">
+                          {leader.experience && (
+                            <li>
+                              <CalendarIcon className="icon" />
+                              <span>
+                                <strong>{leader.experience}</strong>
+                                <small>Experience</small>
+                              </span>
+                            </li>
+                          )}
+                          {leader.specialization && (
+                            <li>
+                              <BriefcaseIcon className="icon" />
+                              <span>
+                                <strong>{leader.specialization}</strong>
+                                <small>Specialization</small>
+                              </span>
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                      {leader.quote && (
+                        <blockquote className="dv-quote">
+                          <QuoteIcon className="icon" />
+                          <p>{leader.quote}</p>
+                          {leader.signature_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element -- a small transparent signature image of unknown size
+                            <img className="dv-signature" src={leader.signature_url} alt={`${leader.name}'s signature`} loading="lazy" />
+                          ) : (
+                            <cite>{leader.name}</cite>
+                          )}
+                        </blockquote>
+                      )}
+                      {!leader.quote && leader.signature_url && (
+                        // eslint-disable-next-line @next/next/no-img-element -- a small transparent signature image of unknown size
+                        <img className="dv-signature" src={leader.signature_url} alt={`${leader.name}'s signature`} loading="lazy" />
+                      )}
+                      <MemberLinks member={leader} />
+                    </div>
+                  </article>
+                ))}
+              </div>
             </section>
           )}
 
           {/* Team */}
           {team.length > 0 && (
             <section className="dv-section">
-              <SectionHead title="Our" accent="Team" />
+              <SectionHead {...head("team", { title: "Our", accent: "Team" })} />
               <ul className="dv-team">
                 {team.map((member) => (
                   <li key={`${member.name}-${member.designation ?? ""}`} className="dv-member">
@@ -558,6 +645,11 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                       {member.designation && <span className="dv-member-tag">{member.designation}</span>}
                       <h3>{member.name}</h3>
                       {member.bio && <p>{member.bio}</p>}
+                      {member.specialization && (
+                        <p className="dv-member-spec">
+                          <BriefcaseIcon className="icon" /> {member.specialization}
+                        </p>
+                      )}
                       <div className="dv-member-foot">
                         {member.experience && (
                           <span className="dv-member-exp">
@@ -577,10 +669,15 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
           {registration.length > 0 && (
             <section className="dv-section dv-registration">
               <div className="dv-registration-head">
-                <SectionHead eyebrow="Company registration & verification" title="Registered & Verified" accent={`${kind}`} />
-                {developer.is_verified && (
+                <SectionHead {...head("registration", { eyebrow: "Company registration & verification", title: "Registered & Verified", accent: kind })} />
+                {isVerified && (
                   <span className="dv-verified-box">
-                    <ShieldCheckIcon className="icon" />
+                    {developer.verification_badge_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- an admin-uploaded seal of unknown size
+                      <img className="dv-verified-seal" src={developer.verification_badge_url} alt="Verification badge" loading="lazy" />
+                    ) : (
+                      <ShieldCheckIcon className="icon" />
+                    )}
                     <span>
                       <strong>Verified company</strong>
                       <small>Documents checked by {siteName}</small>
@@ -604,9 +701,11 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
           )}
 
           {/* Contact */}
-          {(developer.phone || developer.email || location || whatsapp) && (
-            <section className="dv-section dv-contact">
-              <SectionHead eyebrow="Contact us" title="Get in" accent="Touch" text={`Visit our office, call, WhatsApp or email ${developer.name} about any project.`} />
+          {(developer.phone || developer.email || location || whatsapp || socials.length > 0) && (
+            <section className="dv-section dv-contact" id="contact">
+              <SectionHead
+                {...head("contact", { eyebrow: "Contact us", title: "Get in", accent: "Touch", text: `Visit our office, call, WhatsApp or email ${developer.name} about any project.` })}
+              />
               <ul className="dv-contact-list">
                 {developer.email && (
                   <li>
@@ -638,6 +737,11 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                     <span>
                       <small>Office address</small>
                       <span>{location}</span>
+                      {developer.google_maps_url && (
+                        <a className="dv-map-link" href={developer.google_maps_url} target="_blank" rel="noopener noreferrer nofollow">
+                          <MapIcon className="icon" /> View on Google Maps
+                        </a>
+                      )}
                     </span>
                   </li>
                 )}
@@ -688,9 +792,9 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
               {socials.length > 0 && (
                 <div className="dv-follow">
                   <div>
-                    <span className="dv-eyebrow">Follow us</span>
-                    <h3>Connect With Us</h3>
-                    <p>Stay updated with the latest projects and company news.</p>
+                    <span className="dv-eyebrow">{sections.social?.label?.trim() || "Follow us"}</span>
+                    <h3>{sections.social?.heading?.trim() || "Connect With Us"}</h3>
+                    <p>{sections.social?.description?.trim() || "Stay updated with the latest projects and company news."}</p>
                   </div>
                   <ul>
                     {socials.map((social) => (
@@ -704,6 +808,26 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                   </ul>
                 </div>
               )}
+            </section>
+          )}
+
+          {/* FAQs */}
+          {faqs.length > 0 && (
+            <section className="dv-section">
+              <SectionHead {...head("faqs", { eyebrow: "FAQs", title: "Frequently Asked", accent: "Questions" })} center />
+              <div className="pj-faqs" id="dv-faqs">
+                {faqs.map((faq, index) => (
+                  <details key={faq.question} name="dv-faq" open={index === 0}>
+                    <summary>
+                      <span className="pj-faq-num">{String(index + 1).padStart(2, "0")}</span>
+                      <strong>{faq.question}</strong>
+                      <ChevronDownIcon />
+                    </summary>
+                    {/* Sanitised by the API before it is stored. */}
+                    <div className="pj-faq-answer prose pj-html" dangerouslySetInnerHTML={{ __html: faq.answer }} />
+                  </details>
+                ))}
+              </div>
             </section>
           )}
         </>

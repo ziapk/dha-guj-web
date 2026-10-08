@@ -401,20 +401,31 @@ export type PublicDeveloper = {
   short_description: string | null;
   /** Sanitised HTML; only on the company's own page. */
   description?: string;
+  /** Admin wording per section; anything missing falls back to the page's own text. Only on the company's own page. */
+  sections?: Partial<Record<DeveloperSection, DeveloperSectionContent>>;
+  /** Typed by an admin or counted from live projects. Only on the company's own page. */
+  stats?: Record<DeveloperStat, number | null>;
   /** Plain text sections, only on the company's own page. */
   history?: string | null;
   mission?: string | null;
   vision?: string | null;
   core_values?: DeveloperListItem[];
   expertise?: DeveloperListItem[];
+  leadership?: DeveloperLeader[];
   team?: DeveloperTeamMember[];
-  /** Photo URLs; the first one is shown large. */
-  gallery?: string[];
+  /** In display order; the first one is shown large. */
+  gallery?: DeveloperGalleryItem[];
+  /** Published ones only; answers are sanitised HTML. */
+  faqs?: { question: string; answer: string }[];
   logo_url: string | null;
   cover_url: string | null;
   established_year: number | null;
   registration_number: string | null;
   legal_name: string | null;
+  registered_name: string | null;
+  verification_status: "unverified" | "pending" | "verified";
+  /** Optional badge image shown with the verified tick. */
+  verification_badge_url: string | null;
   ntn_number: string | null;
   strn_number: string | null;
   license_number: string | null;
@@ -422,17 +433,15 @@ export type PublicDeveloper = {
   business_type: string | null;
   city?: City | null;
   address: string | null;
+  google_maps_url: string | null;
   highlights: string[];
   phone: string | null;
   whatsapp: string | null;
   email: string | null;
   business_hours: string | null;
   website: string | null;
-  facebook: string | null;
-  instagram: string | null;
-  linkedin: string | null;
-  youtube: string | null;
-  tiktok: string | null;
+  /** Active links only, in display order. */
+  social_links: { platform: "facebook" | "instagram" | "youtube" | "tiktok" | "linkedin" | "x"; url: string }[];
   meta_title: string | null;
   meta_description: string | null;
   /** Live projects. */
@@ -451,13 +460,52 @@ export type DeveloperTeamMember = {
   designation: string | null;
   bio: string | null;
   experience: string | null;
+  specialization?: string | null;
   photo_url: string | null;
   email: string | null;
   linkedin: string | null;
   facebook: string | null;
-  is_leader?: boolean;
-  /** Only used for the leader's card. */
-  message: string | null;
+};
+
+export type DeveloperLeader = DeveloperTeamMember & { quote?: string | null; signature_url?: string | null };
+
+export type DeveloperSection =
+  | "overview"
+  | "history"
+  | "mission"
+  | "vision"
+  | "values"
+  | "expertise"
+  | "stats"
+  | "projects"
+  | "gallery"
+  | "leadership"
+  | "team"
+  | "registration"
+  | "contact"
+  | "social"
+  | "faqs";
+
+export type DeveloperSectionContent = {
+  label?: string | null;
+  heading?: string | null;
+  description?: string | null;
+  icon?: PageIcon | null;
+  image_url?: string | null;
+  button_label?: string | null;
+  button_url?: string | null;
+};
+
+export type DeveloperStat = "years_experience" | "total_projects" | "completed_projects" | "ongoing_projects" | "upcoming_projects" | "cities_covered" | "total_units";
+
+export type GalleryCategory = "projects" | "construction" | "completed_homes" | "architecture" | "interior" | "exterior" | "site_visits" | "events";
+
+export type DeveloperGalleryItem = {
+  url: string;
+  title?: string | null;
+  caption?: string | null;
+  alt?: string | null;
+  category?: GalleryCategory | null;
 };
 
 export type PublicAuthor = {
