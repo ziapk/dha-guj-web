@@ -3,7 +3,7 @@ import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
 import { BannerSlot } from "@/components/banner-slot";
 import { BellIcon, KeyIcon } from "@/components/icons";
-import { PropertyCard } from "@/components/property-card";
+import { ListingRowCard, ownerOf } from "@/components/listing-row-card";
 import { QuickFilters } from "@/components/quick-filters";
 import { RecentlyViewed } from "@/components/recently-viewed";
 import { SaveSearchButton } from "@/components/save-search-button";
@@ -117,9 +117,11 @@ export default async function PropertiesPage({ searchParams }: PageProps<"/prope
             <BannerSlot key={`top:${JSON.stringify(filters)}`} placement="search_top" />
             {results && results.data.length > 0 ? (
               <>
-                {results.data.map((property, index) => (
-                  <PropertyCard key={property.id} property={property} layout="list" priority={index < 2} />
-                ))}
+                <div className="listing-row-list">
+                  {results.data.map((property, index) => (
+                    <ListingRowCard key={property.id} property={property} owner={ownerOf(property)} priority={index < 2} />
+                  ))}
+                </div>
                 {results.meta.last_page > 1 && (
                   <ResultsPagination filters={filters} current={results.meta.current_page} total={results.meta.total} pageSize={results.meta.per_page} />
                 )}
