@@ -611,6 +611,8 @@ export type ProjectUnit = {
   availability: string | null;
   description: string | null;
   floor_plan_url: string | null;
+  /** The unit's own picture; the page falls back to floor_plan_url. */
+  image_url: string | null;
 };
 
 /** The grouped feature lists on a project; each one is a plain list of strings. */
@@ -619,10 +621,17 @@ export type ProjectFeatureGroup =
 
 export type ProjectFeatures = Partial<Record<ProjectFeatureGroup, string[]>>;
 
+/** The fixed categories a nearby place can be filed under (null = uncategorised). */
+export type NearbyPlaceCategory =
+  | "mosque" | "school" | "hospital" | "restaurant" | "shopping_mall" | "public_transport" | "park" | "pharmacy"
+  | "gujranwala_city" | "main_gt_road" | "motorway";
+
 export type ProjectNearbyPlace = {
   id: number;
   name: string;
+  category: NearbyPlaceCategory | null;
   distance: string | null;
+  /** "m" or "km"; older rows may say "min". */
   distance_unit: string | null;
   description: string | null;
   maps_url: string | null;
@@ -660,6 +669,82 @@ export type ProjectFloorPlan = {
   description: string | null;
 };
 
+/** A project feature card picked in the admin; icon is a built-in icon name (see section-icon.tsx), icon_url an uploaded one. */
+export type ProjectFeatureCard = {
+  id: number;
+  name: string;
+  icon: string | null;
+  icon_url: string | null;
+  description: string | null;
+  sort_order: number;
+  is_active: boolean;
+};
+
+export type ProjectBrochure = { id: number; name: string; image_url: string | null; pdf_url: string | null };
+
+export type ProjectMilestoneStatus = "upcoming" | "in_progress" | "completed";
+
+/** An admin-entered project milestone, already in display order. */
+export type ProjectMilestoneItem = {
+  id: number;
+  title: string;
+  /** "YYYY-MM-DD". */
+  milestone_date: string | null;
+  status: ProjectMilestoneStatus;
+  is_current: boolean;
+  description: string | null;
+  icon: string | null;
+  icon_url: string | null;
+};
+
+/** A published construction update, already in display order. */
+export type ProjectConstructionUpdate = {
+  id: number;
+  title: string;
+  update_date: string | null;
+  date_label: string | null;
+  /** Display label, e.g. "Sep 2024". */
+  label: string | null;
+  description: string | null;
+  stage: string | null;
+  image_url: string | null;
+  gallery: string[];
+  caption: string | null;
+  alt_text: string | null;
+  is_published: boolean;
+  is_featured: boolean;
+};
+
+/** An admin-entered FAQ; answer is sanitised HTML. */
+export type ProjectFaq = { id: number; question: string; answer: string; is_active: boolean };
+
+export type ProjectProgressStatus = "not_started" | "in_progress" | "near_completion" | "completed";
+
+/** The Development Progress block: figures plus the admin's settings for what the page shows. */
+export type ProjectProgress = {
+  percent: number | null;
+  status: ProjectProgressStatus | null;
+  /** Sanitised HTML. */
+  description: string | null;
+  start_date: string | null;
+  completion_date: string | null;
+  months_elapsed: number | null;
+  estimated_months: number | null;
+  milestones_completed: number;
+  settings: {
+    enabled: boolean;
+    label: string | null;
+    heading: string | null;
+    description: string | null;
+    show_overview: boolean;
+    show_milestones: boolean;
+    show_updates: boolean;
+    show_view_all: boolean;
+    view_all_text: string | null;
+    view_all_url: string | null;
+  };
+};
+
 /** A live developer project (see dha-guj-api PublicProjectResource). contact is only on GET /public/projects/{slug}. */
 export type PublicProject = {
   id: number;
@@ -668,7 +753,18 @@ export type PublicProject = {
   name: string;
   project_type: string | null;
   short_description: string | null;
+  /** Sanitised HTML from the rich text editor (older plain-text rows were wrapped in <p>). */
   description: string;
+  /** Project logo; older projects may still have a "logo" media item instead. */
+  logo_url?: string | null;
+  /** Display location, e.g. "DHA Gujranwala, Phase 1". */
+  location?: string | null;
+  unit_type?: string | null;
+  unit_size?: string | null;
+  possession_status?: string | null;
+  master_plan_image_url?: string | null;
+  /** Sanitised HTML. */
+  master_plan_html?: string | null;
   video_url: string | null;
   virtual_tour_url: string | null;
 
@@ -733,12 +829,21 @@ export type PublicProject = {
   floor_plans?: ProjectFloorPlan[];
   media?: ProjectMedia[];
   cover_url?: string | null;
+  /** The rest are only on GET /public/projects/{slug}. */
+  project_features?: ProjectFeatureCard[];
+  brochures?: ProjectBrochure[];
+  milestones?: ProjectMilestoneItem[];
+  construction_updates?: ProjectConstructionUpdate[];
+  faqs?: ProjectFaq[];
+  progress?: ProjectProgress;
 
   meta_title: string | null;
   meta_description: string | null;
   published_at: string | null;
   views_count: number;
   is_featured: boolean;
+  /** Reviewed by the admin team. */
+  is_verified?: boolean;
   /** Only on GET /public/projects/{slug}. */
   contact?: { name: string; office: string | null; phone: string | null; whatsapp: string | null; email: string | null };
 };

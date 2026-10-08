@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { formatArea, formatCompactPrice, formatPriceRange } from "@/lib/labels";
-import type { ProjectMedia, ProjectUnit, PublicProject } from "@/types/api";
+import { descriptionText } from "@/lib/property";
+import type { NearbyPlaceCategory, ProjectMedia, ProjectNearbyPlace, ProjectProgressStatus, ProjectUnit, PublicProject } from "@/types/api";
 
 /** Construction statuses a buyer can filter by, in the order they happen. */
 export const CONSTRUCTION_STATUSES = ["upcoming", "under_construction", "ready"] as const;
@@ -14,11 +15,17 @@ export function projectHref(slug: string): string {
   return `/projects/${slug}`;
 }
 
-/** Photos with the cover first. */
-export function projectPhotosOf(project: PublicProject): ProjectMedia[] {
-  const photos = (project.media ?? []).filter((media) => media.type === "image");
+/** "September 2024" — milestone and progress dates. */
+export function monthYearOf(date: string | null | undefined): string | null {
+  return date ? dayjs(date).format("MMMM YYYY") : null;
+}
 
-  return [...photos.filter((photo) => photo.is_cover), ...photos.filter((photo) => !photo.is_cover)];
+/**
+ * The gallery photos in the order the admin arranged them (the first one is the cover).
+ * Only "image" media; logos, plans, brochures and the like are left out.
+ */
+export function projectPhotosOf(project: PublicProject): ProjectMedia[] {
+  return (project.media ?? []).filter((media) => media.type === "image");
 }
 
 export function projectMediaOf(project: PublicProject, type: ProjectMedia["type"]): ProjectMedia[] {
@@ -49,9 +56,41 @@ export function nearbyDistanceOf(place: { distance: string | null; distance_unit
   }
 
   const value = Number(place.distance);
+  const amount = Number.isNaN(value) ? place.distance : Number.isInteger(value) ? value : Number(value.toFixed(1));
 
-  return `${Number.isInteger(value) ? value : value.toFixed(1)}${place.distance_unit ? ` ${place.distance_unit}` : ""}`;
+  return `${amount}${place.distance_unit ? ` ${place.distance_unit}` : ""}`;
 }
+
+/** Nearby place categories in the order the page shows them, with the built-in icon (amenity-icons.tsx) for each. */
+export const NEARBY_CATEGORIES: { key: NearbyPlaceCategory; label: string; icon: string }[] = [
+  { key: "mosque", label: "Mosque", icon: "mosque" },
+  { key: "school", label: "School", icon: "school" },
+  { key: "hospital", label: "Hospital", icon: "hospital" },
+  { key: "restaurant", label: "Restaurant", icon: "dining" },
+  { key: "shopping_mall", label: "Shopping Mall", icon: "shop" },
+  { key: "public_transport", label: "Public Transport", icon: "road" },
+  { key: "park", label: "Park", icon: "park" },
+  { key: "pharmacy", label: "Pharmacy", icon: "hospital" },
+  { key: "gujranwala_city", label: "Gujranwala City", icon: "corner" },
+  { key: "main_gt_road", label: "Main GT Road", icon: "road" },
+  { key: "motorway", label: "Motorway", icon: "road" },
+];
+
+/** Nearby places grouped by category in NEARBY_CATEGORIES order; uncategorised (or unknown) places go last under "Other". */
+export function nearbyGroupsOf(places: ProjectNearbyPlace[]): { key: string; label: string; icon: string; places: ProjectNearbyPlace[] }[] {
+  const known = new Set<string>(NEARBY_CATEGORIES.map((category) => category.key));
+  const groups = NEARBY_CATEGORIES.map((category) => ({ ...category, places: places.filter((place) => place.category === category.key) }));
+  const other = places.filter((place) => !place.category || !known.has(place.category));
+
+  return [...groups, { key: "other", label: "Other", icon: "check", places: other }].filter((group) => group.places.length > 0);
+}
+
+export const PROGRESS_STATUS_LABELS: Record<ProjectProgressStatus, string> = {
+  not_started: "Not started",
+  in_progress: "In progress",
+  near_completion: "Near completion",
+  completed: "Completed",
+};
 
 /** "Rs 50 Lakh – Rs 1.2 Crore" over all unit types, or null when no unit has a price. */
 export function projectPriceOf(project: PublicProject): string | null {
@@ -99,23 +138,6 @@ export const UNIT_AVAILABILITY_LABELS: Record<string, string> = {
   sold_out: "Sold out",
   coming_soon: "Coming soon",
 };
-
-/** The built-in icon (see amenity-icons.tsx) that best fits a nearby place, guessed from its name. */
-export function nearbyIconOf(name: string): string {
-  const text = name.toLowerCase();
-  const match: [RegExp, string][] = [
-    [/mosque|masjid/, "mosque"],
-    [/school|college|universit|academy|institute/, "school"],
-    [/hospital|clinic|medical|pharmac|chemist|health/, "hospital"],
-    [/restaurant|cafe|café|food|dine|dining|hotel/, "dining"],
-    [/mall|market|shop|mart|store|plaza|bazaar/, "shop"],
-    [/park|garden|green|lake/, "park"],
-    [/gym|fitness|sport|club/, "gym"],
-    [/transport|bus|metro|station|motorway|highway|road|airport|interchange/, "road"],
-  ];
-
-  return match.find(([pattern]) => pattern.test(text))?.[1] ?? "check";
-}
 
 export type ProjectMilestone = { key: string; label: string; date: string | null; note: string; done: boolean };
 
@@ -169,11 +191,12 @@ export function projectFaqsOf(project: PublicProject): { question: string; answe
   const planInstallments = plans.filter((plan) => plan.monthly_installment || plan.quarterly_installment || plan.half_yearly_installment);
   const possession = project.possession_date ?? project.completion_date;
   const contact = project.contact;
+  const description = descriptionText(project.description ?? "");
 
   const faqs: { question: string; answer: string | null }[] = [
     {
       question: `What is ${project.name}?`,
-      answer: project.short_description ?? (project.description.length > 320 ? `${project.description.slice(0, 317).trimEnd()}…` : project.description),
+      answer: project.short_description ?? (description.length > 320 ? `${description.slice(0, 317).trimEnd()}…` : description || null),
     },
     {
       question: "What types of units are available?",
@@ -242,4 +265,17 @@ export function projectFaqsOf(project: PublicProject): { question: string; answe
   ];
 
   return faqs.filter((faq): faq is { question: string; answer: string } => Boolean(faq.answer));
+}
+
+export type ProjectFaqEntry = { key: string; question: string; /** Sanitised HTML from the admin, or null for a generated answer. */ html: string | null; text: string };
+
+/** The admin's FAQs when there are any (answers are HTML), otherwise the generated ones from projectFaqsOf. */
+export function projectFaqEntriesOf(project: PublicProject): ProjectFaqEntry[] {
+  const own = (project.faqs ?? []).filter((faq) => faq.question.trim() !== "");
+
+  if (own.length > 0) {
+    return own.map((faq) => ({ key: `faq-${faq.id}`, question: faq.question, html: faq.answer, text: descriptionText(faq.answer ?? "") }));
+  }
+
+  return projectFaqsOf(project).map((faq) => ({ key: faq.question, question: faq.question, html: null, text: faq.answer }));
 }

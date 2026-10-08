@@ -12865,23 +12865,6 @@ main:has(> .section-seo:last-child) + .site-footer {
   color: var(--app-heading);
 }
 
-.pj-verified {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.pj-verified .icon {
-  width: 16px;
-  height: 16px;
-}
-
 .pj-title p {
   display: flex;
   flex-wrap: wrap;
@@ -12906,6 +12889,12 @@ main:has(> .section-seo:last-child) + .site-footer {
 .pj-title .pj-by a {
   color: var(--accent);
   font-weight: 600;
+}
+
+.pj-title .badge .icon {
+  width: 13px;
+  height: 13px;
+  color: inherit;
 }
 
 .pj-prices {
@@ -13479,6 +13468,78 @@ main:has(> .section-seo:last-child) + .site-footer {
   font-weight: 600;
 }
 
+/* Nearby facilities grouped by category */
+.pj-nearby-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pj-nearby-groups > li {
+  padding: 14px 16px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-l);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+}
+
+.pj-nearby-group-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.pj-nearby-group-head strong {
+  color: var(--app-heading);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pj-nearby-groups ul {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pj-nearby-groups ul li + li {
+  border-top: 1px dashed var(--app-border);
+}
+
+.pj-nearby-groups ul a,
+.pj-nearby-groups ul div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+  color: var(--app-text);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.pj-nearby-groups ul a:hover span {
+  color: var(--accent);
+}
+
+.pj-nearby-groups ul span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pj-nearby-groups ul b {
+  flex: none;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 /* Project features */
 .pj-features {
   display: grid;
@@ -13550,43 +13611,26 @@ main:has(> .section-seo:last-child) + .site-footer {
   line-height: 1.3;
 }
 
-.pj-feature-groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
-  margin-top: 20px;
+/* Admin-built feature cards: icon, name and a short description */
+.pj-features-detailed {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
 }
 
-.pj-feature-groups > div {
-  padding: 16px;
-  border: 1px solid var(--app-border);
-  border-radius: var(--radius-l);
-  background: var(--app-surface);
+.pj-features-detailed li {
+  justify-content: flex-start;
+  padding: 20px 14px 18px;
 }
 
-.pj-feature-groups h3 {
-  margin: 0 0 10px;
-  color: var(--app-heading);
-  font-size: 14px;
-  font-weight: 700;
+.pj-features-detailed small {
+  color: var(--app-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
 }
 
-.pj-feature-groups ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pj-feature-groups li {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 600;
+.pj-admin-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 /* Master plan viewer */
@@ -14117,22 +14161,297 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
-.pj-update {
-  position: relative;
-  display: block;
-  aspect-ratio: 16 / 10;
+/* Rich text from the admin editor (description, master plan, progress, FAQ answers) */
+.pj-html {
+  max-width: none;
+  font-size: 15.5px;
+  line-height: 1.8;
+}
+
+.pj-html p,
+.pj-html ul,
+.pj-html ol {
+  margin: 0 0 12px;
+}
+
+.pj-html ul,
+.pj-html ol {
+  padding-left: 22px;
+}
+
+.pj-faq-answer.pj-html {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.pj-plan-about {
+  max-width: 760px;
+  margin: 24px auto 0;
+  text-align: center;
+}
+
+.pj-plan-about h3 {
+  margin: 0 0 10px;
+  color: var(--app-heading);
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 800;
+}
+
+.pj-plan-about h3 span {
+  color: var(--accent);
+}
+
+.pj-plan-about .pj-html {
+  color: var(--app-muted);
+  font-size: 14.5px;
+}
+
+.pj-plan-about .pj-html ul,
+.pj-plan-about .pj-html ol {
+  display: inline-block;
+  text-align: left;
+}
+
+/* Numbered panel heads (01 Overview, 02 Milestones, 03 Updates) */
+.pj-panel-num {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--btn-bg);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pj-panel .pj-progress-top {
+  margin-bottom: 0;
+}
+
+.pj-progress-ring-card > div {
+  min-width: 0;
+}
+
+.pj-progress-status {
+  display: inline-block;
+  margin: 4px 0 0 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  vertical-align: 1px;
+}
+
+.pj-progress-status.is-completed {
+  background: color-mix(in srgb, var(--pj-green) 14%, var(--app-surface));
+  color: var(--pj-green);
+}
+
+.pj-progress-status.is-not_started {
+  background: var(--app-surface-2);
+  color: var(--app-muted);
+}
+
+.pj-progress-desc {
+  margin-top: 6px;
+  color: var(--app-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.pj-progress-desc p {
+  margin: 0 0 6px;
+}
+
+.pj-panel > .pj-html {
+  margin-top: 14px;
+  color: var(--app-muted);
+  font-size: 14px;
+}
+
+/* Admin milestones: any number of steps, scrolling sideways inside the panel when they do not fit */
+.pj-milestones-wrap {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.pj-milestones.is-rich {
+  grid-template-columns: repeat(var(--count, 4), minmax(120px, 1fr));
+  padding-top: 30px;
+}
+
+.pj-milestones.is-rich li::before {
+  top: 14px;
+}
+
+.pj-milestones li.is-progress::before {
+  border-top-style: solid;
+  border-top-color: var(--accent);
+}
+
+.pj-milestones.is-rich .pj-dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--app-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pj-milestones.is-rich .pj-dot .pj-admin-icon,
+.pj-milestones.is-rich .pj-dot .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.pj-milestones .is-done .pj-dot.has-content {
+  background-image: none;
+  color: #fff;
+}
+
+.pj-milestones .is-progress .pj-dot {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.pj-milestones .is-current .pj-dot.has-content {
+  color: #fff;
+}
+
+.pj-milestones .is-progress strong {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .pj-milestones.is-rich {
+    grid-template-columns: 1fr;
+    padding-top: 0;
+  }
+
+  .pj-milestones.is-rich li {
+    grid-template-columns: 30px 1fr;
+  }
+
+  .pj-milestones.is-rich li::before {
+    top: -18px;
+    left: 14px;
+  }
+
+  .pj-milestones li.is-progress::before {
+    border-left-style: solid;
+    border-left-color: var(--accent);
+  }
+}
+
+/* Construction update cards */
+.pj-cupdate {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--app-border);
   border-radius: var(--radius-m);
+  background: var(--app-surface);
   overflow: hidden;
 }
 
-.pj-update span {
+.pj-cupdate-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  border: 0;
+  background: var(--app-surface-2);
+  color: var(--app-muted);
+  cursor: pointer;
+}
+
+.pj-cupdate-media:disabled {
+  cursor: default;
+}
+
+.pj-cupdate-media:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.pj-cupdate-media > .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.pj-cupdate-label {
   position: absolute;
-  inset: auto 0 0;
-  padding: 18px 10px 8px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  left: 8px;
+  bottom: 8px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.65);
   color: #fff;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.pj-cupdate-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.pj-cupdate-count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pj-cupdate-count .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.pj-cupdate-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px 12px;
+}
+
+.pj-cupdate-body strong {
+  color: var(--app-heading);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.pj-cupdate-body small {
+  color: var(--app-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.pj-cupdate-all {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.pj-cupdate-all .btn .icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* Location + developer */
@@ -14274,16 +14593,19 @@ main:has(> .section-seo:last-child) + .site-footer {
   font-weight: 800;
 }
 
-.pj-faqs details p {
-  margin: 0;
+.pj-faq-answer {
   padding: 14px 16px 16px 64px;
   color: var(--app-text);
   font-size: 14px;
   line-height: 1.7;
 }
 
+.pj-faq-answer > p:only-child {
+  margin: 0;
+}
+
 @media (max-width: 560px) {
-  .pj-faqs details p {
+  .pj-faq-answer {
     padding-left: 16px;
   }
 }

@@ -14,7 +14,6 @@ import {
   BedIcon,
   BuildingIcon,
   CalendarIcon,
-  CameraIcon,
   ChartIcon,
   ChevronDownIcon,
   ChevronRightIcon,
@@ -33,20 +32,24 @@ import { JsonLd } from "@/components/json-ld";
 import { ProjectCard } from "@/components/project-card";
 import { ProjectContactCard } from "@/components/project-contact-card";
 import { Expandable } from "@/components/property-detail/expandable";
+import { ConstructionUpdates, type ConstructionUpdateCard } from "@/components/project-detail/construction-updates";
 import { MasterPlanViewer } from "@/components/project-detail/master-plan-viewer";
 import { PropertyGallery } from "@/components/property-gallery";
 import { Rail } from "@/components/rail";
+import { SectionIcon } from "@/components/section-icon";
 import { ViewTracker } from "@/components/view-tracker";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { developerHref } from "@/lib/developers";
 import { CONSTRUCTION_STATUS_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import {
+  PROGRESS_STATUS_LABELS,
   UNIT_AVAILABILITY_LABELS,
   completionOf,
+  monthYearOf,
   nearbyDistanceOf,
-  nearbyIconOf,
+  nearbyGroupsOf,
   projectAddressOf,
-  projectFaqsOf,
+  projectFaqEntriesOf,
   projectHref,
   projectLocationOf,
   projectMediaOf,
@@ -54,25 +57,12 @@ import {
   projectSingleMediaOf,
   projectTimelineOf,
 } from "@/lib/project";
-import { coverOf, locationOf, mediumUrl, propertyHref, thumbnailUrl } from "@/lib/property";
+import { coverOf, descriptionText, locationOf, mediumUrl, propertyHref, thumbnailUrl } from "@/lib/property";
 import { metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
-import type { AgencyProfile, Paginated, ProjectFeatureGroup, ProjectPaymentPlan, PublicProject, PublicProperty, Resource } from "@/types/api";
+import type { AgencyProfile, PageIcon, Paginated, ProjectPaymentPlan, PublicProject, PublicProperty, Resource } from "@/types/api";
 
 export const revalidate = 300;
-
-/** The grouped feature lists, in the order the page shows them. */
-const FEATURE_GROUPS: { key: ProjectFeatureGroup; label: string }[] = [
-  { key: "main", label: "Main features" },
-  { key: "smart_home", label: "Smart home" },
-  { key: "security", label: "Security" },
-  { key: "sustainability", label: "Sustainability" },
-  { key: "energy", label: "Energy" },
-  { key: "construction", label: "Construction" },
-  { key: "community", label: "Community" },
-  { key: "business", label: "Business & communication" },
-  { key: "other", label: "Other facilities" },
-];
 
 /** The money rows a payment plan can show, skipping anything the developer left empty. */
 const PLAN_ROWS: { key: keyof ProjectPaymentPlan; label: string }[] = [
@@ -122,7 +112,7 @@ export async function generateMetadata({ params }: PageProps<"/projects/[slug]">
   const title = project.meta_title ?? project.name;
   const from = project.price_from ? formatCompactPrice(project.price_from) : null;
   const description = metaText(
-    project.meta_description ?? `${project.name} by ${project.developer_name}${from ? ` — from ${from}` : ""}. ${project.short_description ?? project.description}`,
+    project.meta_description ?? `${project.name} by ${project.developer_name}${from ? ` — from ${from}` : ""}. ${project.short_description ?? descriptionText(project.description ?? "")}`,
   );
   const url = projectHref(project.slug);
 
@@ -205,6 +195,15 @@ function DocCard({ title, kind, image, href, cta, children }: { title: string; k
   );
 }
 
+/** An admin-picked icon: an uploaded image, else a built-in icon by name, else the fallback. */
+function AdminIcon({ url, name, fallback }: { url: string | null; name: string | null; fallback: ReactNode }) {
+  if (url) {
+    return <Image src={url} alt="" width={28} height={28} unoptimized className="pj-admin-icon" />;
+  }
+
+  return name ? <SectionIcon name={name as PageIcon} className="pj-admin-icon" /> : <>{fallback}</>;
+}
+
 export default async function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
   const { slug } = await params;
   const project = await getProject(slug);
@@ -215,7 +214,8 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
   const photos = projectPhotosOf(project);
   const videos = projectMediaOf(project, "video");
-  const brochures = projectMediaOf(project, "brochure");
+  const mediaBrochures = projectMediaOf(project, "brochure");
+  const brochures = project.brochures ?? [];
   const construction = projectMediaOf(project, "construction");
   const planImages = projectMediaOf(project, "payment_plan");
   const masterPlan = projectSingleMediaOf(project, "master_plan");
@@ -226,11 +226,14 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
   const floorPlans = project.floor_plans ?? [];
   const nearby = project.nearby_places ?? [];
   const amenities = project.amenities ?? [];
-  const featureGroups = FEATURE_GROUPS.filter((group) => (project.features?.[group.key] ?? []).length > 0);
+  const projectFeatures = project.project_features ?? [];
+  const nearbyGroups = nearbyGroupsOf(nearby);
   const address = projectAddressOf(project);
-  const location = projectLocationOf(project);
+  const location = project.location || projectLocationOf(project);
   const timeline = projectTimelineOf(project);
-  const faqs = projectFaqsOf(project);
+  const faqs = projectFaqEntriesOf(project);
+  const masterPlanImage = project.master_plan_image_url ? { src: project.master_plan_image_url, full: project.master_plan_image_url } : masterPlan ? { src: masterPlan.medium_url ?? masterPlan.url, full: masterPlan.url } : null;
+  const logoUrl = project.logo_url ?? (logo ? (logo.medium_url ?? logo.url) : null);
   const coverThumb = photos[0] ? thumbnailUrl(photos[0]) : null;
 
   const [similar, spotlight, agency] = await Promise.all([
@@ -264,13 +267,27 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
     availability: units.some((unit) => unit.availability),
   };
 
+  /** Distinct unit names, for projects saved before the "unit type" field existed. */
+  const unitNames = [...new Set(units.map((unit) => unit.name))];
+
+  /** The "Main features" strip; the admin's own values first, then what older projects can tell us. */
   const stats = [
     { label: "Project Type", value: project.project_type ?? project.category, icon: <BuildingIcon />, tone: "blue" },
-    { label: "Unit Types", value: units.length > 0 ? String(units.length) : null, icon: <LayersIcon />, tone: "orange" },
-    { label: "Unit Sizes", value: sizeText, icon: <HomeIcon />, tone: "green" },
-    project.possession_date
-      ? { label: "Possession", value: formatDate(project.possession_date), icon: <CalendarIcon />, tone: "purple" }
-      : { label: project.construction_status === "ready" ? "Status" : "Completion", value: project.construction_status === "ready" ? "Ready" : completionOf(project.completion_date), icon: <CalendarIcon />, tone: "purple" },
+    {
+      label: "Unit Type",
+      value: project.unit_type || (unitNames.length > 0 ? unitNames.slice(0, 3).join(" · ") + (unitNames.length > 3 ? " …" : "") : null),
+      icon: <LayersIcon />,
+      tone: "orange",
+    },
+    { label: "Unit Size", value: project.unit_size || sizeText, icon: <HomeIcon />, tone: "green" },
+    {
+      label: "Possession Status",
+      value:
+        project.possession_status ||
+        (project.possession_date ? formatDate(project.possession_date) : project.construction_status === "ready" ? "Ready" : completionOf(project.completion_date)),
+      icon: <CalendarIcon />,
+      tone: "purple",
+    },
   ].filter((stat) => stat.value);
 
   const facts = [
@@ -294,14 +311,57 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
     { label: "Construction", value: project.construction_company },
   ].filter((fact) => fact.value);
 
-  const showProgress = timeline.percent !== null || construction.length > 0 || project.launch_date || project.completion_date;
+  /** Development Progress: shown only when the admin switched it on. */
+  const progress = project.progress?.settings.enabled ? project.progress : null;
+  const milestones = project.milestones ?? [];
+  const progressPercent = progress ? (progress.percent ?? timeline.percent) : null;
+  const updates: ConstructionUpdateCard[] = (
+    (project.construction_updates ?? []).length > 0
+      ? [...(project.construction_updates ?? [])]
+          .sort((a, b) => Number(b.is_featured) - Number(a.is_featured))
+          .map((update) => ({
+            id: update.id,
+            title: update.title,
+            label: update.label ?? update.date_label ?? completionOf(update.update_date),
+            caption: update.caption,
+            image: update.image_url ?? update.gallery[0] ?? null,
+            alt: update.alt_text || update.title,
+            featured: update.is_featured,
+            images: [...new Set([update.image_url, ...(update.gallery ?? [])].filter((url): url is string => Boolean(url)))],
+          }))
+      : // Projects saved before construction updates existed: their "construction" photos.
+        construction.map((photo, index) => ({
+          id: `media-${photo.id}`,
+          title: photo.original_name?.replace(/\.[a-z0-9]+$/i, "") ?? `Construction update ${index + 1}`,
+          label: null,
+          caption: null,
+          image: photo.thumbnail_url ?? photo.medium_url ?? photo.url,
+          alt: `Construction update ${index + 1}`,
+          featured: false,
+          images: [photo.medium_url ?? photo.url],
+        }))
+  );
+  const progressStats = progress
+    ? [
+        { label: "Project Start", value: monthYearOf(progress.start_date ?? project.launch_date), icon: <CalendarIcon />, tone: "blue" },
+        { label: "Expected Completion", value: monthYearOf(progress.completion_date ?? project.completion_date), icon: <BuildingIcon />, tone: "purple" },
+        { label: "Months Elapsed", value: progress.months_elapsed ?? timeline.monthsElapsed, icon: <ClockIcon />, tone: "blue" },
+        { label: "Estimated Completion Months", value: progress.estimated_months, icon: <CalendarIcon />, tone: "orange" },
+        {
+          label: "Major Milestones Completed",
+          value: milestones.length > 0 ? `${progress.milestones_completed} of ${milestones.length}` : null,
+          icon: <ChartIcon />,
+          tone: "green",
+        },
+      ].filter((stat) => stat.value !== null && stat.value !== undefined && stat.value !== "")
+    : [];
 
   const projectUrl = `${siteUrl()}${projectHref(project.slug)}`;
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: project.name,
-    description: project.short_description ?? project.description,
+    description: project.short_description ?? descriptionText(project.description ?? ""),
     url: projectUrl,
     image: photos.map((photo) => mediumUrl(photo)),
     brand: {
@@ -334,7 +394,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
   const faqData = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
+    mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.text } })),
   };
 
   return (
@@ -353,19 +413,14 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
         <header className="pj-header">
           <div className="pj-logo">
-            {logo ? (
-              <Image src={logo.medium_url ?? logo.url} alt={`${project.name} logo`} fill sizes="150px" style={{ objectFit: "contain" }} />
+            {logoUrl ? (
+              <Image src={logoUrl} alt={`${project.name} logo`} fill sizes="150px" style={{ objectFit: "contain" }} />
             ) : (
               <AgencyLogo name={project.developer?.name ?? project.name} logoUrl={project.developer?.logo_url ?? null} size={64} />
             )}
           </div>
           <div className="pj-title">
-            <h1>
-              {project.name}
-              <span className="pj-verified" title="Reviewed by our team before it went live">
-                <ShieldCheckIcon /> Verified
-              </span>
-            </h1>
+            <h1>{project.name}</h1>
             {location && (
               <p>
                 <PinIcon /> {location}
@@ -375,6 +430,11 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               <BuildingIcon /> By {project.developer ? <Link href={developerHref(project.developer.slug)}>{project.developer_name}</Link> : project.developer_name}
               <span className={`pj-status is-${project.construction_status}`}>{CONSTRUCTION_STATUS_LABELS[project.construction_status]}</span>
               {project.is_featured && <span className="badge badge-featured">Featured</span>}
+              {project.is_verified && (
+                <span className="badge badge-verified" title="Reviewed by our team">
+                  <ShieldCheckIcon /> Verified
+                </span>
+              )}
             </p>
           </div>
           {(project.price_from || project.price_to) && (
@@ -410,7 +470,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               {location ? ` – ${location}` : ""}
             </h3>
             <Expandable collapsedHeight={230}>
-              <p className="pj-text">{project.description}</p>
+              {project.description && <div className="prose pj-html" dangerouslySetInnerHTML={{ __html: project.description }} />}
               {facts.length > 0 && (
                 <dl className="pj-facts">
                   {facts.map((fact) => (
@@ -464,7 +524,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                   </thead>
                   <tbody>
                     {units.map((unit) => {
-                      const image = unit.floor_plan_url ?? coverThumb;
+                      const image = unit.image_url ?? unit.floor_plan_url ?? coverThumb;
 
                       return (
                         <tr key={unit.id}>
@@ -488,8 +548,14 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                             )}
                           </td>
                           <td className="pj-unit-price is-accent">
-                            <strong>{formatCompactPrice(unit.price_from).replace(/^Rs/, "PKR")}</strong>
-                            <small>(Starting from)</small>
+                            {unit.price_from ? (
+                              <>
+                                <strong>{formatCompactPrice(unit.price_from).replace(/^Rs/, "PKR")}</strong>
+                                <small>(Starting from)</small>
+                              </>
+                            ) : (
+                              "—"
+                            )}
                           </td>
                           {unitColumns.max && (
                             <td className="pj-unit-price">
@@ -551,40 +617,48 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
             </section>
           )}
 
-          {nearby.length > 0 && (
+          {nearbyGroups.length > 0 && (
             <section className="pj-section" aria-labelledby="pj-nearby">
               <SectionHead id="pj-nearby" eyebrow="Nearby Facilities" title="Nearby" accent="Facilities" />
-              <ul className="pj-nearby">
-                {nearby.map((place) => {
-                  const body = (
-                    <>
+              <ul className="pj-nearby-groups">
+                {nearbyGroups.map((group) => (
+                  <li key={group.key}>
+                    <div className="pj-nearby-group-head">
                       <span className="pj-nearby-icon">
-                        <AmenityGlyph name={nearbyIconOf(place.name)} />
+                        <AmenityGlyph name={group.icon} />
                       </span>
-                      <span>
-                        <strong>{place.name}</strong>
-                        {nearbyDistanceOf(place) && <small>{nearbyDistanceOf(place)}</small>}
-                      </span>
-                    </>
-                  );
+                      <strong>{group.label}</strong>
+                    </div>
+                    <ul>
+                      {group.places.map((place) => {
+                        const distance = nearbyDistanceOf(place);
+                        const body = (
+                          <>
+                            <span>{place.name}</span>
+                            {distance && <b>{distance}</b>}
+                          </>
+                        );
 
-                  return (
-                    <li key={place.id} title={place.description ?? undefined}>
-                      {place.maps_url ? (
-                        <a href={place.maps_url} target="_blank" rel="noopener noreferrer">
-                          {body}
-                        </a>
-                      ) : (
-                        <div>{body}</div>
-                      )}
-                    </li>
-                  );
-                })}
+                        return (
+                          <li key={place.id} title={place.description ?? undefined}>
+                            {place.maps_url ? (
+                              <a href={place.maps_url} target="_blank" rel="noopener noreferrer">
+                                {body}
+                              </a>
+                            ) : (
+                              <div>{body}</div>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </li>
+                ))}
               </ul>
             </section>
           )}
 
-          {(amenities.length > 0 || featureGroups.length > 0) && (
+          {projectFeatures.length > 0 && (
             <section className="pj-section pj-band" aria-labelledby="pj-features">
               <SectionHead
                 id="pj-features"
@@ -593,37 +667,56 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                 accent="Features"
                 sub="A well-planned community with the facilities you need for a comfortable and secure lifestyle."
               />
-              {amenities.length > 0 && (
-                <ul className="pj-features">
-                  {amenities.map((amenity) => (
-                    <li key={amenity.id}>
-                      <span className="pj-feature-icon">{hasAmenityIcon(amenity) ? <AmenityIcon amenity={amenity} /> : <AmenityGlyph name="check" className="amenity-icon" />}</span>
-                      <strong>{amenity.name}</strong>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {featureGroups.length > 0 && (
-                <div className="pj-feature-groups">
-                  {featureGroups.map((group) => (
-                    <div key={group.key}>
-                      <h3>{group.label}</h3>
-                      <ul>
-                        {(project.features?.[group.key] ?? []).map((feature) => (
-                          <li key={feature}>{feature}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <ul className="pj-features pj-features-detailed">
+                {projectFeatures.map((feature) => (
+                  <li key={feature.id}>
+                    <span className="pj-feature-icon">
+                      <AdminIcon url={feature.icon_url} name={feature.icon} fallback={<AmenityGlyph name="check" className="amenity-icon" />} />
+                    </span>
+                    <strong>{feature.name}</strong>
+                    {feature.description && <small>{feature.description}</small>}
+                  </li>
+                ))}
+              </ul>
             </section>
           )}
 
-          {masterPlan && (
+          {amenities.length > 0 && (
+            <section className="pj-section pj-band" aria-labelledby="pj-amenities">
+              {projectFeatures.length > 0 ? (
+                <SectionHead id="pj-amenities" eyebrow="Amenities" title="Project" accent="Amenities" sub="Facilities available to residents across the project." />
+              ) : (
+                <SectionHead
+                  id="pj-amenities"
+                  eyebrow="Key Highlights"
+                  title="Project"
+                  accent="Features"
+                  sub="A well-planned community with the facilities you need for a comfortable and secure lifestyle."
+                />
+              )}
+              <ul className="pj-features">
+                {amenities.map((amenity) => (
+                  <li key={amenity.id}>
+                    <span className="pj-feature-icon">{hasAmenityIcon(amenity) ? <AmenityIcon amenity={amenity} /> : <AmenityGlyph name="check" className="amenity-icon" />}</span>
+                    <strong>{amenity.name}</strong>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {(masterPlanImage || project.master_plan_html) && (
             <section className="pj-section pj-band pj-band-sky" aria-labelledby="pj-master-plan">
-              <SectionHead id="pj-master-plan" eyebrow="Master Plan" title="Master" accent="Plan" sub="Zoom in to explore sectors, roads, parks and commercial zones." />
-              <MasterPlanViewer src={masterPlan.medium_url ?? masterPlan.url} fullUrl={masterPlan.url} alt={`${project.name} master plan`} />
+              <SectionHead id="pj-master-plan" eyebrow="Master Plan" title="Master" accent="Plan" sub={masterPlanImage ? "Zoom in to explore sectors, roads, parks and commercial zones." : undefined} />
+              {masterPlanImage && <MasterPlanViewer src={masterPlanImage.src} fullUrl={masterPlanImage.full} alt={`${project.name} master plan`} />}
+              {project.master_plan_html && (
+                <div className="pj-plan-about">
+                  <h3>
+                    About the <span>Master Plan</span>
+                  </h3>
+                  <div className="prose pj-html" dangerouslySetInnerHTML={{ __html: project.master_plan_html }} />
+                </div>
+              )}
             </section>
           )}
 
@@ -632,10 +725,17 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               <SectionHead id="pj-payment-plans" eyebrow="Payment Plans" title="Payment" accent="Plans" sub="View or download the official payment plans for this project." />
               <Rail label="Payment plans">
                 {paymentPlans.map((plan) => {
-                  const rows = PLAN_ROWS.map((row) => ({ label: row.label, value: plan[row.key] as string | null })).filter((row) => row.value !== null);
+                  const rows = PLAN_ROWS.map((row) => ({ label: row.label, value: plan[row.key] as string | null })).filter((row) => row.value !== null && row.value !== "");
 
                   return (
-                    <DocCard key={plan.id} title={plan.name} kind={plan.unit_type ?? "Payment Plan"} image={plan.image_url} href={plan.pdf_url ?? plan.image_url}>
+                    <DocCard
+                      key={plan.id}
+                      title={plan.name}
+                      kind={plan.unit_type ?? "Payment Plan"}
+                      image={plan.image_url}
+                      href={plan.pdf_url ?? plan.image_url}
+                      cta={plan.pdf_url ? "Download PDF" : undefined}
+                    >
                       {rows.length > 0 ? (
                         <dl className="pj-plan-rows">
                           {rows.map((row) => (
@@ -692,130 +792,142 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
             </section>
           )}
 
-          {brochures.length > 0 && (
+          {(brochures.length > 0 || mediaBrochures.length > 0) && (
             <section className="pj-section pj-band" aria-labelledby="pj-brochures">
-              <SectionHead id="pj-brochures" eyebrow="Brochure" title="Project" accent="Brochure" sub="Download the official brochures to explore project details, payment plans, amenities and more." align="start" />
+              <SectionHead
+                id="pj-brochures"
+                eyebrow="Brochures"
+                title="Marketing"
+                accent="Brochures"
+                sub="Download the official brochures to explore project details, payment plans, amenities and more."
+                align="start"
+              />
               <Rail label="Brochures">
-                {brochures.map((brochure, index) => (
+                {brochures.map((brochure) => (
                   <DocCard
                     key={brochure.id}
+                    title={brochure.name}
+                    kind={project.name}
+                    image={brochure.image_url}
+                    href={brochure.pdf_url ?? brochure.image_url}
+                    cta={brochure.pdf_url ? "Download PDF" : undefined}
+                  />
+                ))}
+                {mediaBrochures.map((brochure, index) => (
+                  <DocCard
+                    key={`media-${brochure.id}`}
                     title={brochure.original_name?.replace(/\.pdf$/i, "") ?? `Brochure ${index + 1}`}
                     kind={project.name}
                     image={brochure.thumbnail_url}
                     href={brochure.url}
-                    cta="Download Brochure"
+                    cta="Download PDF"
                   />
                 ))}
               </Rail>
             </section>
           )}
 
-          {showProgress && (
+          {progress && (
             <section className="pj-section pj-band" aria-labelledby="pj-progress">
-              <SectionHead id="pj-progress" eyebrow="Development Progress" title="Development" accent="Progress" sub="Track the timeline, milestones and latest construction updates for this project." />
+              <SectionHead
+                id="pj-progress"
+                eyebrow={progress.settings.label ?? "Development Progress"}
+                title={progress.settings.heading ?? "Development"}
+                accent={progress.settings.heading ? "" : "Progress"}
+                sub={progress.settings.description ?? undefined}
+              />
 
-              <div className="pj-progress-top">
-                {timeline.percent !== null && (
-                  <div className="pj-progress-ring-card">
-                    <div className="pj-ring" style={{ "--pct": timeline.percent } as CSSProperties} role="img" aria-label={`${timeline.percent}% of the timeline`}>
-                      <span>
-                        <strong>{timeline.percent}%</strong>
-                        <small>{project.construction_status === "ready" ? "Completed" : "Timeline"}</small>
-                      </span>
-                    </div>
-                    <div>
-                      <strong>Overall Progress</strong>
-                      <p>
-                        {project.construction_status === "ready"
-                          ? "The project is complete and ready for possession."
-                          : project.construction_status === "upcoming"
-                            ? "The project has not started construction yet."
-                            : "Estimated from the launch and expected completion dates."}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {timeline.monthsElapsed !== null && (
-                  <div className="pj-progress-stat pj-tone-blue">
-                    <span className="pj-stat-icon">
-                      <ClockIcon />
-                    </span>
-                    <strong>{timeline.monthsElapsed}</strong>
-                    <span>Months Elapsed</span>
-                    <small>Since launch</small>
-                  </div>
-                )}
-                <div className="pj-progress-stat pj-tone-green">
-                  <span className="pj-stat-icon">
-                    <ChartIcon />
-                  </span>
-                  <strong>{timeline.milestones.filter((milestone) => milestone.done).length}</strong>
-                  <span>Milestones</span>
-                  <small>Reached</small>
-                </div>
-                {timeline.monthsToGo !== null && (
-                  <div className="pj-progress-stat pj-tone-orange">
-                    <span className="pj-stat-icon">
-                      <CalendarIcon />
-                    </span>
-                    <strong>{timeline.monthsToGo}</strong>
-                    <span>Months</span>
-                    <small>Estimated to completion</small>
-                  </div>
-                )}
-                {project.completion_date && (
-                  <div className="pj-progress-stat pj-tone-purple">
-                    <span className="pj-stat-icon">
-                      <BuildingIcon />
-                    </span>
-                    <strong>{completionOf(project.completion_date)}</strong>
-                    <span>{project.construction_status === "ready" ? "Completed" : "Expected Completion"}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="pj-panel">
-                <div className="pj-panel-head">
-                  <span className="pj-panel-icon">
-                    <ChartIcon />
-                  </span>
-                  <div>
-                    <strong>Project Milestones</strong>
-                    <small>Key milestones and development phases of the project.</small>
-                  </div>
-                </div>
-                <ol className="pj-milestones">
-                  {timeline.milestones.map((milestone) => (
-                    <li key={milestone.key} className={`${milestone.done ? "is-done" : ""}${timeline.currentKey === milestone.key ? " is-current" : ""}`}>
-                      {timeline.currentKey === milestone.key && <span className="pj-current-tag">Current Stage</span>}
-                      <span className="pj-dot" aria-hidden="true" />
-                      <small>{milestone.date ? completionOf(milestone.date) : milestone.key === "construction" ? CONSTRUCTION_STATUS_LABELS[project.construction_status] : "Date TBA"}</small>
-                      <strong>{milestone.label}</strong>
-                      <span>{milestone.note}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              {construction.length > 0 && (
+              {progress.settings.show_overview && (
                 <div className="pj-panel">
                   <div className="pj-panel-head">
-                    <span className="pj-panel-icon">
-                      <CameraIcon />
-                    </span>
+                    <span className="pj-panel-num">01</span>
+                    <div>
+                      <strong>Overview</strong>
+                      <small>Where the project stands today.</small>
+                    </div>
+                  </div>
+                  <div className="pj-progress-top">
+                    {progressPercent !== null && (
+                      <div className="pj-progress-ring-card">
+                        <div className="pj-ring" style={{ "--pct": progressPercent } as CSSProperties} role="img" aria-label={`${progressPercent}% complete`}>
+                          <span>
+                            <strong>{progressPercent}%</strong>
+                            <small>{progress.status ? PROGRESS_STATUS_LABELS[progress.status] : "Progress"}</small>
+                          </span>
+                        </div>
+                        <div>
+                          <strong>Overall Progress</strong>
+                          {progress.status && <span className={`pj-progress-status is-${progress.status}`}>{PROGRESS_STATUS_LABELS[progress.status]}</span>}
+                          {progress.description ? (
+                            <div className="prose pj-html pj-progress-desc" dangerouslySetInnerHTML={{ __html: progress.description }} />
+                          ) : (
+                            progress.percent === null && <p>Estimated from the launch and expected completion dates.</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {progressStats.map((stat) => (
+                      <div key={stat.label} className={`pj-progress-stat pj-tone-${stat.tone}`}>
+                        <span className="pj-stat-icon">{stat.icon}</span>
+                        <strong>{stat.value}</strong>
+                        <span>{stat.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {progressPercent === null && progress.description && <div className="prose pj-html" dangerouslySetInnerHTML={{ __html: progress.description }} />}
+                </div>
+              )}
+
+              {progress.settings.show_milestones && milestones.length > 0 && (
+                <div className="pj-panel">
+                  <div className="pj-panel-head">
+                    <span className="pj-panel-num">02</span>
+                    <div>
+                      <strong>Project Milestones</strong>
+                      <small>Key milestones and development phases of the project.</small>
+                    </div>
+                  </div>
+                  <div className="pj-milestones-wrap">
+                    <ol className="pj-milestones is-rich" style={{ "--count": milestones.length } as CSSProperties}>
+                      {milestones.map((milestone, index) => {
+                        const hasIcon = Boolean(milestone.icon_url || milestone.icon);
+                        const showNumber = !hasIcon && milestone.status !== "completed";
+
+                        return (
+                          <li
+                            key={milestone.id}
+                            className={[milestone.status === "completed" ? "is-done" : "", milestone.status === "in_progress" ? "is-progress" : "", milestone.is_current ? "is-current" : ""]
+                              .filter(Boolean)
+                              .join(" ")}
+                          >
+                            {milestone.is_current && <span className="pj-current-tag">Current stage</span>}
+                            <span className={`pj-dot${hasIcon || showNumber ? " has-content" : ""}`} aria-hidden="true">
+                              {hasIcon ? <AdminIcon url={milestone.icon_url} name={milestone.icon} fallback={null} /> : showNumber ? index + 1 : null}
+                            </span>
+                            <small>{monthYearOf(milestone.milestone_date) ?? "Date TBA"}</small>
+                            <strong>{milestone.title}</strong>
+                            {milestone.description && <span>{descriptionText(milestone.description)}</span>}
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  </div>
+                </div>
+              )}
+
+              {progress.settings.show_updates && updates.length > 0 && (
+                <div className="pj-panel">
+                  <div className="pj-panel-head">
+                    <span className="pj-panel-num">03</span>
                     <div>
                       <strong>Construction Updates</strong>
                       <small>Latest images from the site showing development progress.</small>
                     </div>
                   </div>
-                  <Rail label="Construction updates">
-                    {construction.map((photo, index) => (
-                      <a key={photo.id} className="pj-update" href={photo.medium_url ?? photo.url} target="_blank" rel="noopener noreferrer">
-                        <Image src={photo.thumbnail_url ?? photo.medium_url ?? photo.url} alt={`Construction update ${index + 1}`} fill sizes="(max-width: 560px) 82vw, 220px" style={{ objectFit: "cover" }} />
-                        {photo.original_name && <span>{photo.original_name.replace(/\.[a-z0-9]+$/i, "")}</span>}
-                      </a>
-                    ))}
-                  </Rail>
+                  <ConstructionUpdates
+                    updates={updates}
+                    viewAll={progress.settings.show_view_all ? { text: progress.settings.view_all_text || "View all images", url: progress.settings.view_all_url || null } : null}
+                  />
                 </div>
               )}
             </section>
@@ -910,13 +1022,19 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               />
               <div className="pj-faqs">
                 {faqs.map((faq, index) => (
-                  <details key={faq.question} name="pj-faq" open={index === 0}>
+                  <details key={faq.key} name="pj-faq" open={index === 0}>
                     <summary>
                       <span className="pj-faq-num">{String(index + 1).padStart(2, "0")}</span>
                       <strong>{faq.question}</strong>
                       <ChevronDownIcon />
                     </summary>
-                    <p>{faq.answer}</p>
+                    {faq.html ? (
+                      <div className="pj-faq-answer prose pj-html" dangerouslySetInnerHTML={{ __html: faq.html }} />
+                    ) : (
+                      <div className="pj-faq-answer">
+                        <p>{faq.text}</p>
+                      </div>
+                    )}
                   </details>
                 ))}
               </div>
