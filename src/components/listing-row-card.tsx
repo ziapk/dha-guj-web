@@ -129,13 +129,7 @@ export function ListingRowCard({ property, owner, priority = false }: { property
             {formatCompactPrice(property.price)}
             {property.purpose === "rent" && <small> / Month</small>}
           </p>
-          {highlights.length > 0 && (
-            <ul className="listing-row-highlights">
-              {highlights.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          )}
+          {highlights.length > 0 && <p className="listing-row-highlights">{highlights.join("  ·  ")}</p>}
           <ul className="listing-row-facts">
             {isPlot ? (
               <>
