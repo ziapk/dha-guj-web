@@ -4,6 +4,7 @@ import { Alert, Button, Form, Input } from "antd";
 import Link from "next/link";
 import { useState } from "react";
 import { AuthCard, AuthDivider } from "@/components/auth-card";
+import { useAuthModal } from "@/components/auth-modal";
 import { ArrowLeftIcon, ArrowRightIcon, MailIcon } from "@/components/icons";
 
 type ForgotValues = { email: string };
@@ -97,17 +98,16 @@ export function ForgotPasswordForm() {
 
       <AuthDivider>OR</AuthDivider>
       <BackToLogin />
-
-      <p className="auth-footnote">
-        Signed up with a phone number only? <Link href="/contact">Contact us</Link> and we will help you back in.
-      </p>
     </AuthCard>
   );
 }
 
 function BackToLogin() {
+  // Inside the modal, swap the history entry so closing returns to the page underneath, not to the previous form.
+  const modal = useAuthModal();
+
   return (
-    <Link href="/login" className="auth-secondary-button">
+    <Link href="/login" replace={Boolean(modal)} className="auth-secondary-button">
       <ArrowLeftIcon className="icon" /> Back to Login
     </Link>
   );

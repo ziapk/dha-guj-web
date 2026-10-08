@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /** Applies the saved light/dark mode before first paint to avoid a white flash in dark mode. */
 const themeScript = `(function(){try{var s=JSON.parse(localStorage.getItem('dha-web-theme')||'{}');var m=s.mode||'system';var d=m==='dark'||(m==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';}catch(e){}})();`;
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children, modal }: LayoutProps<"/">) {
   // Both fall back to empty values, so the site still renders when the API is unavailable.
   const [settings, pages] = await Promise.all([getSiteSettings(), getCmsPages()]);
 
@@ -45,6 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <main>{children}</main>
             <SiteFooter settings={settings} pages={pages.filter((page) => page.show_in_footer)} />
             <CompareTray />
+            {modal}
           </Providers>
         </AntdRegistry>
       </body>
