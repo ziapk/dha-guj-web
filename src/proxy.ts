@@ -36,7 +36,8 @@ function gone(): NextResponse {
 }
 
 /**
- * Listing URLs: old /properties/{slug} links and outdated slugs get a 301 to the permanent /property/{id}/{slug};
+ * Listing URLs: old /property/{id}/{slug} and /properties/{slug} links and outdated slugs get a 301 to the
+ * permanent /property/{slug}-{ref};
  * deleted listings answer 301 to their replacement or 410 Gone.
  */
 async function listing(request: NextRequest, key: string): Promise<NextResponse> {
@@ -63,11 +64,17 @@ async function listing(request: NextRequest, key: string): Promise<NextResponse>
 /** Account pages need a login; listing URLs are checked against the API; everything else is open. */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const permanent = pathname.match(/^\/property\/(\d+)(?:\/[^/]*)?\/?$/);
+  const byId = pathname.match(/^\/property\/(\d+)(?:\/[^/]*)?\/?$/);
+  const byRef = pathname.match(/^\/property\/(?:[^/]*-)?([a-z0-9]{8})\/?$/);
   const legacy = pathname.match(/^\/properties\/([^/]+)\/?$/);
+  const key = byId?.[1] ?? byRef?.[1] ?? (legacy ? decodeURIComponent(legacy[1]) : null);
 
-  if (permanent || legacy) {
-    return listing(request, permanent ? permanent[1] : decodeURIComponent(legacy![1]));
+  if (key !== null) {
+    return listing(request, key);
+  }
+
+  if (pathname.startsWith("/property/")) {
+    return NextResponse.next();
   }
 
   if (!request.cookies.has(TOKEN_COOKIE)) {

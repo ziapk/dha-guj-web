@@ -40,16 +40,19 @@ import { siteUrl } from "@/lib/site";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
 
 /**
- * Listing pages live at /property/{id}/{slug}; the id is permanent. The proxy has already redirected old
- * /properties/{slug} links and outdated slugs, and answered 410 / 301 for deleted listings.
+ * Listing pages live at /property/{slug}-{ref}; the random ref at the end is permanent. The proxy has already
+ * redirected old /property/{id}/{slug} and /properties/{slug} links and outdated slugs, and answered 410 / 301
+ * for deleted listings.
  */
-const getProperty = cache(async (id: string): Promise<PublicProperty | null> => {
-  if (!/^\d+$/.test(id)) {
+const getProperty = cache(async (listing: string): Promise<PublicProperty | null> => {
+  const ref = listing.match(/(?:^|-)([a-z0-9]{8})$/)?.[1];
+
+  if (!ref || /^\d+$/.test(ref)) {
     return null;
   }
 
   try {
-    const response = await publicApi<Resource<PublicProperty>>(`properties/${id}`, { revalidate: 60 });
+    const response = await publicApi<Resource<PublicProperty>>(`properties/${ref}`, { revalidate: 60 });
 
     return response.data;
   } catch (error) {
@@ -96,9 +99,9 @@ function availabilityOf(property: PublicProperty, notice: PropertySeo["notice"])
   return property.property_status === "under_offer" ? "https://schema.org/LimitedAvailability" : "https://schema.org/InStock";
 }
 
-export async function generateMetadata({ params }: PageProps<"/property/[id]/[slug]">): Promise<Metadata> {
-  const { id } = await params;
-  const property = await getProperty(id);
+export async function generateMetadata({ params }: PageProps<"/property/[listing]">): Promise<Metadata> {
+  const { listing } = await params;
+  const property = await getProperty(listing);
 
   if (!property) {
     return { title: "Listing not found" };
@@ -124,9 +127,9 @@ export async function generateMetadata({ params }: PageProps<"/property/[id]/[sl
   };
 }
 
-export default async function PropertyPage({ params }: PageProps<"/property/[id]/[slug]">) {
-  const { id } = await params;
-  const property = await getProperty(id);
+export default async function PropertyPage({ params }: PageProps<"/property/[listing]">) {
+  const { listing } = await params;
+  const property = await getProperty(listing);
 
   if (!property) {
     notFound();

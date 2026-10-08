@@ -51,7 +51,7 @@ export type PropertyAvailability = "available" | "under_offer" | "sold" | "rente
 export type PropertySeo = {
   title: string;
   description: string;
-  /** Permanent path: /property/{id}/{slug}. */
+  /** Permanent path: /property/{slug}-{ref}. */
   path: string;
   canonical_url: string;
   index: boolean;
@@ -64,7 +64,9 @@ export type PropertySeo = {
 export type PublicProperty = {
   id: number;
   slug: string;
-  /** Permanent path: /property/{id}/{slug}. */
+  /** Random permanent code at the end of the URL. */
+  ref: string;
+  /** Permanent path: /property/{slug}-{ref}. */
   url?: string;
   property_status?: PropertyAvailability;
   purpose: PropertyPurpose;
