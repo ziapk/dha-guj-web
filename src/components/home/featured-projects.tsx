@@ -2,18 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type CSSProperties } from "react";
-import { ArrowLeftIcon, ArrowRightIcon, BuildingIcon, ChartIcon, HomeIcon, PinIcon } from "@/components/icons";
+import { DeckSlider, type DeckCardState } from "@/components/home/deck-slider";
+import { BuildingIcon, ChartIcon, HomeIcon, PinIcon } from "@/components/icons";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
 import { projectHref, projectLocationOf, projectPhotosOf, projectPriceOf } from "@/lib/project";
 import { thumbnailUrl } from "@/lib/property";
 import type { PublicProject } from "@/types/api";
-
-/** How many projects wait behind the front card. Slots past this are not drawn. */
-const PEEK_SLOTS = 3;
-
-/** Must outlast the crossfade in globals.css, or the outgoing card is cut off mid-fade. */
-const CROSSFADE_MS = 460;
 
 /** The four facts under the project name, all drawn from the project itself. */
 function factsOf(project: PublicProject) {
@@ -35,7 +29,7 @@ function coverOf(project: PublicProject): string | null | undefined {
 }
 
 /** The big card at the front of the deck. The outgoing copy is laid over the incoming one while it fades. */
-function FrontCard({ project, state }: { project: PublicProject; state: "entering" | "leaving" }) {
+function FrontCard({ project, state }: { project: PublicProject; state: DeckCardState }) {
   const cover = coverOf(project);
   const leaving = state === "leaving";
 
@@ -71,100 +65,16 @@ function FrontCard({ project, state }: { project: PublicProject; state: "enterin
   );
 }
 
-/**
- * Featured projects as a deck: the selected project fills the front card and the next few fan out
- * behind it to the right, each one stepped down and veiled a little more blue to read as depth.
- * Changing project crossfades — the outgoing card stays put and fades while the incoming one
- * scales up underneath it, so the panel background never shows through the swap.
- */
+/** Featured projects as a deck; see DeckSlider for how it moves. */
 export function FeaturedProjects({ projects }: { projects: PublicProject[] }) {
-  const [index, setIndex] = useState(0);
-  const [leaving, setLeaving] = useState<PublicProject | null>(null);
-  const active = projects[index];
-
-  // Retire the outgoing card once its fade has finished.
-  useEffect(() => {
-    if (!leaving) {
-      return;
-    }
-
-    const timer = setTimeout(() => setLeaving(null), CROSSFADE_MS);
-
-    return () => clearTimeout(timer);
-  }, [leaving]);
-
-  if (!active) {
-    return null;
-  }
-
-  function show(next: number) {
-    if (next === index) {
-      return;
-    }
-
-    // With reduced motion there is no fade to cover the swap, so nothing is kept behind.
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    setLeaving(reduceMotion ? null : projects[index]);
-    setIndex(next);
-  }
-
-  const step = (direction: 1 | -1) => show((index + direction + projects.length) % projects.length);
-  /** The projects queued behind the front card, nearest first. */
-  const behind = Array.from({ length: Math.min(PEEK_SLOTS, projects.length - 1) }, (_, offset) => ({
-    project: projects[(index + offset + 1) % projects.length],
-    slot: offset + 1,
-  }));
-
   return (
-    <div className="project-showcase">
-      {/* The deck only reserves room to its right for the cards it actually has. */}
-      <div className="project-stack" style={{ "--peeks": behind.length } as CSSProperties}>
-        <div className="project-front">
-          {/* Keyed by project so the two cards are distinct elements and can animate past each other. */}
-          <FrontCard key={active.id} project={active} state="entering" />
-          {leaving && <FrontCard key={`leaving-${leaving.id}`} project={leaving} state="leaving" />}
-        </div>
-
-        {/* Keyed by slot, not by project: the cards stay mounted and only swap their photo, so the
-            deck shifts without each one blinking through its own background first. */}
-        {behind.map(({ project, slot }) => {
-          const peekCover = coverOf(project);
-
-          return (
-            <button key={slot} type="button" className="project-peek" data-slot={slot} onClick={() => show((index + slot) % projects.length)} aria-label={`Show ${project.name}`}>
-              {peekCover && <Image src={peekCover} alt="" fill sizes="210px" style={{ objectFit: "cover" }} />}
-              <span className="project-peek-badge">{CONSTRUCTION_STATUS_LABELS[project.construction_status]}</span>
-            </button>
-          );
-        })}
-
-        {projects.length > 1 && (
-          <>
-            <button type="button" className="project-arrow prev" onClick={() => step(-1)} aria-label="Previous project">
-              <ArrowLeftIcon className="icon" />
-            </button>
-            <button type="button" className="project-arrow next" onClick={() => step(1)} aria-label="Next project">
-              <ArrowRightIcon className="icon" />
-            </button>
-          </>
-        )}
-      </div>
-
-      {projects.length > 1 && (
-        <div className="project-dots">
-          {projects.map((project, dot) => (
-            <button
-              key={project.id}
-              type="button"
-              aria-label={project.name}
-              aria-current={dot === index ? "true" : undefined}
-              className={dot === index ? "is-active" : undefined}
-              onClick={() => show(dot)}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+    <DeckSlider
+      items={projects}
+      noun="project"
+      nameOf={(project) => project.name}
+      renderFront={(project, state) => <FrontCard project={project} state={state} />}
+      peekCoverOf={coverOf}
+      peekBadgeOf={(project) => CONSTRUCTION_STATUS_LABELS[project.construction_status]}
+    />
   );
 }

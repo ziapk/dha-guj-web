@@ -1,11 +1,15 @@
 import type { CSSProperties } from "react";
+import { preload } from "react-dom";
 import { HeroSearch } from "@/components/hero-search";
 import { ChartIcon, PinIcon, ShieldIcon, UsersIcon } from "@/components/icons";
 import { HERO_TRUST, type TrustItem } from "@/lib/home-content";
 import type { PropertyType, Society } from "@/types/api";
 
-/** Drop your own photo here to change the hero; until then the gradient below shows through. */
-const DEFAULT_HERO_IMAGE = "/hero-dha-gujranwala.jpg";
+/**
+ * The default photo lives in globals.css (`.home-hero-image` and friends) as AVIF/WebP/JPG at 960 and
+ * 1920 wide, built from public/home/DHA Gujranwala Sunset Entrance Boulevard.png.
+ */
+const DEFAULT_HERO_SRCSET = "/home/hero-dha-gujranwala-960.avif 960w, /home/hero-dha-gujranwala-1920.avif 1920w";
 
 export const DEFAULT_HERO_EYEBROW = "Buy . Rent . Invest";
 export const DEFAULT_HERO_TITLE = "Find Your Perfect Property in";
@@ -41,10 +45,12 @@ function withHighlight(title: string) {
   );
 }
 
-export function heroStyle(imageUrl: string | null): CSSProperties {
-  const image = imageUrl && /^https?:\/\//i.test(imageUrl) ? imageUrl : DEFAULT_HERO_IMAGE;
+function isRemoteImage(imageUrl: string | null): imageUrl is string {
+  return !!imageUrl && /^https?:\/\//i.test(imageUrl);
+}
 
-  return { backgroundImage: `url(${JSON.stringify(image)})` };
+export function heroStyle(imageUrl: string | null): CSSProperties {
+  return isRemoteImage(imageUrl) ? { backgroundImage: `url(${JSON.stringify(imageUrl)})` } : {};
 }
 
 export function HomeHero({
@@ -60,6 +66,17 @@ export function HomeHero({
   societies: Society[];
   propertyTypes: PropertyType[];
 }) {
+  // The hero photo is the page's largest paint, so start fetching it before the stylesheet asks for it.
+  if (!isRemoteImage(imageUrl)) {
+    preload("/home/hero-dha-gujranwala-1920.avif", {
+      as: "image",
+      type: "image/avif",
+      imageSrcSet: DEFAULT_HERO_SRCSET,
+      imageSizes: "100vw",
+      fetchPriority: "high",
+    });
+  }
+
   return (
     <section className="home-hero">
       <div className="home-hero-image" style={heroStyle(imageUrl)} aria-hidden="true" />

@@ -22,6 +22,7 @@ import {
   ShieldCheckIcon,
   TikTokIcon,
   UsersIcon,
+  WhatsAppIcon,
   YouTubeIcon,
 } from "@/components/icons";
 import { ListingRowCard } from "@/components/listing-row-card";
@@ -180,20 +181,14 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/a
               {agency.about && <p className="agency-banner-about">{agency.about}</p>}
               <div className="agency-banner-actions">
                 {agency.phone && (
-                  <a className="btn btn-primary" href={`tel:${agency.phone.replace(/[^\d+]/g, "")}`}>
-                    <PhoneIcon /> Contact Agency
+                  <a className="btn btn-primary" href={`tel:${agency.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${agency.name}`}>
+                    <PhoneIcon /> Contact Us
                   </a>
                 )}
-                {whatsapp ? (
-                  <a className="btn btn-light-outline" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
-                    <MailIcon /> Send Message
+                {whatsapp && (
+                  <a className="btn btn-whatsapp" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${agency.name} (opens in a new tab)`}>
+                    <WhatsAppIcon /> WhatsApp
                   </a>
-                ) : (
-                  agency.email && (
-                    <a className="btn btn-light-outline" href={`mailto:${agency.email}`}>
-                      <MailIcon /> Send Message
-                    </a>
-                  )
                 )}
               </div>
             </div>

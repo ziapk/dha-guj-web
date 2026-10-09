@@ -5,6 +5,9 @@ import type { DeveloperSection, DeveloperType, GalleryCategory, Paginated, Publi
 const DEVELOPERS_REVALIDATE = 300;
 
 /** GET /public/developers/{slug} returns the company plus a page of its live projects. */
+/** GET /public/developers adds headline figures for the directory hero. */
+export type DeveloperDirectory = Paginated<PublicDeveloper> & { summary?: { developers: number; projects: number; units: number } };
+
 export type DeveloperPage = Resource<PublicDeveloper> & { projects: Paginated<PublicProject>; featured_project_ids?: number[] };
 
 export const GALLERY_CATEGORY_LABELS: Record<GalleryCategory, string> = {

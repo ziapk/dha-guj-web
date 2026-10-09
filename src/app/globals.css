@@ -980,6 +980,31 @@ main h3 {
   background-position: center;
 }
 
+/* Default hero photo; an admin-uploaded image overrides it with an inline style. */
+.home-hero-image,
+.dealers-hero-image,
+.purpose-hero-image {
+  background-image: url("/home/hero-dha-gujranwala-1920.jpg");
+  background-image: image-set(
+    url("/home/hero-dha-gujranwala-1920.avif") type("image/avif"),
+    url("/home/hero-dha-gujranwala-1920.webp") type("image/webp"),
+    url("/home/hero-dha-gujranwala-1920.jpg") type("image/jpeg")
+  );
+}
+
+@media (max-width: 768px) {
+  .home-hero-image,
+  .dealers-hero-image,
+  .purpose-hero-image {
+    background-image: url("/home/hero-dha-gujranwala-960.jpg");
+    background-image: image-set(
+      url("/home/hero-dha-gujranwala-960.avif") type("image/avif"),
+      url("/home/hero-dha-gujranwala-960.webp") type("image/webp"),
+      url("/home/hero-dha-gujranwala-960.jpg") type("image/jpeg")
+    );
+  }
+}
+
 .home-hero::after {
   content: "";
   position: absolute;
@@ -3338,29 +3363,6 @@ button.auth-close {
   border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--app-surface-2);
-}
-
-.developer-type {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  color: var(--accent);
-  background: var(--accent-tint);
-}
-
-.developer-type-construction {
-  color: #8a5a00;
-  background: #fff3d6;
-}
-
-:root[data-theme="dark"] .developer-type-construction {
-  color: #ffd27a;
-  background: #3d2c00;
 }
 
 .developer-highlights {
@@ -14725,6 +14727,510 @@ main:has(> .section-seo:last-child) + .site-footer {
 }
 
 /* ==========================================================================
+   Developers directory (dl-*) — hero, featured carousel, company cards
+   ========================================================================== */
+.dl-page .dl-hero,
+.dl-page .dl-hero *,
+.dl-page .dl-section,
+.dl-page .dl-section * {
+  box-sizing: border-box;
+}
+
+.dl-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 360px;
+  padding: 28px 40px 40px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(120deg, var(--app-surface) 0%, var(--accent-tint) 100%);
+}
+
+.dl-hero-photo {
+  position: absolute;
+  inset: 0 0 0 42%;
+}
+
+/* Fades the photo into the text side, as in the design. */
+.dl-hero-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--app-surface) 0%, color-mix(in srgb, var(--app-surface) 40%, transparent) 30%, transparent 60%);
+}
+
+.dl-hero-text {
+  position: relative;
+  max-width: 620px;
+}
+
+.dl-hero .breadcrumbs {
+  margin-bottom: 18px;
+}
+
+.dl-hero h1 {
+  margin: 0 0 14px;
+  font-size: clamp(30px, 4.2vw, 48px);
+  font-weight: 800;
+  line-height: 1.12;
+  color: var(--app-heading);
+}
+
+.dl-hero h1 span,
+.dl-head h2 span {
+  color: var(--accent);
+}
+
+.dl-hero-text > p {
+  margin: 0 0 26px;
+  max-width: 540px;
+  line-height: 1.6;
+  color: var(--app-muted);
+}
+
+.dl-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dl-hero-stats li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-left: 1px solid var(--app-border);
+}
+
+.dl-hero-stats li:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.dl-hero-stats .icon {
+  width: 30px;
+  height: 30px;
+  color: var(--accent);
+}
+
+.dl-hero-stats strong,
+.dl-hero-stats small,
+.dl-facts strong,
+.dl-facts small,
+.dl-card-count strong,
+.dl-card-count small {
+  display: block;
+}
+
+.dl-hero-stats strong {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--app-heading);
+}
+
+.dl-hero-stats small {
+  font-size: 12px;
+  color: var(--app-muted);
+}
+
+.dl-section {
+  margin-top: 28px;
+  padding: 32px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(180deg, var(--accent-tint), var(--app-surface));
+}
+
+.dl-head {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.dl-head-center {
+  text-align: center;
+}
+
+.dl-head-center p {
+  margin-inline: auto !important;
+}
+
+.dl-eyebrow {
+  display: inline-block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.dl-head h2 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--app-heading);
+}
+
+.dl-head p {
+  max-width: 640px;
+  margin: 8px 0 0;
+  line-height: 1.6;
+  color: var(--app-muted);
+}
+
+.dl-view-all {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transform: translateY(-50%);
+}
+
+.dl-chip {
+  position: absolute;
+  top: 12px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dl-chip .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.dl-chip-featured,
+.dl-chip-verified {
+  left: 12px;
+  color: #fff;
+}
+
+.dl-chip-featured {
+  background: var(--accent);
+}
+
+.dl-chip-verified {
+  background: var(--tag-verified, #16a34a);
+}
+
+.dl-chip-place {
+  right: 12px;
+  color: var(--app-heading);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.dl-tick {
+  display: inline-flex;
+  margin-left: 6px;
+  vertical-align: -2px;
+  color: var(--accent);
+}
+
+.dl-tick .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.dl-card-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dl-card-placeholder .icon {
+  width: 64px;
+  height: 64px;
+}
+
+/* Featured developers reuse the home page's deck slider (project-* classes). */
+.dl-featured-section {
+  margin-top: 28px;
+}
+
+.dl-deck-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.dl-deck-head .agency-logo {
+  flex: none;
+  border: 3px solid #fff;
+  background: #fff;
+  object-fit: contain;
+}
+
+.dl-deck-head .agency-logo-initials {
+  background: var(--btn-bg);
+}
+
+.dl-deck-head p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.dl-deck-head .dl-tick {
+  color: #8ab4ff;
+}
+
+/* Company cards */
+.dl-list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.dl-list-head .dl-head {
+  margin-bottom: 0;
+}
+
+.dl-page .dl-search {
+  display: flex;
+  flex: 0 1 520px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.dl-page .dl-search input {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.dl-page .dl-search select {
+  flex: 0 1 170px;
+}
+
+.dl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.dl-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-xl);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.dl-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--app-shadow-hover);
+}
+
+.dl-card-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  background: var(--app-surface-2);
+}
+
+.dl-card-body {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0 20px 20px;
+}
+
+.dl-card-logo {
+  margin: -44px 0 10px;
+  line-height: 0;
+}
+
+.dl-card-logo .agency-logo {
+  box-shadow: var(--app-shadow);
+}
+
+.dl-card-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dl-card-title h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--app-heading);
+}
+
+.dl-card-title h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dl-card-title h3 a:hover {
+  color: var(--accent);
+}
+
+.dl-card-tagline {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--app-muted);
+}
+
+.dl-card-count {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-m);
+  background: var(--accent-tint);
+}
+
+.dl-card-count .icon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+}
+
+.dl-card-count strong {
+  font-size: 15px;
+  color: var(--app-heading);
+}
+
+.dl-card-count small {
+  font-size: 11px;
+  color: var(--app-muted);
+}
+
+.dl-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 0;
+  margin: 16px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.dl-facts li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-left: 1px solid var(--app-border);
+}
+
+.dl-facts li:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+
+.dl-facts .icon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+}
+
+.dl-facts strong {
+  font-size: 13px;
+  color: var(--app-heading);
+}
+
+.dl-facts small {
+  font-size: 11px;
+  color: var(--app-muted);
+}
+
+.dl-card-about {
+  display: -webkit-box;
+  margin: 0 0 16px;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--app-muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.dl-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  align-self: flex-start;
+  min-width: 190px;
+  margin-top: auto;
+}
+
+@media (max-width: 900px) {
+  .dl-hero {
+    padding: 24px 22px 28px;
+  }
+
+  .dl-hero-photo {
+    inset: 0;
+    opacity: 0.18;
+  }
+
+  .dl-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dl-view-all {
+    position: static;
+    margin-top: 14px;
+    transform: none;
+  }
+
+  .dl-search {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .dl-section {
+    padding: 22px 16px;
+  }
+
+  .dl-hero-stats,
+  .dl-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .dl-hero-stats li,
+  .dl-hero-stats li:first-child,
+  .dl-facts li,
+  .dl-facts li:first-child {
+    padding: 0;
+    border-left: none;
+  }
+
+  .dl-card-title {
+    flex-direction: column;
+  }
+}
+
+/* ==========================================================================
    Developer / construction company page (dv-*) — header, overview, story
    cards, values & expertise, portfolio rail, gallery, team, registration, contact
    ========================================================================== */
@@ -14757,7 +15263,7 @@ main:has(> .section-seo:last-child) + .site-footer {
   text-align: center;
 }
 
-.dv-head-center p {
+.dv-head.dv-head-center p {
   margin-inline: auto;
 }
 
@@ -14883,6 +15389,14 @@ main:has(> .section-seo:last-child) + .site-footer {
   object-fit: contain;
 }
 
+/* Without a logo the initials keep their coloured tile and shrink with the frame (the size comes inline). */
+.dv-hero-logo .agency-logo-initials {
+  width: 100% !important;
+  height: 100% !important;
+  font-size: clamp(30px, 4vw, 54px) !important;
+  background: var(--btn-bg);
+}
+
 .dv-hero-text {
   min-width: 0;
 }
@@ -14956,9 +15470,9 @@ main:has(> .section-seo:last-child) + .site-footer {
 
 .dv-hero-stats,
 .dv-overview-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 14px 18px;
   margin: 0 0 22px;
   padding: 0;
   list-style: none;
@@ -15173,6 +15687,7 @@ main:has(> .section-seo:last-child) + .site-footer {
 }
 
 .dv-story-eyebrow {
+  display: block;
   margin: 14px 0 0;
 }
 
@@ -15274,7 +15789,9 @@ main:has(> .section-seo:last-child) + .site-footer {
   height: 100%;
 }
 
-.dv-gallery-item img {
+/* Beats Ant Design's own `.ant-image .ant-image-img { height: auto }` so every photo fills its tile. */
+.dv-gallery-item .ant-image img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -15660,6 +16177,8 @@ main:has(> .section-seo:last-child) + .site-footer {
 .dv-contact-btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--app-shadow-hover);
+  /* Keeps Ant Design's global `a:hover` link colour off these buttons. */
+  color: var(--app-heading);
 }
 
 .dv-contact-btn:focus-visible {
@@ -15688,10 +16207,15 @@ main:has(> .section-seo:last-child) + .site-footer {
   opacity: 0.85;
 }
 
-.dv-contact-call {
+.dv-contact-call,
+.dv-contact-call:hover {
   border-color: transparent;
   background: var(--btn-bg);
   color: #fff;
+}
+
+.dv-contact-call:hover {
+  background: var(--btn-bg-hover);
 }
 
 .dv-contact-call > .icon:first-child,
@@ -15699,10 +16223,15 @@ main:has(> .section-seo:last-child) + .site-footer {
   color: #fff;
 }
 
-.dv-contact-whatsapp {
+.dv-contact-whatsapp,
+.dv-contact-whatsapp:hover {
   border-color: transparent;
   background: var(--whatsapp);
   color: #fff;
+}
+
+.dv-contact-whatsapp:hover {
+  background: var(--whatsapp-hover);
 }
 
 .dv-follow {
@@ -15968,6 +16497,15 @@ figure.dv-gallery-item {
   .dv-hero-logo {
     width: 110px;
     height: 110px;
+  }
+
+  .dv-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .dv-stats-grid .dv-stat {
+    padding: 12px;
   }
 
   .dv-trust {

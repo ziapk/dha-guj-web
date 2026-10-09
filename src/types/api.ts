@@ -444,8 +444,12 @@ export type PublicDeveloper = {
   social_links: { platform: "facebook" | "instagram" | "youtube" | "tiktok" | "linkedin" | "x"; url: string }[];
   meta_title: string | null;
   meta_description: string | null;
-  /** Live projects. */
+  /** Cover, else the overview image, else the first gallery photo. */
+  card_image_url: string | null;
+  /** Live projects (or the admin's figure). */
   projects_count?: number;
+  /** Units in finished projects (or the admin's figure); directory only. */
+  units_count?: number;
   /** Live projects that are ready / under construction; only on the company's own page. */
   completed_projects_count?: number;
   ongoing_projects_count?: number;
