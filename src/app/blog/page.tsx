@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChevronDownIcon, ChevronRightIcon, HomeIcon } from "@/components/icons";
 import { longDate, PostCard } from "@/components/post-card";
 import { getPostCategories, getPosts, postHref } from "@/lib/blog";
+import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
 import { openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
@@ -92,7 +93,7 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
       <header className="blog-hero">
         {featured?.cover_image_url && (
           <div className="blog-hero-art" aria-hidden="true">
-            <Image src={featured.cover_image_url} alt="" fill priority sizes="60vw" style={{ objectFit: "cover" }} />
+            <Image src={sizedImage(featured.cover_image_url, "medium")} alt="" fill priority sizes="60vw" style={{ objectFit: "cover" }} />
           </div>
         )}
         <div className="container blog-hero-body">
@@ -142,7 +143,7 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
                 <Link href={postHref(featured.slug)} className="blog-featured-link">
                   <div className="blog-featured-cover">
                     {featured.cover_image_url ? (
-                      <Image src={featured.cover_image_url} alt="" fill priority sizes="(max-width: 860px) 100vw, 700px" style={{ objectFit: "cover" }} />
+                      <Image src={sizedImage(featured.cover_image_url, "medium")} alt="" fill priority sizes="(max-width: 860px) 100vw, 700px" style={{ objectFit: "cover" }} />
                     ) : (
                       <HomeIcon className="placeholder-icon" />
                     )}

@@ -8,6 +8,7 @@ import { ArrowRightIcon, BriefcaseIcon, HandshakeIcon, HomeIcon, KeyIcon, MailIc
 import { ListingRowCard, type ListingOwner } from "@/components/listing-row-card";
 import { agentSocials, getAgent, getAgents } from "@/lib/agents";
 import { publicApi } from "@/lib/api";
+import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
@@ -130,7 +131,7 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
 
       <section className={`agent-hero${cover ? " has-cover" : ""}`}>
-        {cover && <Image src={cover} alt="" fill priority sizes="100vw" className="agent-hero-cover" />}
+        {cover && <Image src={sizedImage(cover, "medium")} alt="" fill priority sizes="100vw" className="agent-hero-cover" />}
         <div className="container agent-hero-inner">
           <nav className="breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
@@ -143,7 +144,7 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
           <div className="agent-hero-row">
             <div className="agent-hero-photo">
               {agent.photo_url ? (
-                <Image src={agent.photo_url} alt={agent.name} fill priority sizes="180px" style={{ objectFit: "cover" }} />
+                <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill priority sizes="180px" style={{ objectFit: "cover" }} />
               ) : (
                 <span aria-hidden="true">{initials(agent.name)}</span>
               )}

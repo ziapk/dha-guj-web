@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarIcon, HomeIcon } from "@/components/icons";
 import { postHref } from "@/lib/blog";
+import { sizedImage } from "@/lib/image";
 import { formatDate } from "@/lib/labels";
 import type { BlogPostSummary } from "@/types/api";
 
@@ -31,7 +32,7 @@ export function PostCard({
         <Link href={postHref(post.slug)} className="post-card-link">
           <div className="post-card-cover">
             {post.cover_image_url ? (
-              <Image src={post.cover_image_url} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
+              <Image src={sizedImage(post.cover_image_url, "medium")} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
             ) : (
               <HomeIcon className="placeholder-icon" />
             )}
@@ -55,7 +56,7 @@ export function PostCard({
       <Link href={postHref(post.slug)} className="post-card-link">
         <div className="post-card-cover">
           {post.cover_image_url ? (
-            <Image src={post.cover_image_url} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
+            <Image src={sizedImage(post.cover_image_url, "medium")} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
           ) : (
             <HomeIcon className="placeholder-icon" />
           )}

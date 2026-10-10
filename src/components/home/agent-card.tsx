@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BriefcaseIcon, DiamondIcon, HomeIcon, KeyIcon, PhoneIcon, PinIcon, ShieldCheckIcon, TagIcon, WhatsAppIcon } from "@/components/icons";
 import { agentHref } from "@/lib/agents";
+import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import type { PublicAgent } from "@/types/api";
 
@@ -66,7 +67,7 @@ function AgentRowCard({ agent, phone, whatsapp }: { agent: PublicAgent; phone: s
       <div className="agent-card-top">
         <Link href={href} className="agent-photo" aria-label={`${agent.name}'s profile`}>
           {agent.photo_url ? (
-            <Image src={agent.photo_url} alt={agent.name} fill sizes="96px" style={{ objectFit: "cover" }} />
+            <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill sizes="96px" style={{ objectFit: "cover" }} />
           ) : (
             <span aria-hidden="true">{initials(agent.name)}</span>
           )}
@@ -147,7 +148,7 @@ export function AgentCard({
 
       <Link href={href} className="agent-photo" aria-label={`${agent.name}'s profile`}>
         {agent.photo_url ? (
-          <Image src={agent.photo_url} alt={agent.name} fill sizes="140px" style={{ objectFit: "cover" }} />
+          <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill sizes="140px" style={{ objectFit: "cover" }} />
         ) : (
           <span aria-hidden="true">{initials(agent.name)}</span>
         )}

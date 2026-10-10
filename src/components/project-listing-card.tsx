@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowRightIcon, BuildingIcon, CheckCircleIcon, ClockIcon, HomeIcon, LayersIcon, PinIcon, RocketIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import { formatArea, formatAreaRange, formatCompactPrice } from "@/lib/labels";
 import { PRICE_ON_REQUEST, projectHref, projectLocationOf, projectPhotosOf, projectPriceOf, projectSingleMediaOf } from "@/lib/project";
 import { descriptionText, mediumUrl, thumbnailUrl } from "@/lib/property";
@@ -17,13 +18,13 @@ export const LISTING_STATUS: Record<ConstructionStatus, { label: string; icon: R
 export function projectLogoOf(project: PublicProject): string | null {
   const logo = projectSingleMediaOf(project, "logo");
 
-  return project.logo_url ?? (logo ? (logo.medium_url ?? logo.url) : null) ?? project.developer?.logo_url ?? null;
+  return sizedImage(project.logo_url, "thumbnail") ?? (logo ? thumbnailUrl(logo) : null) ?? sizedImage(project.developer?.logo_url, "thumbnail") ?? null;
 }
 
 export function projectCoverOf(project: PublicProject, size: "thumb" | "medium" = "thumb"): string | null {
   const photo = projectPhotosOf(project)[0];
 
-  return photo ? (size === "medium" ? mediumUrl(photo) : thumbnailUrl(photo)) : (project.cover_url ?? null);
+  return photo ? (size === "medium" ? mediumUrl(photo) : thumbnailUrl(photo)) : sizedImage(project.cover_url ?? null, size === "medium" ? "medium" : "thumbnail");
 }
 
 /** "5 Marla - 6 Marla - 10 Marla" from the unit types, else the headline size range or the typed unit size. */

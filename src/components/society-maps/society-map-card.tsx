@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, DownloadIcon, MapIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import { societyMapHref, societyMapLocation } from "@/lib/society-maps";
 import type { PublicSocietyMap } from "@/types/api";
 
@@ -16,7 +17,7 @@ export function SocietyMapCard({ map, headingLevel = "h2" }: { map: PublicSociet
   return (
     <article className="smap-card">
       <Link href={href} className="smap-card-thumb" tabIndex={-1} aria-hidden="true">
-        <Image src={map.image_url} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
+        <Image src={sizedImage(map.image_url, "medium")} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
         <span className="smap-ribbon">{map.card_label ?? map.category_label}</span>
         {map.code && <span className="smap-code">{map.code}</span>}
       </Link>

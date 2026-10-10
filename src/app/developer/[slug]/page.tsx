@@ -36,6 +36,7 @@ import { PortfolioProjects } from "@/components/developer/portfolio-projects";
 import { SectionIcon } from "@/components/section-icon";
 import { SocialIcon } from "@/components/social-icon";
 import { DEVELOPER_TYPE_LABELS, developerHref, developerSocials, getDeveloper, sectionHeading, yearsInBusiness } from "@/lib/developers";
+import { sizedImage, type ImageSize } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
@@ -146,11 +147,11 @@ function MemberLinks({ member }: { member: DeveloperTeamMember }) {
   );
 }
 
-function MemberPhoto({ member, sizes }: { member: DeveloperTeamMember | DeveloperLeader; sizes: string }) {
+function MemberPhoto({ member, sizes, size }: { member: DeveloperTeamMember | DeveloperLeader; sizes: string; size: ImageSize }) {
   return (
     <div className="dv-member-photo">
       {member.photo_url ? (
-        <Image src={member.photo_url} alt={member.name} fill sizes={sizes} style={{ objectFit: "cover", objectPosition: "top" }} />
+        <Image src={sizedImage(member.photo_url, size)} alt={member.name} fill sizes={sizes} style={{ objectFit: "cover", objectPosition: "top" }} />
       ) : (
         <span className="dv-member-initials" aria-hidden="true">
           {member.name
@@ -334,7 +335,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
       <section className={`dv-hero${heroImage ? " dv-hero-cover" : ""}`}>
         {heroImage && (
           <div className="dv-hero-image" aria-hidden="true">
-            <Image src={heroImage} alt="" fill priority sizes="(max-width: 900px) 100vw, 60vw" style={{ objectFit: "cover" }} />
+            <Image src={sizedImage(heroImage, "medium")} alt="" fill priority sizes="(max-width: 900px) 100vw, 60vw" style={{ objectFit: "cover" }} />
           </div>
         )}
         <div className="dv-hero-body">
@@ -432,7 +433,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
               </div>
               {overviewImage && (
                 <div className="dv-overview-image">
-                  <Image src={overviewImage} alt={`${developer.name} project`} fill sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: "cover" }} />
+                  <Image src={sizedImage(overviewImage, "medium")} alt={`${developer.name} project`} fill sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: "cover" }} />
                   {isVerified && (
                     <span className="dv-float-badge">
                       <ShieldCheckIcon className="icon" />
@@ -454,7 +455,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                 <article key={card.key} className={`dv-card dv-story-card${card.image ? " dv-story-card-image" : ""}`}>
                   {card.image ? (
                     <div className="dv-story-image">
-                      <Image src={card.image} alt="" fill sizes="(max-width: 900px) 100vw, 33vw" style={{ objectFit: "cover" }} />
+                      <Image src={sizedImage(card.image, "medium")} alt="" fill sizes="(max-width: 900px) 100vw, 33vw" style={{ objectFit: "cover" }} />
                     </div>
                   ) : (
                     <>
@@ -597,11 +598,11 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                   <article key={`${leader.name}-${leader.designation ?? ""}`} className="dv-leader">
                     {heroImage && (
                       <div className="dv-leader-backdrop" aria-hidden="true">
-                        <Image src={heroImage} alt="" fill sizes="40vw" style={{ objectFit: "cover" }} />
+                        <Image src={sizedImage(heroImage, "medium")} alt="" fill sizes="40vw" style={{ objectFit: "cover" }} />
                       </div>
                     )}
                     <div className="dv-leader-photo">
-                      <MemberPhoto member={leader} sizes="(max-width: 900px) 100vw, 420px" />
+                      <MemberPhoto member={leader} sizes="(max-width: 900px) 100vw, 420px" size="medium" />
                       {leader.designation && (
                         <span className="dv-leader-tag">
                           <CrownIcon className="icon" /> {leader.designation}
@@ -640,7 +641,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                           <p>{leader.quote}</p>
                           {leader.signature_url ? (
                             // eslint-disable-next-line @next/next/no-img-element -- a small transparent signature image of unknown size
-                            <img className="dv-signature" src={leader.signature_url} alt={`${leader.name}'s signature`} loading="lazy" />
+                            <img className="dv-signature" src={sizedImage(leader.signature_url, "thumbnail")} alt={`${leader.name}'s signature`} loading="lazy" />
                           ) : (
                             <cite>{leader.name}</cite>
                           )}
@@ -648,7 +649,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                       )}
                       {!leader.quote && leader.signature_url && (
                         // eslint-disable-next-line @next/next/no-img-element -- a small transparent signature image of unknown size
-                        <img className="dv-signature" src={leader.signature_url} alt={`${leader.name}'s signature`} loading="lazy" />
+                        <img className="dv-signature" src={sizedImage(leader.signature_url, "thumbnail")} alt={`${leader.name}'s signature`} loading="lazy" />
                       )}
                       <MemberLinks member={leader} />
                     </div>
@@ -665,7 +666,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
               <ul className="dv-team">
                 {team.map((member) => (
                   <li key={`${member.name}-${member.designation ?? ""}`} className="dv-member">
-                    <MemberPhoto member={member} sizes="(max-width: 640px) 40vw, 180px" />
+                    <MemberPhoto member={member} sizes="(max-width: 640px) 40vw, 180px" size="thumbnail" />
                     <div className="dv-member-body">
                       {member.designation && <span className="dv-member-tag">{member.designation}</span>}
                       <h3>{member.name}</h3>
@@ -699,7 +700,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                   <span className="dv-verified-box">
                     {developer.verification_badge_url ? (
                       // eslint-disable-next-line @next/next/no-img-element -- an admin-uploaded seal of unknown size
-                      <img className="dv-verified-seal" src={developer.verification_badge_url} alt="Verification badge" loading="lazy" />
+                      <img className="dv-verified-seal" src={sizedImage(developer.verification_badge_url, "thumbnail")} alt="Verification badge" loading="lazy" />
                     ) : (
                       <ShieldCheckIcon className="icon" />
                     )}
@@ -730,7 +731,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
             <section className={`dv-section dv-contact${contactImage ? " dv-contact-image" : ""}`} id="contact">
               {contactImage && (
                 <div className="dv-contact-backdrop" aria-hidden="true">
-                  <Image src={contactImage} alt="" fill sizes="(max-width: 900px) 100vw, 55vw" style={{ objectFit: "cover" }} />
+                  <Image src={sizedImage(contactImage, "medium")} alt="" fill sizes="(max-width: 900px) 100vw, 55vw" style={{ objectFit: "cover" }} />
                 </div>
               )}
               <div className="dv-contact-info">

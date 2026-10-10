@@ -4,6 +4,7 @@ import { AgencyLogo } from "@/components/agency-card";
 import { ListingPhotoSlider } from "@/components/listing-photo-slider";
 import { FavoriteButton } from "@/components/favorite-button";
 import { AreaIcon, BathIcon, BedIcon, BoulevardIcon, FlameIcon, KitchenIcon, PhoneIcon, PinIcon, PlotIcon, ShieldCheckIcon, StarIcon, WhatsAppIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import { formatArea, formatCompactPrice } from "@/lib/labels";
 import { locationOf, photosOf, propertyHref, purposeTagOf, thumbnailUrl, whatsappNumber } from "@/lib/property";
 import type { PublicProperty } from "@/types/api";
@@ -191,7 +192,7 @@ export function ListingRowCard({ property, owner, priority = false }: { property
         <div className="listing-row-agent">
           {agent ? (
             <Link href={`/agent/${agent.slug}`} className="listing-row-avatar" aria-hidden="true" tabIndex={-1}>
-              {agent.photo_url ? <Image src={agent.photo_url} alt="" width={52} height={52} /> : <span>{initials(agent.name)}</span>}
+              {agent.photo_url ? <Image src={sizedImage(agent.photo_url, "thumbnail")} alt="" width={52} height={52} /> : <span>{initials(agent.name)}</span>}
             </Link>
           ) : (
             <AgencyLogo name={owner.name} logoUrl={owner.logo_url} size={52} />

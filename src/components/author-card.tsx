@@ -5,6 +5,7 @@ import { ArrowRightIcon, CalendarIcon, HomeIcon } from "@/components/icons";
 import { SocialIcon } from "@/components/social-icon";
 import { authorHref, authorInitials, authorSocials } from "@/lib/authors";
 import { postHref } from "@/lib/blog";
+import { sizedImage } from "@/lib/image";
 import type { BlogPostSummary, PublicAuthor } from "@/types/api";
 
 /** The author's social links as round brand-coloured buttons. */
@@ -37,7 +38,7 @@ export function AuthorCard({ author }: { author: PublicAuthor }) {
     <article className="author-card">
       <Link href={href} className="author-card-photo" tabIndex={-1} aria-hidden="true">
         {author.photo_url ? (
-          <Image src={author.photo_url} alt="" fill sizes="(max-width: 640px) 100vw, 360px" style={{ objectFit: "cover", objectPosition: "top" }} />
+          <Image src={sizedImage(author.photo_url, "medium")} alt="" fill sizes="(max-width: 640px) 100vw, 360px" style={{ objectFit: "cover", objectPosition: "top" }} />
         ) : (
           <span>{authorInitials(author.name)}</span>
         )}
@@ -76,7 +77,7 @@ export function AuthorPostCard({ post }: { post: BlogPostSummary }) {
       <Link href={postHref(post.slug)} className="author-post-link">
         <div className="author-post-cover">
           {post.cover_image_url ? (
-            <Image src={post.cover_image_url} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
+            <Image src={sizedImage(post.cover_image_url, "medium")} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px" style={{ objectFit: "cover" }} />
           ) : (
             <HomeIcon className="placeholder-icon" />
           )}

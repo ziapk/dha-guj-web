@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PinIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import type { AgencyProfile } from "@/types/api";
 
 function initials(name: string): string {
@@ -19,7 +20,7 @@ export function AgencyLogoCard({ agency }: { agency: AgencyProfile }) {
     <Link href={`/dealer/${agency.slug}`} className="agency-tile">
       <span className="agency-tile-plate">
         {agency.logo_url ? (
-          <Image src={agency.logo_url} alt={`${agency.name} logo`} width={120} height={120} className="agency-tile-logo" />
+          <Image src={sizedImage(agency.logo_url, "thumbnail")} alt={`${agency.name} logo`} width={120} height={120} className="agency-tile-logo" />
         ) : (
           <span className="agency-tile-initials" aria-hidden="true">
             {initials(agency.name)}

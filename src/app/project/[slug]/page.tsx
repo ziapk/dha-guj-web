@@ -40,6 +40,7 @@ import { SectionIcon } from "@/components/section-icon";
 import { ViewTracker } from "@/components/view-tracker";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { developerHref } from "@/lib/developers";
+import { sizedImage } from "@/lib/image";
 import { CONSTRUCTION_STATUS_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import {
   PROGRESS_STATUS_LABELS,
@@ -164,7 +165,7 @@ function DocCard({ title, kind, image, href, cta, children }: { title: string; k
     <article className="pj-doc">
       <a className={`pj-doc-media${image ? "" : " is-empty"}`} href={href ?? image ?? undefined} target="_blank" rel="noopener noreferrer" tabIndex={-1} aria-hidden="true">
         {image ? (
-          <Image src={image} alt="" fill sizes="(max-width: 560px) 82vw, 240px" style={{ objectFit: "cover", objectPosition: "top" }} />
+          <Image src={sizedImage(image, "thumbnail")} alt="" fill sizes="(max-width: 560px) 82vw, 240px" style={{ objectFit: "cover", objectPosition: "top" }} />
         ) : (
           (children ?? (
             <span className="pj-doc-placeholder">
@@ -198,7 +199,7 @@ function DocCard({ title, kind, image, href, cta, children }: { title: string; k
 /** An admin-picked icon: an uploaded image, else a built-in icon by name, else the fallback. */
 function AdminIcon({ url, name, fallback }: { url: string | null; name: string | null; fallback: ReactNode }) {
   if (url) {
-    return <Image src={url} alt="" width={28} height={28} unoptimized className="pj-admin-icon" />;
+    return <Image src={sizedImage(url, "thumbnail")} alt="" width={28} height={28} unoptimized className="pj-admin-icon" />;
   }
 
   return name ? <SectionIcon name={name as PageIcon} className="pj-admin-icon" /> : <>{fallback}</>;
@@ -232,8 +233,8 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
   const location = project.location || projectLocationOf(project);
   const timeline = projectTimelineOf(project);
   const faqs = projectFaqEntriesOf(project);
-  const masterPlanImage = project.master_plan_image_url ? { src: project.master_plan_image_url, full: project.master_plan_image_url } : masterPlan ? { src: masterPlan.medium_url ?? masterPlan.url, full: masterPlan.url } : null;
-  const logoUrl = project.logo_url ?? (logo ? (logo.medium_url ?? logo.url) : null);
+  const masterPlanImage = project.master_plan_image_url ? { src: sizedImage(project.master_plan_image_url, "medium"), full: project.master_plan_image_url } : masterPlan ? { src: masterPlan.medium_url ?? masterPlan.url, full: masterPlan.url } : null;
+  const logoUrl = sizedImage(project.logo_url, "thumbnail") ?? (logo ? (logo.thumbnail_url ?? logo.medium_url ?? logo.url) : null);
   const coverThumb = photos[0] ? thumbnailUrl(photos[0]) : null;
 
   const [similar, spotlight, agency] = await Promise.all([
@@ -324,7 +325,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             title: update.title,
             label: update.label ?? update.date_label ?? completionOf(update.update_date),
             caption: update.caption,
-            image: update.image_url ?? update.gallery[0] ?? null,
+            image: sizedImage(update.image_url ?? update.gallery[0] ?? null, "thumbnail"),
             alt: update.alt_text || update.title,
             featured: update.is_featured,
             images: [...new Set([update.image_url, ...(update.gallery ?? [])].filter((url): url is string => Boolean(url)))],
@@ -532,7 +533,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
                   </thead>
                   <tbody>
                     {units.map((unit) => {
-                      const image = unit.image_url ?? unit.floor_plan_url ?? coverThumb;
+                      const image = sizedImage(unit.image_url ?? unit.floor_plan_url, "thumbnail") ?? coverThumb;
 
                       return (
                         <tr key={unit.id}>
@@ -1095,7 +1096,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             <div className="pj-agency">
               <Link href={`/dealer/${agency.slug}`} className="pj-agency-cover" tabIndex={-1} aria-hidden="true">
                 {agency.cover_url ? (
-                  <Image src={agency.cover_url} alt="" fill sizes="360px" style={{ objectFit: "cover" }} />
+                  <Image src={sizedImage(agency.cover_url, "medium")} alt="" fill sizes="360px" style={{ objectFit: "cover" }} />
                 ) : (
                   <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={72} />
                 )}

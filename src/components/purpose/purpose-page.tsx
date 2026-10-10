@@ -8,6 +8,7 @@ import { PurposeSearchBar } from "@/components/purpose/purpose-search-bar";
 import { SaveSearchButton } from "@/components/save-search-button";
 import { SortSelect } from "@/components/search-controls";
 import { ValidationError, publicApi } from "@/lib/api";
+import { sizedImage } from "@/lib/image";
 import { searchHeading } from "@/lib/property";
 import { PURPOSE_PAGES, PURPOSE_PAGE_SIZE, purposeFilters, purposeHref, sectorOptions } from "@/lib/purpose-search";
 import { PAGE_META } from "@/lib/page-meta";
@@ -107,7 +108,7 @@ export async function PurposeListingPage({ purpose, searchParams, landing }: { p
   return (
     <>
       <section className="purpose-hero">
-        <div className="purpose-hero-image" style={heroStyle(heroImage)} aria-hidden="true" />
+        <div className="purpose-hero-image" style={heroStyle(sizedImage(heroImage, "medium"))} aria-hidden="true" />
         <div className="container purpose-hero-inner">
           {landing ? (
             <h1>{landing.heading ?? landing.title}</h1>

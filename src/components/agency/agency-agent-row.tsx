@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AgencyLogo } from "@/components/agency-card";
 import { BriefcaseIcon, HandshakeIcon, HomeIcon, KeyIcon, PhoneIcon, PinIcon, ShieldCheckIcon, WhatsAppIcon } from "@/components/icons";
 import { agentHref } from "@/lib/agents";
+import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import type { AgencyAgent, AgencyProfile } from "@/types/api";
 
@@ -27,7 +28,7 @@ export function AgencyAgentRow({ agent, agency }: { agent: AgencyAgent; agency: 
   const place = agent.city ?? agency.city?.name ?? null;
 
   const photo = agent.photo_url ? (
-    <Image src={agent.photo_url} alt={agent.name} fill sizes="200px" style={{ objectFit: "cover" }} />
+    <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill sizes="200px" style={{ objectFit: "cover" }} />
   ) : (
     <span aria-hidden="true">{initials(agent.name)}</span>
   );

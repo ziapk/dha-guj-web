@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { initials } from "@/components/home/agent-card";
 import { ArrowRightIcon, CrownIcon, HandshakeIcon, HomeIcon, PinIcon, ShieldCheckIcon, WhatsAppIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import type { AgencyProfile } from "@/types/api";
 
@@ -21,7 +22,7 @@ export function AgencyDirectoryCard({ agency, fallbackWhatsapp }: { agency: Agen
   return (
     <article className={`dealer-card${agency.is_titanium ? " is-titanium" : ""}`}>
       <Link href={href} className="dealer-cover" tabIndex={-1} aria-hidden="true">
-        {agency.cover_url && <Image src={agency.cover_url} alt="" fill sizes="(max-width: 640px) 100vw, 320px" style={{ objectFit: "cover" }} />}
+        {agency.cover_url && <Image src={sizedImage(agency.cover_url, "thumbnail")} alt="" fill sizes="(max-width: 640px) 100vw, 320px" style={{ objectFit: "cover" }} />}
         {agency.is_titanium && (
           <>
             <span className="titanium-badge">
@@ -37,7 +38,7 @@ export function AgencyDirectoryCard({ agency, fallbackWhatsapp }: { agency: Agen
       <div className="dealer-head">
         <Link href={href} className="dealer-logo" aria-label={`${agency.name} profile`}>
           {agency.logo_url ? (
-            <Image src={agency.logo_url} alt={`${agency.name} logo`} fill sizes="84px" style={{ objectFit: "contain" }} />
+            <Image src={sizedImage(agency.logo_url, "thumbnail")} alt={`${agency.name} logo`} fill sizes="84px" style={{ objectFit: "contain" }} />
           ) : (
             <span aria-hidden="true">{initials(agency.name)}</span>
           )}

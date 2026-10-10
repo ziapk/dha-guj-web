@@ -9,6 +9,7 @@ import { SectionIcon } from "@/components/section-icon";
 import { ContactList, SocialLinks } from "@/components/site-contact";
 import { publicApi } from "@/lib/api";
 import { CONTACT_SLUG, getContactPage } from "@/lib/cms-sections";
+import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
@@ -99,7 +100,7 @@ export default async function ContactPage() {
       <JsonLd data={[...cmsPageSchemas(page, `/${CONTACT_SLUG}`, structuredData), faqSchema]} />
 
       <section className={`page-banner${sections.hero.image_url ? " has-image" : ""}`}>
-        {sections.hero.image_url && <Image src={sections.hero.image_url} alt="" fill priority sizes="100vw" style={{ objectFit: "cover" }} />}
+        {sections.hero.image_url && <Image src={sizedImage(sections.hero.image_url, "medium")} alt="" fill priority sizes="100vw" style={{ objectFit: "cover" }} />}
         <div className="container page-banner-body">
           <nav className="breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>

@@ -4,6 +4,7 @@ import { MailOutlined, PhoneOutlined, ShareAltOutlined, WhatsAppOutlined } from 
 import { App, Avatar, Button } from "antd";
 import { useState } from "react";
 import { BadgeIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import type { PublicProject } from "@/types/api";
 
@@ -31,7 +32,7 @@ export function ProjectContactCard({ project }: { project: PublicProject }) {
   return (
     <div className="contact-card pd-contact">
       <div className="pd-contact-person">
-        <Avatar size={56} className="avatar-accent" src={contact?.image_url || undefined} alt={name}>
+        <Avatar size={56} className="avatar-accent" src={sizedImage(contact?.image_url, "thumbnail") || undefined} alt={name}>
           {name.slice(0, 1).toUpperCase()}
         </Avatar>
         <div style={{ minWidth: 0 }}>

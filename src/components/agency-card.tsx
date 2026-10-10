@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { sizedImage } from "@/lib/image";
 import type { AgencyProfile } from "@/types/api";
 
 function initials(name: string): string {
@@ -14,7 +15,7 @@ function initials(name: string): string {
 
 export function AgencyLogo({ name, logoUrl, size }: { name: string; logoUrl: string | null; size: number }) {
   if (logoUrl) {
-    return <Image src={logoUrl} alt={`${name} logo`} width={size} height={size} className="agency-logo" />;
+    return <Image src={sizedImage(logoUrl, "thumbnail")} alt={`${name} logo`} width={size} height={size} className="agency-logo" />;
   }
 
   return (

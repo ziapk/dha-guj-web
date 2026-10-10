@@ -7,6 +7,7 @@ import { VerifiedTick, developerFacts } from "@/components/developer-card";
 import { DeckSlider, type DeckCardState } from "@/components/home/deck-slider";
 import { BuildingIcon } from "@/components/icons";
 import { developerHref } from "@/lib/developers";
+import { sizedImage } from "@/lib/image";
 import type { PublicDeveloper } from "@/types/api";
 
 /** The big card at the front of the deck, drawn with the same classes as the home page's featured projects. */
@@ -21,7 +22,7 @@ function FrontCard({ developer, state }: { developer: PublicDeveloper; state: De
   return (
     <article className={`project-hero-card is-${state}`} aria-hidden={leaving} inert={leaving}>
       {developer.card_image_url ? (
-        <Image src={developer.card_image_url} alt="" fill priority sizes="(max-width: 1040px) 100vw, 620px" style={{ objectFit: "cover" }} />
+        <Image src={sizedImage(developer.card_image_url, "medium")} alt="" fill priority sizes="(max-width: 1040px) 100vw, 620px" style={{ objectFit: "cover" }} />
       ) : (
         <BuildingIcon className="placeholder-icon" />
       )}
@@ -66,7 +67,7 @@ export function FeaturedDevelopers({ developers }: { developers: PublicDeveloper
       noun="developer"
       nameOf={(developer) => developer.name}
       renderFront={(developer, state) => <FrontCard developer={developer} state={state} />}
-      peekCoverOf={(developer) => developer.card_image_url}
+      peekCoverOf={(developer) => sizedImage(developer.card_image_url, "thumbnail")}
       peekBadgeOf={(developer) => (developer.is_verified ? "Trusted" : "Featured")}
     />
   );

@@ -5,6 +5,7 @@ import { AuthorCard } from "@/components/author-card";
 import { SectionHeading } from "@/components/home/section-heading";
 import { ChartIcon, DocumentIcon, MegaphoneIcon, PlusIcon, ShieldCheckIcon, ArrowRightIcon } from "@/components/icons";
 import { authorInitials, getAuthorsPage } from "@/lib/authors";
+import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
 import { openGraph } from "@/lib/seo";
 
@@ -72,7 +73,7 @@ export default async function AuthorsPage({ searchParams }: PageProps<"/authors"
                 <div className="authors-hero-faces" aria-hidden="true">
                   {faces.map((author) => (
                     <span key={author.id} className="authors-hero-face">
-                      {author.photo_url ? <Image src={author.photo_url} alt="" fill sizes="44px" style={{ objectFit: "cover" }} /> : authorInitials(author.name)}
+                      {author.photo_url ? <Image src={sizedImage(author.photo_url, "thumbnail")} alt="" fill sizes="44px" style={{ objectFit: "cover" }} /> : authorInitials(author.name)}
                     </span>
                   ))}
                 </div>

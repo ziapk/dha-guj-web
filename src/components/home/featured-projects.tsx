@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DeckSlider, type DeckCardState } from "@/components/home/deck-slider";
 import { BuildingIcon, ChartIcon, HomeIcon, PinIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
 import { projectHref, projectLocationOf, projectPhotosOf, projectPriceOf } from "@/lib/project";
 import { thumbnailUrl } from "@/lib/property";
@@ -25,7 +26,7 @@ function factsOf(project: PublicProject) {
 function coverOf(project: PublicProject): string | null | undefined {
   const photos = projectPhotosOf(project);
 
-  return photos[0] ? thumbnailUrl(photos[0]) : project.cover_url;
+  return photos[0] ? thumbnailUrl(photos[0]) : sizedImage(project.cover_url, "thumbnail");
 }
 
 /** The big card at the front of the deck. The outgoing copy is laid over the incoming one while it fades. */

@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BadgeIcon, ChevronRightIcon } from "@/components/icons";
 import { useState } from "react";
+import { sizedImage } from "@/lib/image";
 import { ACCOUNT_TYPE_LABELS } from "@/lib/labels";
 import { whatsappNumber } from "@/lib/property";
 import type { PublicProperty } from "@/types/api";
@@ -32,7 +33,7 @@ export function ContactCard({ property }: { property: PublicProperty }) {
   return (
     <div className="contact-card pd-contact">
       <div className="pd-contact-person">
-        <Avatar size={56} className={contact.photo_url ? undefined : "avatar-accent"} src={contact.photo_url ?? undefined} alt={contact.name}>
+        <Avatar size={56} className={contact.photo_url ? undefined : "avatar-accent"} src={sizedImage(contact.photo_url, "thumbnail") ?? undefined} alt={contact.name}>
           {contact.name.slice(0, 1).toUpperCase()}
         </Avatar>
         <strong>{contact.name}</strong>
@@ -80,7 +81,7 @@ export function ContactCard({ property }: { property: PublicProperty }) {
       {contact.agency && (
         <Link href={`/dealer/${contact.agency.slug}`} className="pd-contact-agency">
           {contact.agency.logo_url ? (
-            <Image src={contact.agency.logo_url} alt={contact.agency.name} width={96} height={32} unoptimized />
+            <Image src={sizedImage(contact.agency.logo_url, "thumbnail")} alt={contact.agency.name} width={96} height={32} unoptimized />
           ) : (
             <strong>
               {contact.agency.name}

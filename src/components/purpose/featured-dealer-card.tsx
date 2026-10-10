@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AgencyLogo } from "@/components/agency-card";
 import { ArrowRightIcon, CalendarIcon, HomeIcon, PinIcon, ShieldCheckIcon, UsersIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import type { AgencyProfile } from "@/types/api";
 
 /** The sidebar dealer spotlight on /buy and /rent: cover photo, name, and a few numbers from the agency profile. */
@@ -21,7 +22,7 @@ export function FeaturedDealerCard({ agency }: { agency: AgencyProfile }) {
     <article className="dealer-spotlight">
       <Link href={href} className="dealer-spotlight-cover" tabIndex={-1} aria-hidden="true">
         {agency.cover_url ? (
-          <Image src={agency.cover_url} alt="" fill sizes="(max-width: 1023px) 100vw, 300px" style={{ objectFit: "cover" }} />
+          <Image src={sizedImage(agency.cover_url, "thumbnail")} alt="" fill sizes="(max-width: 1023px) 100vw, 300px" style={{ objectFit: "cover" }} />
         ) : (
           <span className="dealer-spotlight-logo">
             <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={72} />

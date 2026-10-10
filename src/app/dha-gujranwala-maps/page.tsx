@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/json-ld";
 import { SectionIcon } from "@/components/section-icon";
 import { SocietyMapCard } from "@/components/society-maps/society-map-card";
 import { getMapsPage, MAPS_SLUG } from "@/lib/cms-sections";
+import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { PAGE_META } from "@/lib/page-meta";
 import { metaText, openGraph } from "@/lib/seo";
@@ -124,7 +125,7 @@ export default async function SocietyMapsPage({ searchParams }: PageProps<"/dha-
       )}
 
       <section className={`smaps-hero${hero.image_url ? " has-image" : ""}`}>
-        {hero.image_url && <Image src={hero.image_url} alt="" fill priority sizes="100vw" className="smaps-hero-image" />}
+        {hero.image_url && <Image src={sizedImage(hero.image_url, "medium")} alt="" fill priority sizes="100vw" className="smaps-hero-image" />}
         <div className="container smaps-hero-inner">
           <nav className="breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
@@ -174,7 +175,7 @@ export default async function SocietyMapsPage({ searchParams }: PageProps<"/dha-
             </div>
             {about.image_url && (
               <div className="smaps-about-image">
-                <Image src={about.image_url} alt={about.highlight ?? about.title ?? "DHA Gujranwala master plan"} fill sizes="(max-width: 900px) 100vw, 640px" style={{ objectFit: "cover" }} />
+                <Image src={sizedImage(about.image_url, "medium")} alt={about.highlight ?? about.title ?? "DHA Gujranwala master plan"} fill sizes="(max-width: 900px) 100vw, 640px" style={{ objectFit: "cover" }} />
               </div>
             )}
           </div>

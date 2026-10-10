@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ContactButtons, initials } from "@/components/home/agent-card";
 import { BriefcaseIcon, HandshakeIcon, KeyIcon, PinIcon, StarIcon, TagIcon } from "@/components/icons";
 import { agentHref } from "@/lib/agents";
+import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import type { PublicAgent } from "@/types/api";
 
@@ -35,7 +36,7 @@ export function AgentProfileCard({
   return (
     <article className={`agent-pro-card${agent.is_superstar ? " is-superstar" : ""}`}>
       <div className="agent-pro-cover">
-        {cover && <Image src={cover} alt="" fill sizes="(max-width: 640px) 100vw, 320px" style={{ objectFit: "cover" }} />}
+        {cover && <Image src={sizedImage(cover, "thumbnail")} alt="" fill sizes="(max-width: 640px) 100vw, 320px" style={{ objectFit: "cover" }} />}
         {agent.is_superstar && (
           <span className="superstar-badge">
             <StarIcon className="icon" /> Superstar Agent
@@ -46,7 +47,7 @@ export function AgentProfileCard({
       <div className="agent-pro-head">
         <Link href={href} className="agent-pro-photo" aria-label={`${agent.name}'s profile`}>
           {agent.photo_url ? (
-            <Image src={agent.photo_url} alt={agent.name} fill sizes="92px" style={{ objectFit: "cover" }} />
+            <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill sizes="92px" style={{ objectFit: "cover" }} />
           ) : (
             <span aria-hidden="true">{initials(agent.name)}</span>
           )}

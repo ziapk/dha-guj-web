@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
 import { SectionIcon } from "@/components/section-icon";
 import { ABOUT_SLUG, getAboutPage } from "@/lib/cms-sections";
+import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
@@ -87,7 +88,7 @@ export default async function AboutPage() {
       <JsonLd data={cmsPageSchemas(page, `/${ABOUT_SLUG}`, structuredData)} />
 
       <section className={`page-banner${sections.hero.image_url ? " has-image" : ""}`}>
-        {sections.hero.image_url && <Image src={sections.hero.image_url} alt="" fill priority sizes="100vw" style={{ objectFit: "cover" }} />}
+        {sections.hero.image_url && <Image src={sizedImage(sections.hero.image_url, "medium")} alt="" fill priority sizes="100vw" style={{ objectFit: "cover" }} />}
         <div className="container page-banner-body">
           <nav className="breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
@@ -188,7 +189,7 @@ export default async function AboutPage() {
                 <article key={person.name} className="leader-card">
                   <span className="agent-photo">
                     {person.photo_url ? (
-                      <Image src={person.photo_url} alt={person.name} fill sizes="140px" style={{ objectFit: "cover" }} />
+                      <Image src={sizedImage(person.photo_url, "thumbnail")} alt={person.name} fill sizes="140px" style={{ objectFit: "cover" }} />
                     ) : (
                       <span aria-hidden="true">{initials(person.name)}</span>
                     )}

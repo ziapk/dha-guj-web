@@ -19,6 +19,7 @@ import {
   TagIcon,
 } from "@/components/icons";
 import { Rail } from "@/components/rail";
+import { sizedImage } from "@/lib/image";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
 import { projectHref, projectLocationOf, projectPhotosOf, projectPriceOf } from "@/lib/project";
 import { mediumUrl, thumbnailUrl } from "@/lib/property";
@@ -91,7 +92,7 @@ export function PortfolioProjects({ projects, label }: { projects: PublicProject
 
 function PortfolioCard({ project, onOpen }: { project: PublicProject; onOpen: () => void }) {
   const photos = projectPhotosOf(project);
-  const cover = photos[0] ? mediumUrl(photos[0]) : project.cover_url;
+  const cover = photos[0] ? mediumUrl(photos[0]) : sizedImage(project.cover_url, "medium");
   const location = locationText(project);
 
   return (

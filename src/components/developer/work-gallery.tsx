@@ -4,6 +4,7 @@ import { Image } from "antd";
 import { useState } from "react";
 import { CameraIcon } from "@/components/icons";
 import { GALLERY_CATEGORY_LABELS } from "@/lib/developers";
+import { sizedImage } from "@/lib/image";
 import type { DeveloperGalleryItem, GalleryCategory } from "@/types/api";
 
 /** Photos shown on the page; the rest open from the last tile in the lightbox. */
@@ -42,7 +43,12 @@ export function WorkGallery({ photos, name }: { photos: DeveloperGalleryItem[]; 
         <div className={`dv-gallery dv-gallery-${Math.min(visible.length, VISIBLE)}`}>
           {visible.map((photo, index) => (
             <figure key={photo.url} className={`dv-gallery-item${index === 0 ? " dv-gallery-main" : ""}`}>
-              <Image src={photo.url} alt={altOf(photo, name, index)} loading={index === 0 ? undefined : "lazy"} />
+              <Image
+                src={sizedImage(photo.url, index === 0 ? "medium" : "thumbnail")}
+                alt={altOf(photo, name, index)}
+                preview={{ src: photo.url }}
+                loading={index === 0 ? undefined : "lazy"}
+              />
               {(photo.title || photo.caption) && (
                 <figcaption>
                   {photo.title && <strong>{photo.title}</strong>}
@@ -58,7 +64,7 @@ export function WorkGallery({ photos, name }: { photos: DeveloperGalleryItem[]; 
           ))}
           {hidden.map((photo, index) => (
             <div key={photo.url} hidden>
-              <Image src={photo.url} alt={altOf(photo, name, VISIBLE + index)} loading="lazy" />
+              <Image src={sizedImage(photo.url, "thumbnail")} alt={altOf(photo, name, VISIBLE + index)} preview={{ src: photo.url }} loading="lazy" />
             </div>
           ))}
         </div>

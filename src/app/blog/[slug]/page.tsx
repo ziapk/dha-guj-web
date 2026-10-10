@@ -15,6 +15,7 @@ import { SocialIcon } from "@/components/social-icon";
 import { publicApi } from "@/lib/api";
 import { getPost, getPosts, postHref, readingMinutes, splitArticle, stripHtml } from "@/lib/blog";
 import { authorHref, authorSocials, getAuthor } from "@/lib/authors";
+import { sizedImage } from "@/lib/image";
 import { formatDate } from "@/lib/labels";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
@@ -200,7 +201,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
               <Link href={authorHref(post.author.slug)} className="blog-detail-author">
                 <span className="blog-detail-avatar">
                   {post.author.photo_url ? (
-                    <Image src={post.author.photo_url} alt="" fill sizes="32px" style={{ objectFit: "cover" }} />
+                    <Image src={sizedImage(post.author.photo_url, "thumbnail")} alt="" fill sizes="32px" style={{ objectFit: "cover" }} />
                   ) : (
                     <span aria-hidden="true">{initials(post.author.name)}</span>
                   )}
@@ -223,7 +224,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
 
       {post.cover_image_url && (
         <div className="blog-detail-cover">
-          <Image src={post.cover_image_url} alt={post.title} fill priority sizes="(max-width: 1240px) 100vw, 1200px" style={{ objectFit: "cover" }} />
+          <Image src={sizedImage(post.cover_image_url, "medium")} alt={post.title} fill priority sizes="(max-width: 1240px) 100vw, 1200px" style={{ objectFit: "cover" }} />
         </div>
       )}
 
@@ -240,7 +241,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
             <section className="blog-author-box" aria-labelledby="blog-author-name">
               <Link href={authorHref(post.author.slug)} className="blog-author-photo" tabIndex={-1} aria-hidden="true">
                 {post.author.photo_url ? (
-                  <Image src={post.author.photo_url} alt="" fill sizes="120px" style={{ objectFit: "cover" }} />
+                  <Image src={sizedImage(post.author.photo_url, "thumbnail")} alt="" fill sizes="120px" style={{ objectFit: "cover" }} />
                 ) : (
                   <span>{initials(post.author.name)}</span>
                 )}

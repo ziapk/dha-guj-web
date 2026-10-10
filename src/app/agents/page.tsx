@@ -7,6 +7,7 @@ import { initials } from "@/components/home/agent-card";
 import { BuildingIcon, SearchIcon, StarIcon, UserIcon, UsersIcon } from "@/components/icons";
 import { Rail } from "@/components/rail";
 import { getAgents } from "@/lib/agents";
+import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
 import { openGraph, robots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
@@ -98,7 +99,7 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
             <div className="agents-hero-faces" aria-hidden="true">
               {faces.map((agent) => (
                 <span key={agent.id} className="agents-hero-face">
-                  {agent.photo_url ? <Image src={agent.photo_url} alt="" fill sizes="120px" style={{ objectFit: "cover" }} /> : initials(agent.name)}
+                  {agent.photo_url ? <Image src={sizedImage(agent.photo_url, "thumbnail")} alt="" fill sizes="120px" style={{ objectFit: "cover" }} /> : initials(agent.name)}
                 </span>
               ))}
             </div>

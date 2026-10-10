@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, MapIcon } from "@/components/icons";
 import type { SectorMap } from "@/lib/home-content";
+import { sizedImage } from "@/lib/image";
 import { societyMapHref, societyMapLocation } from "@/lib/society-maps";
 import type { PublicSocietyMap } from "@/types/api";
 
@@ -45,7 +46,7 @@ export function MapCard({ map }: { map: MapCardData }) {
   return (
     <article className={`map-card tone-${map.tone}`}>
       <div className="map-card-thumb">
-        {map.image ? <Image src={map.image} alt={map.title} fill sizes="(max-width: 720px) 100vw, 280px" style={{ objectFit: "cover" }} /> : <MapIcon className="placeholder-icon" />}
+        {map.image ? <Image src={sizedImage(map.image, "thumbnail")} alt={map.title} fill sizes="(max-width: 720px) 100vw, 280px" style={{ objectFit: "cover" }} /> : <MapIcon className="placeholder-icon" />}
         <span className="map-badge">
           <MapIcon className="icon" />
           {map.badge}

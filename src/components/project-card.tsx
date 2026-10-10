@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BuildingIcon, CalendarIcon, CameraIcon, PinIcon } from "@/components/icons";
+import { sizedImage } from "@/lib/image";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
 import { completionOf, projectHref, projectLocationOf, projectPhotosOf, projectPriceOf } from "@/lib/project";
 import { thumbnailUrl } from "@/lib/property";
@@ -8,7 +9,7 @@ import type { PublicProject } from "@/types/api";
 
 export function ProjectCard({ project, priority = false }: { project: PublicProject; priority?: boolean }) {
   const photos = projectPhotosOf(project);
-  const cover = photos[0] ? thumbnailUrl(photos[0]) : project.cover_url;
+  const cover = photos[0] ? thumbnailUrl(photos[0]) : sizedImage(project.cover_url, "thumbnail");
   const price = projectPriceOf(project);
   const unitCount = project.units?.length ?? 0;
   const location = projectLocationOf(project);

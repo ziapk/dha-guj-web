@@ -18,6 +18,7 @@ import {
   UsersIcon,
 } from "@/components/icons";
 import { authorInitials, authorSocials, getAuthor, getAuthors } from "@/lib/authors";
+import { sizedImage } from "@/lib/image";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
@@ -155,7 +156,7 @@ export default async function AuthorPage({ params, searchParams }: PageProps<"/a
           <div className="author-hero-grid">
             <div className="author-hero-photo">
               {author.photo_url ? (
-                <Image src={author.photo_url} alt={author.name} fill priority sizes="(max-width: 900px) 100vw, 360px" style={{ objectFit: "cover", objectPosition: "top" }} />
+                <Image src={sizedImage(author.photo_url, "medium")} alt={author.name} fill priority sizes="(max-width: 900px) 100vw, 360px" style={{ objectFit: "cover", objectPosition: "top" }} />
               ) : (
                 <span className="author-hero-initials" aria-hidden="true">
                   {authorInitials(author.name)}

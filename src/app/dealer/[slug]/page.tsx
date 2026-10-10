@@ -27,6 +27,7 @@ import {
 } from "@/components/icons";
 import { ListingRowCard } from "@/components/listing-row-card";
 import { NotFoundError, publicApi } from "@/lib/api";
+import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
@@ -163,7 +164,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
         <section className={`agency-banner${agency.cover_url ? " has-cover" : ""}`}>
           {agency.cover_url && (
             <div className="agency-banner-cover">
-              <Image src={agency.cover_url} alt="" fill priority sizes="(max-width: 900px) 100vw, 1200px" style={{ objectFit: "cover" }} />
+              <Image src={sizedImage(agency.cover_url, "medium")} alt="" fill priority sizes="(max-width: 900px) 100vw, 1200px" style={{ objectFit: "cover" }} />
             </div>
           )}
           <div className="agency-banner-content">

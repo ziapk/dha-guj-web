@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { AgencyLogo } from "@/components/agency-card";
 import { ArrowRightIcon, BadgeIcon, BuildingIcon, CalendarIcon, HomeIcon, PinIcon, StarIcon, ShieldCheckIcon } from "@/components/icons";
 import { DEVELOPER_TYPE_LABELS, developerHref, yearsInBusiness } from "@/lib/developers";
+import { sizedImage } from "@/lib/image";
 import type { PublicDeveloper } from "@/types/api";
 
 /** A blue tick after a verified company's name. */
@@ -41,7 +42,7 @@ export function DeveloperCard({ developer }: { developer: PublicDeveloper }) {
     <article className="dl-card">
       <Link href={href} className="dl-card-media" tabIndex={-1} aria-hidden="true">
         {developer.card_image_url ? (
-          <Image src={developer.card_image_url} alt="" fill sizes="(max-width: 900px) 100vw, 600px" style={{ objectFit: "cover" }} />
+          <Image src={sizedImage(developer.card_image_url, "medium")} alt="" fill sizes="(max-width: 900px) 100vw, 600px" style={{ objectFit: "cover" }} />
         ) : (
           <span className="dl-card-placeholder">
             <BuildingIcon className="icon" />

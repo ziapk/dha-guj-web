@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { sizedImage } from "@/lib/image";
 import type { Banner, BannerPlacement } from "@/types/api";
 
 /**
@@ -36,7 +37,7 @@ export function BannerSlot({ placement, limit = 1, className }: { placement: Ban
       {banners.map((banner) => {
         const image = (
           <Image
-            src={banner.image_url}
+            src={sizedImage(banner.image_url, "medium")}
             alt={banner.title}
             width={1200}
             height={300}
