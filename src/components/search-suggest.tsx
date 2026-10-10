@@ -15,7 +15,7 @@ const GROUPS: { key: SuggestionGroup; label: string }[] = [
   { key: "societies", label: "Societies" },
   { key: "phases", label: "Phases" },
   { key: "projects", label: "Projects" },
-  { key: "agencies", label: "Agencies" },
+  { key: "agencies", label: "Dealers" },
 ];
 
 const ALL_GROUPS = GROUPS.map((group) => group.key);
@@ -51,9 +51,9 @@ export function suggestionHref(suggestion: Suggestion, params?: URLSearchParams)
 
       return `/properties?${query.toString()}`;
     case "projects":
-      return `/projects/${encodeURIComponent(suggestion.slug)}`;
+      return `/project/${encodeURIComponent(suggestion.slug)}`;
     case "agencies":
-      return `/agencies/${encodeURIComponent(suggestion.slug)}`;
+      return `/dealer/${encodeURIComponent(suggestion.slug)}`;
   }
 }
 

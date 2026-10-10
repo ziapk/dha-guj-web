@@ -6,7 +6,7 @@ import type { AgencyProfile } from "@/types/api";
 
 /** The sidebar dealer spotlight on /buy and /rent: cover photo, name, and a few numbers from the agency profile. */
 export function FeaturedDealerCard({ agency }: { agency: AgencyProfile }) {
-  const href = `/agencies/${agency.slug}`;
+  const href = `/dealer/${agency.slug}`;
   const listings = agency.listings_count ?? 0;
   const years = agency.established_year ? new Date().getFullYear() - agency.established_year : null;
   const agents = agency.agents?.length ?? 0;

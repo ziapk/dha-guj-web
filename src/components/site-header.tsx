@@ -15,12 +15,12 @@ import { useThemeSettings } from "@/theme/theme-provider";
 import type { SiteSettings } from "@/types/api";
 
 const LINKS = [
-  { href: "/buy", label: "Buy" },
-  { href: "/rent", label: "Rent" },
+  { href: "/properties-for-sale", label: "Buy" },
+  { href: "/properties-for-rent", label: "Rent" },
   { href: "/projects", label: "Projects" },
   { href: "/developers", label: "Developers" },
-  { href: "/maps", label: "Maps" },
-  { href: "/agencies", label: "Dealers" },
+  { href: "/dha-gujranwala-maps", label: "Maps" },
+  { href: "/dealers", label: "Dealers" },
   { href: "/agents", label: "Agents" },
   { href: "/dha-gujranwala-files-rates", label: "File Rates" },
   { href: "/blog", label: "Blog" },
@@ -30,6 +30,7 @@ const LINKS = [
 const MORE_LINKS = [
   { href: "/properties?category=plot", label: "Plots" },
   { href: "/properties?category=commercial", label: "Commercial" },
+  { href: "/plot-finder", label: "Plot Finder" },
   { href: "/wanted", label: "Wanted" },
   { href: "/pricing", label: "Pricing" },
   { href: "/about-us", label: "About Us" },

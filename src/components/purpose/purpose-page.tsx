@@ -10,8 +10,10 @@ import { SortSelect } from "@/components/search-controls";
 import { ValidationError, publicApi } from "@/lib/api";
 import { searchHeading } from "@/lib/property";
 import { PURPOSE_PAGES, PURPOSE_PAGE_SIZE, purposeFilters, purposeHref, sectorOptions } from "@/lib/purpose-search";
+import { PAGE_META } from "@/lib/page-meta";
+import { searchPageChips } from "@/lib/search-pages";
 import { openGraph, robots } from "@/lib/seo";
-import type { AgencyProfile, Block, Collection, HomeData, Paginated, PropertyPurpose, PropertyType, PublicProperty, Resource, Sector } from "@/types/api";
+import type { AgencyProfile, Block, Collection, HomeData, Paginated, PropertyPurpose, PropertyType, PublicProperty, Resource, SearchPage, Sector } from "@/types/api";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -30,13 +32,17 @@ export async function purposeMetadata(purpose: PropertyPurpose, searchParams: Pr
   const page = PURPOSE_PAGES[purpose];
   const filters = purposeFilters(await searchParams);
   const heading = searchHeading({ ...filters, purpose }, [], await propertyTypesList());
-  const title = `${heading}${filters.sector ? ` in ${filters.sector}` : ""} in ${PLACE}`;
-  const description = `Browse verified property ${page.phrase} in ${PLACE}: houses, plots and commercial units with photos, prices and direct Call and WhatsApp contact.`;
+  // The unfiltered page uses the SEO spec's wording; filtered landing pages describe what they list.
+  const plain = Object.keys(filters).length === 0;
+  const title = plain ? PAGE_META[purpose].title : `${heading}${filters.sector ? ` in ${filters.sector}` : ""} in ${PLACE}`;
+  const description = plain
+    ? PAGE_META[purpose].description
+    : `Browse verified property ${page.phrase} in ${PLACE}: houses, plots and commercial units with photos, prices and direct Call and WhatsApp contact.`;
   const canonical = purposeHref(page.path, Object.fromEntries(Object.entries(filters).filter(([key]) => LANDING_FILTERS.includes(key))));
   const refined = Object.keys(filters).some((key) => !LANDING_FILTERS.includes(key));
 
   return {
-    title,
+    title: plain ? { absolute: title } : title,
     description,
     alternates: { canonical },
     openGraph: await openGraph({ title, description, url: canonical }),
@@ -53,13 +59,26 @@ async function spotlightAgency(): Promise<AgencyProfile | null> {
   return [...agencies].sort((a, b) => Number(b.is_verified) - Number(a.is_verified) || (b.listings_count ?? 0) - (a.listings_count ?? 0))[0] ?? null;
 }
 
+/** On a landing page the search is the admin's; the URL may only page through it or re-sort it. */
+const LANDING_URL_KEYS = ["sort", "page"];
+
+/** The landing page's saved filters, minus the purpose (the page's purpose already fixes it), plus sort and page from the URL. */
+function landingFilters(landing: SearchPage, fromUrl: Record<string, string>): Record<string, string> {
+  const saved = Object.fromEntries(Object.entries(landing.filters).filter(([key]) => key !== "purpose"));
+  const extra = Object.fromEntries(Object.entries(fromUrl).filter(([key]) => LANDING_URL_KEYS.includes(key)));
+
+  return { ...saved, ...extra };
+}
+
 /**
  * The Buy (/buy) and Rent (/rent) pages: same hero, filters, listing cards and sidebar; only the purpose differs,
  * and it comes from the route, never from the URL, so /rent can only ever show rentals.
+ * Keyword landing pages (/properties/{slug}) use the same page with their saved filters already chosen in the bar.
  */
-export async function PurposeListingPage({ purpose, searchParams }: { purpose: PropertyPurpose; searchParams: Promise<SearchParams> }) {
+export async function PurposeListingPage({ purpose, searchParams, landing }: { purpose: PropertyPurpose; searchParams: Promise<SearchParams>; landing?: SearchPage }) {
   const page = PURPOSE_PAGES[purpose];
-  const filters = purposeFilters(await searchParams);
+  const fromUrl = purposeFilters(await searchParams);
+  const filters = landing ? landingFilters(landing, fromUrl) : fromUrl;
 
   const [propertyTypes, sectors, blocks, home, agency] = await Promise.all([
     propertyTypesList(),
@@ -90,9 +109,13 @@ export async function PurposeListingPage({ purpose, searchParams }: { purpose: P
       <section className="purpose-hero">
         <div className="purpose-hero-image" style={heroStyle(heroImage)} aria-hidden="true" />
         <div className="container purpose-hero-inner">
-          <h1>
-            {filters.category === "commercial" ? `${page.label} Commercial Property in` : page.title} <span>{PLACE}</span>
-          </h1>
+          {landing ? (
+            <h1>{landing.heading ?? landing.title}</h1>
+          ) : (
+            <h1>
+              {filters.category === "commercial" ? `${page.label} Commercial Property in` : page.title} <span>{PLACE}</span>
+            </h1>
+          )}
           <PurposeSearchBar key={searchKey} page={page} filters={filters} propertyTypes={propertyTypes} sectors={sectorOptions(sectors, blocks)} />
         </div>
       </section>
@@ -103,9 +126,24 @@ export async function PurposeListingPage({ purpose, searchParams }: { purpose: P
             <nav className="breadcrumbs" aria-label="Breadcrumb">
               <Link href="/">Home</Link>
               <span>/</span>
-              <span>{page.label}</span>
+              {landing ? (
+                <>
+                  <Link href={page.path}>{page.label}</Link>
+                  <span>/</span>
+                  <span>{landing.title}</span>
+                </>
+              ) : (
+                <span>{page.label}</span>
+              )}
             </nav>
             <h2>{heading}</h2>
+            {landing && searchPageChips(landing).length > 0 && (
+              <ul className="purpose-chips" aria-label="Filters on this page">
+                {searchPageChips(landing).map((chip) => (
+                  <li key={chip}>{chip}</li>
+                ))}
+              </ul>
+            )}
             <p>
               {results
                 ? `${total.toLocaleString("en-PK")} propert${total === 1 ? "y" : "ies"} ${page.phrase} in ${PLACE}`
@@ -122,7 +160,7 @@ export async function PurposeListingPage({ purpose, searchParams }: { purpose: P
           <section className="results-list" aria-label={`Properties ${page.phrase}`}>
             <BannerSlot key={`top:${purpose}:${searchKey}`} placement="search_top" />
             {results && results.data.length > 0 ? (
-              <PurposeResults key={`${purpose}:${searchKey}`} initial={results} path={page.path} filters={filters} />
+              <PurposeResults key={`${purpose}:${searchKey}`} initial={results} path={page.path} purpose={purpose} filters={filters} />
             ) : (
               <div className="empty-results">
                 <div style={{ fontSize: 44 }}>🔍</div>
@@ -140,6 +178,8 @@ export async function PurposeListingPage({ purpose, searchParams }: { purpose: P
             <BannerSlot key={`side:${purpose}:${searchKey}`} placement="search_sidebar" />
           </aside>
         </div>
+
+        {landing?.intro_html && <div className="purpose-intro prose" dangerouslySetInnerHTML={{ __html: landing.intro_html }} />}
       </div>
     </>
   );

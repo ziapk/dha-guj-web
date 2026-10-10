@@ -135,7 +135,7 @@ export default function RequirementsPage() {
         <div className="empty-results">
           <div style={{ fontSize: 44 }}>📋</div>
           <h2>No requirements yet</h2>
-          <p>Tell owners and agencies what you are looking for, and let them come to you.</p>
+          <p>Tell owners and dealers what you are looking for, and let them come to you.</p>
           <Link className="btn btn-primary" href="/account/requirements/new">
             Post your requirement
           </Link>

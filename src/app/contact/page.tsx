@@ -222,7 +222,7 @@ export default async function ContactPage() {
                 <h2 id="trusted-dealers">{sections.dealers.heading ?? "Trusted dealers of DHA Gujranwala"}</h2>
                 {sections.dealers.text && <p>{sections.dealers.text}</p>}
               </div>
-              <Link className="pill-link" href="/agencies">
+              <Link className="pill-link" href="/dealers">
                 View all
               </Link>
             </div>

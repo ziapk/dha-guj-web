@@ -7,7 +7,7 @@ const MAPS_REVALIDATE = 300;
 export const SOCIETY_MAPS_PER_PAGE = 12;
 
 export function societyMapHref(slug: string): string {
-  return `/society-maps/${slug}`;
+  return `/map/${slug}`;
 }
 
 export const SOCIETY_MAP_CATEGORIES: SocietyMapCategory[] = ["master_plan", "sector", "block", "commercial", "location", "other"];

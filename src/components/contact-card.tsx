@@ -78,7 +78,7 @@ export function ContactCard({ property }: { property: PublicProperty }) {
       )}
 
       {contact.agency && (
-        <Link href={`/agencies/${contact.agency.slug}`} className="pd-contact-agency">
+        <Link href={`/dealer/${contact.agency.slug}`} className="pd-contact-agency">
           {contact.agency.logo_url ? (
             <Image src={contact.agency.logo_url} alt={contact.agency.name} width={96} height={32} unoptimized />
           ) : (

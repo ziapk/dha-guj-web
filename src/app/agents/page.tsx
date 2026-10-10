@@ -7,13 +7,13 @@ import { initials } from "@/components/home/agent-card";
 import { BuildingIcon, SearchIcon, StarIcon, UserIcon, UsersIcon } from "@/components/icons";
 import { Rail } from "@/components/rail";
 import { getAgents } from "@/lib/agents";
+import { PAGE_META } from "@/lib/page-meta";
 import { openGraph, robots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 
 export const revalidate = 300;
 
-const TITLE = "Real estate agents in DHA Gujranwala";
-const DESCRIPTION = "Trusted real estate professionals in DHA Gujranwala. Call or WhatsApp an agent about plots, files, houses and commercial property.";
+const { title: TITLE, description: DESCRIPTION } = PAGE_META.agents;
 
 function pick(value: string | string[] | undefined): string {
   return (Array.isArray(value) ? (value[0] ?? "") : (value ?? "")).trim().slice(0, 100);
@@ -33,7 +33,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/agents">): 
   const filtered = Boolean(pick(params.name) || pick(params.agency));
 
   return {
-    title,
+    title: { absolute: title },
     description: DESCRIPTION,
     alternates: { canonical: page > 1 ? `/agents?page=${page}` : "/agents" },
     openGraph: await openGraph({ title, description: DESCRIPTION, url: "/agents" }),
@@ -117,7 +117,7 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
             <label className="agents-search-field">
               <BuildingIcon className="icon" />
               <span>
-                <small>Agency Name</small>
+                <small>Dealer Name</small>
                 <input type="search" name="agency" defaultValue={agency} placeholder="Search agency name…" maxLength={100} />
               </span>
             </label>
@@ -188,8 +188,8 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
                 🔍
               </div>
               <h2>{filtered ? "No agents match your search" : "No agents to show yet"}</h2>
-              <p>{filtered ? "Try a shorter name, or search by agency instead." : "Check back soon, or browse our dealers."}</p>
-              <Link className="btn btn-primary" href={filtered ? "/agents" : "/agencies"}>
+              <p>{filtered ? "Try a shorter name, or search by dealer instead." : "Check back soon, or browse our dealers."}</p>
+              <Link className="btn btn-primary" href={filtered ? "/agents" : "/dealers"}>
                 {filtered ? "Show all agents" : "View dealers"}
               </Link>
             </div>

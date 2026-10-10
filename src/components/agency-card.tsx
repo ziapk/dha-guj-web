@@ -36,7 +36,7 @@ export function AgencyCard({ agency }: { agency: AgencyProfile }) {
   const listings = agency.listings_count ?? 0;
 
   return (
-    <Link href={`/agencies/${agency.slug}`} className="agency-card">
+    <Link href={`/dealer/${agency.slug}`} className="agency-card">
       <div className="agency-card-head">
         <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={56} />
         <div style={{ minWidth: 0 }}>

@@ -19,7 +19,7 @@ function plotParam(value: string | string[] | undefined): number | null {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-export async function generateMetadata({ params }: PageProps<"/maps/[[...area]]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/plot-finder/[[...area]]">): Promise<Metadata> {
   const { area = [] } = await params;
   const areas = (await getMapAreas()) ?? EMPTY_AREAS;
   const resolved = resolveArea(areas, area);
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps<"/maps/[[...area]]"
   };
 }
 
-export default async function MapsPage({ params, searchParams }: PageProps<"/maps/[[...area]]">) {
+export default async function PlotFinderPage({ params, searchParams }: PageProps<"/plot-finder/[[...area]]">) {
   const { area = [] } = await params;
   const [config, fetchedAreas, settings] = await Promise.all([getMapConfig(), getMapAreas(), getSiteSettings()]);
   const areas = fetchedAreas ?? EMPTY_AREAS;
@@ -64,7 +64,7 @@ export default async function MapsPage({ params, searchParams }: PageProps<"/map
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: siteUrl() },
-      { "@type": "ListItem", position: 2, name: "Maps", item: `${siteUrl()}/maps` },
+      { "@type": "ListItem", position: 2, name: "Plot Finder", item: `${siteUrl()}/plot-finder` },
       ...(entry ? [{ "@type": "ListItem", position: 3, name, item: `${siteUrl()}${mapsHref(entry, block)}` }] : []),
     ],
   };

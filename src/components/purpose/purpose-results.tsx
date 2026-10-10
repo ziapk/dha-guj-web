@@ -4,13 +4,23 @@ import { useState } from "react";
 import { ChevronDownIcon } from "@/components/icons";
 import { ListingRowCard, ownerOf } from "@/components/listing-row-card";
 import { purposeHref } from "@/lib/purpose-search";
-import type { Paginated, PublicProperty } from "@/types/api";
+import type { Paginated, PropertyPurpose, PublicProperty } from "@/types/api";
 
 /**
  * The listings on /buy and /rent. The server renders the first page; "Load more" appends the next ones in place.
  * The button is also a real link to the next page, so crawlers and visitors without JavaScript can page through.
  */
-export function PurposeResults({ initial, path, filters }: { initial: Paginated<PublicProperty>; path: string; filters: Record<string, string> }) {
+export function PurposeResults({
+  initial,
+  path,
+  purpose,
+  filters,
+}: {
+  initial: Paginated<PublicProperty>;
+  path: string;
+  purpose: PropertyPurpose;
+  filters: Record<string, string>;
+}) {
   const [properties, setProperties] = useState(initial.data);
   const [page, setPage] = useState(initial.meta.current_page);
   const [lastPage, setLastPage] = useState(initial.meta.last_page);
@@ -30,7 +40,7 @@ export function PurposeResults({ initial, path, filters }: { initial: Paginated<
     setFailed(false);
 
     try {
-      const response = await fetch(`/api/properties?${new URLSearchParams(nextFilters).toString()}`);
+      const response = await fetch(`/api/properties?${new URLSearchParams({ ...nextFilters, purpose }).toString()}`);
 
       if (!response.ok) {
         throw new Error("Could not load properties.");

@@ -74,17 +74,17 @@ const getAgency = cache(async (slug: string): Promise<AgencyProfile | null> => {
   }
 });
 
-export async function generateMetadata({ params }: PageProps<"/agencies/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/dealer/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const agency = await getAgency(slug);
 
   if (!agency) {
-    return { title: "Agency not found" };
+    return { title: "Dealer not found" };
   }
 
   const place = agency.city ? ` in ${agency.city.name}` : "";
   const description = metaText(agency.about ? `${agency.name}, real estate agency${place}. ${agency.about}` : `${agency.name}, real estate agency${place}. Meet the agents and browse every property they have for sale or rent.`);
-  const url = `/agencies/${agency.slug}`;
+  const url = `/dealer/${agency.slug}`;
   const title = `${agency.name}: real estate agency${place}`;
 
   return {
@@ -96,7 +96,7 @@ export async function generateMetadata({ params }: PageProps<"/agencies/[slug]">
   };
 }
 
-export default async function AgencyPage({ params, searchParams }: PageProps<"/agencies/[slug]">) {
+export default async function AgencyPage({ params, searchParams }: PageProps<"/dealer/[slug]">) {
   const { slug } = await params;
   const tab = (await searchParams).tab === "agents" ? "agents" : "properties";
   const agency = await getAgency(slug);
@@ -116,17 +116,17 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/a
   const total = listings?.meta.total ?? 0;
   const liveListings = agency.listings_count ?? total;
   const socials = SOCIALS.map((social) => ({ ...social, href: agency[social.key] })).filter((social) => social.href);
-  const pageUrl = `/agencies/${agency.slug}`;
+  const pageUrl = `/dealer/${agency.slug}`;
 
   const facts = [
     { icon: <PinIcon />, label: "Location", value: agency.city?.name ?? agency.address },
-    { icon: <BuildingIcon />, label: "Agency Type", value: agency.is_verified ? "Authorized Dealer" : "Real Estate Agency" },
+    { icon: <BuildingIcon />, label: "Dealer Type", value: agency.is_verified ? "Authorized Dealer" : "Property Dealer" },
     { icon: <BriefcaseIcon />, label: "Years of Experience", value: experience(agency.established_year) },
     { icon: <DocumentIcon />, label: "Total Listings", value: liveListings.toLocaleString("en-PK") },
     { icon: <ShieldCheckIcon />, label: "Service Areas", value: agency.service_areas ?? agency.city?.name ?? null },
   ].filter((fact) => fact.value);
 
-  const agencyUrl = `${siteUrl()}/agencies/${agency.slug}`;
+  const agencyUrl = `${siteUrl()}/dealer/${agency.slug}`;
   const structuredData = {
     "@context": "https://schema.org",
     "@type": ["RealEstateAgent", "Organization"],
@@ -153,7 +153,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/a
         <nav className="breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span>/</span>
-          <Link href="/agencies">Agencies</Link>
+          <Link href="/dealers">Dealers</Link>
           <span>/</span>
           <span>{agency.name}</span>
         </nav>
@@ -276,7 +276,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/a
             <div className="empty-results">
               <div style={{ fontSize: 44 }}>🏠</div>
               <h2>No live listings right now</h2>
-              <p>Check back soon, or contact the agency directly.</p>
+              <p>Check back soon, or contact the dealer directly.</p>
             </div>
           ) : (
             <>
@@ -298,7 +298,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/a
           <div className="empty-results">
             <div style={{ fontSize: 44 }}>👤</div>
             <h2>No agents listed yet</h2>
-            <p>Contact the agency directly for help with buying, selling or renting.</p>
+            <p>Contact the dealer directly for help with buying, selling or renting.</p>
           </div>
         ) : (
           <div className="agency-list">

@@ -77,7 +77,7 @@ function AgentRowCard({ agent, phone, whatsapp }: { agent: PublicAgent; phone: s
           </h3>
           {agent.agency ? (
             <p className="agent-agency">
-              <Link href={`/agencies/${agent.agency.slug}`}>{agent.agency.name}</Link>
+              <Link href={`/dealer/${agent.agency.slug}`}>{agent.agency.name}</Link>
             </p>
           ) : (
             agent.designation && <p className="agent-agency">{agent.designation}</p>
@@ -158,7 +158,7 @@ export function AgentCard({
       </h3>
       {agent.agency ? (
         <p className="agent-agency">
-          <Link href={`/agencies/${agent.agency.slug}`}>{agent.agency.name}</Link>
+          <Link href={`/dealer/${agent.agency.slug}`}>{agent.agency.name}</Link>
         </p>
       ) : (
         agent.specialisation && <p className="agent-agency">{agent.specialisation}</p>

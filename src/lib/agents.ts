@@ -7,7 +7,7 @@ const AGENTS_REVALIDATE = 300;
 export const AGENTS_PER_PAGE = 24;
 
 export function agentHref(slug: string): string {
-  return `/agents/${slug}`;
+  return `/agent/${slug}`;
 }
 
 export type AgentFilters = {

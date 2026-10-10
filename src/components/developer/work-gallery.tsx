@@ -7,14 +7,14 @@ import { GALLERY_CATEGORY_LABELS } from "@/lib/developers";
 import type { DeveloperGalleryItem, GalleryCategory } from "@/types/api";
 
 /** Photos shown on the page; the rest open from the last tile in the lightbox. */
-const VISIBLE = 5;
+const VISIBLE = 4;
 
 function altOf(photo: DeveloperGalleryItem, name: string, index: number): string {
   return photo.alt || photo.title || `${name} work photo ${index + 1}`;
 }
 
 /**
- * A company's work gallery: one large photo, four stacked tiles, every photo in the lightbox.
+ * A company's work gallery: one large photo, three stacked tiles, every photo in the lightbox.
  * Category tabs appear once the photos span more than one category.
  */
 export function WorkGallery({ photos, name }: { photos: DeveloperGalleryItem[]; name: string }) {

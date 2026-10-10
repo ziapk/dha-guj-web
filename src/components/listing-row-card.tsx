@@ -18,11 +18,11 @@ export type ListingOwner = {
   phone: string | null;
   whatsapp: string | null;
   is_verified: boolean;
-  /** Line under the name when no agent is shown; defaults to "Real Estate Agency". */
+  /** Line under the name when no agent is shown; defaults to "Property Dealer". */
   subtitle?: string;
 };
 
-const ACCOUNT_SUBTITLES: Record<string, string> = { individual: "Property Owner", agency: "Real Estate Agency", agent: "Property Agent", developer: "Developer" };
+const ACCOUNT_SUBTITLES: Record<string, string> = { individual: "Property Owner", agency: "Property Dealer", agent: "Property Agent", developer: "Developer" };
 
 /** The owner of a search result, from the contact the API sends with it: the agency when there is one, else the person. */
 export function ownerOf(property: PublicProperty): ListingOwner {
@@ -35,7 +35,7 @@ export function ownerOf(property: PublicProperty): ListingOwner {
     phone: contact?.phone ?? null,
     whatsapp: contact?.whatsapp ?? null,
     is_verified: agency?.is_verified ?? false,
-    subtitle: agency ? "Real Estate Agency" : (ACCOUNT_SUBTITLES[contact?.account_type ?? ""] ?? "Property Owner"),
+    subtitle: agency ? "Property Dealer" : (ACCOUNT_SUBTITLES[contact?.account_type ?? ""] ?? "Property Owner"),
   };
 }
 
@@ -190,7 +190,7 @@ export function ListingRowCard({ property, owner, priority = false }: { property
       <footer className="listing-row-foot">
         <div className="listing-row-agent">
           {agent ? (
-            <Link href={`/agents/${agent.slug}`} className="listing-row-avatar" aria-hidden="true" tabIndex={-1}>
+            <Link href={`/agent/${agent.slug}`} className="listing-row-avatar" aria-hidden="true" tabIndex={-1}>
               {agent.photo_url ? <Image src={agent.photo_url} alt="" width={52} height={52} /> : <span>{initials(agent.name)}</span>}
             </Link>
           ) : (
@@ -198,10 +198,10 @@ export function ListingRowCard({ property, owner, priority = false }: { property
           )}
           <div>
             <strong>
-              {agent ? <Link href={`/agents/${agent.slug}`}>{agent.name}</Link> : owner.name}
+              {agent ? <Link href={`/agent/${agent.slug}`}>{agent.name}</Link> : owner.name}
               {owner.is_verified && <ShieldCheckIcon className="icon agency-verified-tick" />}
             </strong>
-            <span>{agent ? owner.name : (owner.subtitle ?? "Real Estate Agency")}</span>
+            <span>{agent ? owner.name : (owner.subtitle ?? "Property Dealer")}</span>
           </div>
         </div>
         <div className="listing-row-actions">

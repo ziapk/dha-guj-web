@@ -1,18 +1,20 @@
 import dayjs from "dayjs";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { DownloadIcon, MapIcon, PinIcon } from "@/components/icons";
 import { ShareLinks } from "@/components/share-links";
 import { MapViewer } from "@/components/society-maps/map-viewer";
 import { SocietyMapCard } from "@/components/society-maps/society-map-card";
+import { getMapAreas } from "@/lib/plot-finder";
+import { mapsHref, resolveArea } from "@/lib/plot-finder-shared";
 import { fileSizeLabel, getSocietyMap, societyMapHref, societyMapLocation } from "@/lib/society-maps";
 import { jsonLd, metaText, openGraph } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 
 export const revalidate = 300;
 
-export async function generateMetadata({ params }: PageProps<"/society-maps/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/map/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const result = await getSocietyMap(slug);
 
@@ -22,7 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/society-maps/[slu
 
   const map = result.data;
   const title = map.meta_title ?? map.title;
-  const description = metaText(map.meta_description ?? map.description ?? `${map.title}: view in full size, zoom in and download.`);
+  const description = metaText(map.meta_description ?? map.description_text ?? `${map.title}: view in full size, zoom in and download.`);
   const url = societyMapHref(map.slug);
 
   return {
@@ -34,11 +36,19 @@ export async function generateMetadata({ params }: PageProps<"/society-maps/[slu
   };
 }
 
-export default async function SocietyMapPage({ params }: PageProps<"/society-maps/[slug]">) {
+export default async function SocietyMapPage({ params }: PageProps<"/map/[slug]">) {
   const { slug } = await params;
   const result = await getSocietyMap(slug);
 
   if (!result) {
+    // The Plot Finder used to live at /maps/{sector}: send old links there.
+    const areas = await getMapAreas();
+    const area = areas ? resolveArea(areas, [slug]) : null;
+
+    if (area?.entry) {
+      permanentRedirect(mapsHref(area.entry));
+    }
+
     notFound();
   }
 
@@ -63,7 +73,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/society-map
     name: map.title,
     url,
     image: map.image_url,
-    description: map.description ?? undefined,
+    description: map.description_text ?? undefined,
     dateModified: updated ?? undefined,
     contentLocation: location ? { "@type": "Place", name: location } : undefined,
   };
@@ -73,7 +83,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/society-map
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: siteUrl() },
-      { "@type": "ListItem", position: 2, name: "Society Maps", item: `${siteUrl()}/society-maps` },
+      { "@type": "ListItem", position: 2, name: "Society Maps", item: `${siteUrl()}/maps` },
       { "@type": "ListItem", position: 3, name: map.title, item: url },
     ],
   };
@@ -87,7 +97,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/society-map
         <nav className="breadcrumbs" aria-label="Breadcrumb">
           <Link href="/">Home</Link>
           <span aria-hidden="true">›</span>
-          <Link href="/society-maps">Society Maps</Link>
+          <Link href="/dha-gujranwala-maps">Society Maps</Link>
           <span aria-hidden="true">›</span>
           <span aria-current="page">{map.title}</span>
         </nav>
@@ -109,7 +119,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/society-map
               <DownloadIcon className="icon" /> Download {map.download_type.toUpperCase()}
               {size ? ` · ${size}` : ""}
             </a>
-            <Link className="btn btn-outline" href="/maps">
+            <Link className="btn btn-outline" href="/plot-finder">
               <MapIcon className="icon" /> Plot Finder
             </Link>
           </div>
@@ -120,7 +130,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/society-map
         <div className="smap-info">
           <section>
             <h2>About this map</h2>
-            {map.description ? <p className="smap-description">{map.description}</p> : <p className="smap-description">View {map.title} in full size above, or download it to keep a copy.</p>}
+            {map.description ? <div className="smap-description prose" dangerouslySetInnerHTML={{ __html: map.description }} /> : <p className="smap-description">View {map.title} in full size above, or download it to keep a copy.</p>}
             <ShareLinks url={url} title={map.title} />
           </section>
           <aside className="aside-card">
@@ -145,7 +155,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/society-map
                 </h2>
               </div>
               <div className="home-head-action">
-                <Link className="pill-link" href="/society-maps">
+                <Link className="pill-link" href="/dha-gujranwala-maps">
                   View all maps
                 </Link>
               </div>

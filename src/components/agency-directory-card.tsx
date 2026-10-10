@@ -11,7 +11,7 @@ import type { AgencyProfile } from "@/types/api";
  * WhatsApp buttons. Titanium agencies get a badge and their live listing count on the cover.
  */
 export function AgencyDirectoryCard({ agency, fallbackWhatsapp }: { agency: AgencyProfile; fallbackWhatsapp: string | null }) {
-  const href = `/agencies/${agency.slug}`;
+  const href = `/dealer/${agency.slug}`;
   const listed = agency.listings_count ?? 0;
   const sold = agency.sold_count ?? 0;
   // An agency without its own number falls back to the site's, so the button is never dead.

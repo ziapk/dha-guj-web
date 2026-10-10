@@ -1,11 +1,12 @@
 import { cache } from "react";
 import { NotFoundError, publicApi } from "@/lib/api";
-import type { AboutSections, CmsPage, ContactSections, Resource } from "@/types/api";
+import type { AboutSections, CmsPage, ContactSections, MapsSections, Resource } from "@/types/api";
 
 const SECTIONS_REVALIDATE = 300;
 
 export const ABOUT_SLUG = "about-us";
 export const CONTACT_SLUG = "contact";
+export const MAPS_SLUG = "maps";
 
 const EMPTY_ABOUT: AboutSections = {
   hero: { title: null, subtitle: null, image_url: null },
@@ -28,6 +29,14 @@ const EMPTY_CONTACT: ContactSections = {
   form: { heading: null, text: null, consent_text: null, success_message: null },
   dealers: { show: true, heading: null, text: null },
   faqs: [],
+};
+
+const EMPTY_MAPS: MapsSections = {
+  hero: { eyebrow: null, title: null, highlight: null, subtitle: null, image_url: null },
+  about: { eyebrow: null, title: null, highlight: null, text: null, image_url: null },
+  features: [],
+  collection: { eyebrow: null, title: null, highlight: null, subtitle: null },
+  content_html: null,
 };
 
 /** One published page by slug, or null when an admin has unpublished or deleted it. */
@@ -95,6 +104,26 @@ export const getContactPage = cache(async (): Promise<{ page: CmsPage; sections:
       cards: (saved.cards ?? []).map((card) => ({ ...card, lines: card.lines ?? [] })),
       office_hours: saved.office_hours ?? [],
       faqs: saved.faqs ?? [],
+    },
+  };
+});
+
+/**
+ * The content around the /maps listing. Unlike About and Contact, the listing works without it, so a hidden page
+ * or an API error gives empty sections (and no page) instead of a 404.
+ */
+export const getMapsPage = cache(async (): Promise<{ page: CmsPage | null; sections: MapsSections }> => {
+  const page = await getPage(MAPS_SLUG).catch(() => null);
+  const saved = (page?.sections ?? {}) as Partial<MapsSections>;
+
+  return {
+    page,
+    sections: {
+      hero: { ...EMPTY_MAPS.hero, ...(saved.hero ?? {}) },
+      about: { ...EMPTY_MAPS.about, ...(saved.about ?? {}) },
+      features: saved.features ?? [],
+      collection: { ...EMPTY_MAPS.collection, ...(saved.collection ?? {}) },
+      content_html: saved.content_html ?? null,
     },
   };
 });

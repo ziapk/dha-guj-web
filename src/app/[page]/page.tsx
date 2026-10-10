@@ -11,7 +11,7 @@ import { cmsPageHref, getCmsPage, getCmsPages, getSiteSettings, hasContactDetail
 
 /**
  * CMS pages at short URLs: /about, /contact, /terms, /privacy, /faq and any other published page.
- * Static routes (/properties, /agencies, /pricing, /login, ...) always win over this dynamic segment,
+ * Static routes (/properties, /dealers, /pricing, /login, ...) always win over this dynamic segment,
  * and getCmsPage() rejects reserved or malformed slugs without calling the API.
  */
 

@@ -10,18 +10,19 @@ import type { CmsPageSummary, SiteSettings } from "@/types/api";
 const QUICK_LINKS = [
   { href: "/projects", label: "Projects" },
   { href: "/developers", label: "Developers" },
-  { href: "/agencies", label: "Dealers" },
+  { href: "/dealers", label: "Dealers" },
   { href: "/agents", label: "Agents" },
   { href: "/blog", label: "Blog" },
-  { href: "/maps", label: "Sector Maps" },
+  { href: "/dha-gujranwala-maps", label: "Society Maps" },
+  { href: "/plot-finder", label: "Plot Finder" },
   { href: "/dha-gujranwala-files-rates", label: "File Rates" },
   { href: "/pricing", label: "Plans & Pricing" },
   { href: "/wanted", label: "Buyer Requirements" },
 ];
 
 const PROPERTY_LINKS = [
-  { href: "/buy", label: "Buy Property" },
-  { href: "/rent", label: "Rent Property" },
+  { href: "/properties-for-sale", label: "Buy Property" },
+  { href: "/properties-for-rent", label: "Rent Property" },
   { href: "/properties?category=residential", label: "Houses" },
   { href: "/properties?category=plot", label: "Plots" },
   { href: "/properties?category=commercial", label: "Commercial" },

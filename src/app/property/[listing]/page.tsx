@@ -41,19 +41,20 @@ import { siteUrl } from "@/lib/site";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
 
 /**
- * Listing pages live at /property/{slug}-{ref}; the random ref at the end is permanent. The proxy has already
+ * Listing pages live at /property/{slug}-{ref}; the random ref at the end is permanent. An admin can drop the ref,
+ * leaving /property/{slug}, so the whole segment goes to the API, which tells the two apart. The proxy has already
  * redirected old /property/{id}/{slug} and /properties/{slug} links and outdated slugs, and answered 410 / 301
  * for deleted listings.
  */
 const getProperty = cache(async (listing: string): Promise<PublicProperty | null> => {
-  const ref = listing.match(/(?:^|-)([a-z0-9]{8})$/)?.[1];
+  const key = decodeURIComponent(listing);
 
-  if (!ref || /^\d+$/.test(ref)) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(key) || /^\d+$/.test(key)) {
     return null;
   }
 
   try {
-    const response = await publicApi<Resource<PublicProperty>>(`properties/${ref}`, { revalidate: 60 });
+    const response = await publicApi<Resource<PublicProperty>>(`properties/${key}`, { revalidate: 60 });
 
     return response.data;
   } catch (error) {
@@ -221,7 +222,7 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
       availability: availabilityOf(property, seo.notice),
       businessFunction: property.purpose === "rent" ? "http://purl.org/goodrelations/v1#LeaseOut" : "http://purl.org/goodrelations/v1#Sell",
       ...(property.purpose === "rent" ? { priceSpecification: { "@type": "UnitPriceSpecification", price: Number(property.price), priceCurrency: "PKR", unitCode: "MON" } } : {}),
-      ...(property.contact?.agency ? { offeredBy: { "@type": "RealEstateAgent", name: property.contact.agency.name, url: `${siteUrl()}/agencies/${property.contact.agency.slug}` } } : {}),
+      ...(property.contact?.agency ? { offeredBy: { "@type": "RealEstateAgent", name: property.contact.agency.name, url: `${siteUrl()}/dealer/${property.contact.agency.slug}` } } : {}),
     },
     address: {
       "@type": "PostalAddress",

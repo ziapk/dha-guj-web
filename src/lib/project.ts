@@ -12,7 +12,7 @@ export function completionOf(date: string | null): string | null {
 }
 
 export function projectHref(slug: string): string {
-  return `/projects/${slug}`;
+  return `/project/${slug}`;
 }
 
 /** "September 2024" — milestone and progress dates. */
@@ -92,9 +92,12 @@ export const PROGRESS_STATUS_LABELS: Record<ProjectProgressStatus, string> = {
   completed: "Completed",
 };
 
-/** "Rs 50 Lakh – Rs 1.2 Crore" over all unit types, or null when no unit has a price. */
+/** Shown wherever a price would be when the developer keeps prices private. */
+export const PRICE_ON_REQUEST = "Price on request";
+
+/** "Rs 50 Lakh – Rs 1.2 Crore" over all unit types, "Price on request" when hidden, or null when no unit has a price. */
 export function projectPriceOf(project: PublicProject): string | null {
-  return formatPriceRange(project.price_from, project.price_to);
+  return project.hide_price ? PRICE_ON_REQUEST : formatPriceRange(project.price_from, project.price_to);
 }
 
 export function unitPriceOf(unit: ProjectUnit): string | null {

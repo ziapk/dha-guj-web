@@ -39,7 +39,7 @@ export const DEVELOPER_TYPE_LABELS: Record<DeveloperType, string> = {
 export const DEVELOPER_TYPES = Object.keys(DEVELOPER_TYPE_LABELS) as DeveloperType[];
 
 export function developerHref(slug: string): string {
-  return `/developers/${slug}`;
+  return `/developer/${slug}`;
 }
 
 export const getDeveloper = cache(async (slug: string, page = 1): Promise<DeveloperPage | null> => {

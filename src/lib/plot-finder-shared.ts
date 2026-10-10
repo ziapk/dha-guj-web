@@ -19,7 +19,7 @@ export type SectorEntry = { society: MapSociety; phase: MapPhase; sector: MapSec
 
 /**
  * Every mapped sector with its URL key. The key is the sector's slug ("g"), or "phase-sector" ("ii-g") when two
- * phases have a sector with the same slug, so /maps/{key}/{block} always means one place.
+ * phases have a sector with the same slug, so /plot-finder/{key}/{block} always means one place.
  */
 export function sectorEntries(areas: MapAreas): SectorEntry[] {
   const all = areas.societies.flatMap((society) => society.phases.flatMap((phase) => phase.sectors.map((sector) => ({ society, phase, sector }))));
@@ -34,13 +34,13 @@ export function sectorEntries(areas: MapAreas): SectorEntry[] {
 
 export function mapsHref(entry?: SectorEntry | null, block?: MapBlock | null): string {
   if (!entry) {
-    return "/maps";
+    return "/plot-finder";
   }
 
-  return block ? `/maps/${entry.key}/${block.slug}` : `/maps/${entry.key}`;
+  return block ? `/plot-finder/${entry.key}/${block.slug}` : `/plot-finder/${entry.key}`;
 }
 
-/** The sector and block a /maps/… path points to; null when the path names something that is not mapped. */
+/** The sector and block a /plot-finder/… path points to; null when the path names something that is not mapped. */
 export function resolveArea(areas: MapAreas, path: string[]): { entry: SectorEntry | null; block: MapBlock | null } | null {
   if (path.length === 0) {
     return { entry: null, block: null };

@@ -5,12 +5,11 @@ import { AuthorCard } from "@/components/author-card";
 import { SectionHeading } from "@/components/home/section-heading";
 import { ChartIcon, DocumentIcon, MegaphoneIcon, PlusIcon, ShieldCheckIcon, ArrowRightIcon } from "@/components/icons";
 import { authorInitials, getAuthorsPage } from "@/lib/authors";
+import { PAGE_META } from "@/lib/page-meta";
 import { openGraph } from "@/lib/seo";
-import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
 export const revalidate = 300;
 
-const TITLE = "Our Authors";
 const PER_PAGE = 12;
 
 /** "Load more" keeps earlier pages on screen, so page N shows pages 1…N. Capped to keep the render bounded. */
@@ -31,12 +30,11 @@ function pageNumber(value: string | string[] | undefined): number {
 
 export async function generateMetadata({ searchParams }: PageProps<"/authors">): Promise<Metadata> {
   const page = pageNumber((await searchParams).page);
-  const settings = await getSiteSettings();
-  const description = `Meet the writers behind ${siteNameOf(settings)}: real estate insights, investment guides and market updates for DHA Gujranwala.`;
-  const title = page > 1 ? `${TITLE} – page ${page}` : TITLE;
+  const { description } = PAGE_META.authors;
+  const title = page > 1 ? `${PAGE_META.authors.title} – page ${page}` : PAGE_META.authors.title;
 
   return {
-    title,
+    title: { absolute: title },
     description,
     // Every "load more" page repeats the first, so they all point at it.
     alternates: { canonical: "/authors" },

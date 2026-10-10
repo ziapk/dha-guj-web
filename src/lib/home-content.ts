@@ -43,33 +43,3 @@ export const SECTOR_MAPS: SectorMap[] = [
   { slug: "location-map", badge: "Location Map", tone: "blue", title: "Location Map", description: "Find DHA Gujranwala location and access routes.", file: null },
 ];
 
-export const SEO_AREA = "DHA Gujranwala";
-
-type SeoSpec = { sizes: string[]; noun: string; purposes: ("sale" | "rent")[]; category: "residential" | "plot" | "commercial" };
-
-const SEO_SPECS: { title: string; groups: SeoSpec[] }[] = [
-  { title: "Villas", groups: [{ sizes: ["5 Marla", "10 Marla"], noun: "Villa", purposes: ["sale", "rent"], category: "residential" }] },
-  { title: "Plots", groups: [{ sizes: ["5 Marla", "10 Marla", "1 Kanal", "2 Kanal"], noun: "Plot", purposes: ["sale"], category: "plot" }] },
-  { title: "Commercial Plots", groups: [{ sizes: ["2 Marla", "4 Marla", "8 Marla"], noun: "Commercial Plot", purposes: ["sale"], category: "commercial" }] },
-  { title: "Houses", groups: [{ sizes: ["5 Marla", "10 Marla", "1 Kanal", "2 Kanal"], noun: "House", purposes: ["sale", "rent"], category: "residential" }] },
-  { title: "Plazas", groups: [{ sizes: ["4 Marla", "8 Marla", "2 Marla"], noun: "Commercial Plaza", purposes: ["sale", "rent"], category: "commercial" }] },
-];
-
-export type SeoLinkGroup = { title: string; links: { label: string; href: string }[] };
-
-/**
- * "5 Marla House for Sale in DHA Gujranwala" and friends, as keyword links into the search page.
- * Each link carries the purpose and category as real filters plus the size as the keyword, so the
- * results page shows a sensible heading and a matching result set.
- */
-export const SEO_LINK_GROUPS: SeoLinkGroup[] = SEO_SPECS.map(({ title, groups }) => ({
-  title,
-  links: groups.flatMap((group) =>
-    group.purposes.flatMap((purpose) =>
-      group.sizes.map((size) => ({
-        label: `${size} ${group.noun} for ${purpose === "sale" ? "Sale" : "Rent"} in ${SEO_AREA}`,
-        href: `/properties?purpose=${purpose}&category=${group.category}&q=${encodeURIComponent(`${size} ${group.noun}`)}`,
-      })),
-    ),
-  ),
-}));

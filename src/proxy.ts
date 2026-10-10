@@ -37,7 +37,7 @@ function gone(): NextResponse {
 
 /**
  * Listing URLs: old /property/{id}/{slug} and /properties/{slug} links and outdated slugs get a 301 to the
- * permanent /property/{slug}-{ref};
+ * permanent /property/{slug}-{ref}, or /property/{slug} for a listing whose URL an admin set without the ref;
  * deleted listings answer 301 to their replacement or 410 Gone.
  */
 async function listing(request: NextRequest, key: string): Promise<NextResponse> {
@@ -65,9 +65,10 @@ async function listing(request: NextRequest, key: string): Promise<NextResponse>
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const byId = pathname.match(/^\/property\/(\d+)(?:\/[^/]*)?\/?$/);
-  const byRef = pathname.match(/^\/property\/(?:[^/]*-)?([a-z0-9]{8})\/?$/);
+  // "{slug}-{ref}" or a ref-less "{slug}": the API tells them apart.
+  const bySlug = pathname.match(/^\/property\/([^/]+)\/?$/);
   const legacy = pathname.match(/^\/properties\/([^/]+)\/?$/);
-  const key = byId?.[1] ?? byRef?.[1] ?? (legacy ? decodeURIComponent(legacy[1]) : null);
+  const key = byId?.[1] ?? (bySlug ? decodeURIComponent(bySlug[1]) : null) ?? (legacy ? decodeURIComponent(legacy[1]) : null);
 
   if (key !== null) {
     return listing(request, key);

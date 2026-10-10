@@ -1,7 +1,10 @@
 import { PROPERTY_PURPOSE_LABELS } from "@/lib/labels";
 import type { City, PropertyMedia, PropertyType, PublicProperty } from "@/types/api";
 
-/** The listing's permanent page: /property/{slug}-{ref}. The ref never changes; an outdated slug is redirected. */
+/**
+ * The listing's permanent page: /property/{slug}-{ref} (or /property/{slug} when an admin dropped the ref, which
+ * the API's `url` reflects). The ref never changes; an outdated slug is redirected.
+ */
 export function propertyHref(property: Pick<PublicProperty, "ref" | "slug" | "url">): string {
   return property.url ?? `/property/${property.slug}-${property.ref}`;
 }

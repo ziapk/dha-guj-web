@@ -8,6 +8,7 @@ import { mapsHref, sectorEntries } from "@/lib/plot-finder-shared";
 import { projectHref } from "@/lib/project";
 import { siteUrl } from "@/lib/site";
 import { cmsPageHref, getCmsPages } from "@/lib/site-data";
+import { getSearchPages, searchPageHref } from "@/lib/search-pages";
 import { societyMapHref } from "@/lib/society-maps";
 import type { AgencyProfile, BlogPostSummary, Paginated, PublicAgent, PublicAuthor, PublicDeveloper, PublicProject, PublicSocietyMap } from "@/types/api";
 
@@ -59,15 +60,15 @@ export const SITEMAPS = {
   "sitemap-main.xml": {
     description: "all the main pages of the website",
     async entries(site: string): Promise<SitemapEntry[]> {
-      const pages = await getCmsPages();
+      const [pages, searchPages] = await Promise.all([getCmsPages(), getSearchPages(false, SITEMAP_REVALIDATE)]);
 
       return [
         { url: `${site}/`, changeFrequency: "daily", priority: 1 },
         { url: `${site}/properties`, changeFrequency: "hourly", priority: 0.9 },
-        { url: `${site}/buy`, changeFrequency: "hourly", priority: 0.8 },
-        { url: `${site}/rent`, changeFrequency: "hourly", priority: 0.8 },
+        { url: `${site}/properties-for-sale`, changeFrequency: "hourly", priority: 0.8 },
+        { url: `${site}/properties-for-rent`, changeFrequency: "hourly", priority: 0.8 },
         { url: `${site}/projects`, changeFrequency: "daily", priority: 0.7 },
-        { url: `${site}/agencies`, changeFrequency: "daily", priority: 0.6 },
+        { url: `${site}/dealers`, changeFrequency: "daily", priority: 0.6 },
         { url: `${site}/agents`, changeFrequency: "daily", priority: 0.6 },
         { url: `${site}/developers`, changeFrequency: "weekly", priority: 0.6 },
         { url: `${site}/wanted`, changeFrequency: "daily", priority: 0.5 },
@@ -75,6 +76,7 @@ export const SITEMAPS = {
         { url: `${site}/pricing`, changeFrequency: "monthly", priority: 0.5 },
         { url: `${site}/about-us`, changeFrequency: "monthly", priority: 0.3 },
         { url: `${site}/contact`, changeFrequency: "monthly", priority: 0.3 },
+        ...searchPages.map((page) => ({ url: `${site}${searchPageHref(page.slug)}`, lastModified: page.updated_at, changeFrequency: "daily" as const, priority: 0.7 })),
         ...pages.map((page) => ({ url: `${site}${cmsPageHref(page.slug)}`, lastModified: page.updated_at, changeFrequency: "monthly" as const, priority: 0.3 })),
       ];
     },
@@ -95,7 +97,7 @@ export const SITEMAPS = {
     async entries(site: string): Promise<SitemapEntry[]> {
       const agencies = await collect<AgencyProfile>("agencies", MAX_AGENCY_PAGES);
 
-      return agencies.map((agency) => ({ url: `${site}/agencies/${agency.slug}`, changeFrequency: "weekly", priority: 0.6 }));
+      return agencies.map((agency) => ({ url: `${site}/dealer/${agency.slug}`, changeFrequency: "weekly", priority: 0.6 }));
     },
   },
   "maps.xml": {
@@ -105,8 +107,8 @@ export const SITEMAPS = {
       const mapPages = mapAreas ? sectorEntries(mapAreas).flatMap((entry) => [mapsHref(entry), ...entry.sector.blocks.map((block) => mapsHref(entry, block))]) : [];
 
       return [
-        { url: `${site}/maps`, changeFrequency: "weekly", priority: 0.6 },
-        { url: `${site}/society-maps`, changeFrequency: "weekly", priority: 0.6 },
+        { url: `${site}/dha-gujranwala-maps`, changeFrequency: "weekly", priority: 0.6 },
+        { url: `${site}/plot-finder`, changeFrequency: "weekly", priority: 0.6 },
         ...societyMaps.map((map) => ({ url: `${site}${societyMapHref(map.slug)}`, lastModified: map.updated_at, changeFrequency: "monthly" as const, priority: 0.5 })),
         ...mapPages.map((path) => ({ url: `${site}${path}`, changeFrequency: "weekly" as const, priority: 0.5 })),
       ];

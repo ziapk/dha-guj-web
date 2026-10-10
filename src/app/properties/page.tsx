@@ -10,6 +10,7 @@ import { SaveSearchButton } from "@/components/save-search-button";
 import { KeywordSearch, ResultsPagination, SortSelect } from "@/components/search-controls";
 import { ValidationError, publicApi } from "@/lib/api";
 import { pickFilters, searchHeading } from "@/lib/property";
+import { PAGE_META } from "@/lib/page-meta";
 import { PURPOSE_PAGES, purposeHref } from "@/lib/purpose-search";
 import { openGraph, robots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
@@ -26,8 +27,12 @@ export async function generateMetadata({ searchParams }: PageProps<"/properties"
   ]);
 
   const heading = searchHeading(filters, cities, propertyTypes);
-  const title = heading === "Properties" ? "Properties for sale and rent" : heading;
-  const description = `Search ${title.charAt(0).toLowerCase()}${title.slice(1)} with filters for city, society, price, area and bedrooms. Contact owners and agencies directly.`;
+  // The unfiltered page uses the SEO spec's wording; filtered landing pages describe what they list.
+  const plain = Object.keys(filters).length === 0;
+  const title = plain ? PAGE_META.properties.title : heading === "Properties" ? "Properties for sale and rent" : heading;
+  const description = plain
+    ? PAGE_META.properties.description
+    : `Search ${title.charAt(0).toLowerCase()}${title.slice(1)} with filters for city, society, price, area and bedrooms. Contact owners and dealers directly.`;
 
   const canonicalQuery = new URLSearchParams();
 
@@ -42,7 +47,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/properties"
   const refined = Object.keys(filters).some((key) => !(LANDING_FILTERS as readonly string[]).includes(key));
 
   return {
-    title,
+    title: plain ? { absolute: title } : title,
     description,
     alternates: { canonical },
     openGraph: await openGraph({ title, description, url: canonical }),

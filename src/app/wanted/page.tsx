@@ -8,7 +8,7 @@ import { PORTAL_WANTED_PATH, portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PropertyType, Society, WantedPost } from "@/types/api";
 
 const TITLE = "Buyer requirements: property wanted";
-const DESCRIPTION = "Buyers and tenants looking for homes, plots and commercial property. Owners and agencies can find a match and get in touch.";
+const DESCRIPTION = "Buyers and tenants looking for homes, plots and commercial property. Owners and dealers can find a match and get in touch.";
 const FILTER_KEYS = ["purpose", "city_id", "society_id", "property_type_id", "page"] as const;
 
 type Filters = Partial<Record<(typeof FILTER_KEYS)[number], string>>;
@@ -201,7 +201,7 @@ export default async function WantedPage({ searchParams }: PageProps<"/wanted">)
               <MegaphoneIcon />
             </span>
             <h3>Looking for a property?</h3>
-            <p>Tell owners and agencies what you need. Your requirement stays up for 30 days and your contact details are only shared with sellers who unlock them.</p>
+            <p>Tell owners and dealers what you need. Your requirement stays up for 30 days and your contact details are only shared with sellers who unlock them.</p>
             <Link className="btn btn-outline btn-block" href="/account/requirements/new">
               Post your requirement
             </Link>

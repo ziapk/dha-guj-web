@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChevronDownIcon, ChevronRightIcon, HomeIcon } from "@/components/icons";
 import { longDate, PostCard } from "@/components/post-card";
 import { getPostCategories, getPosts, postHref } from "@/lib/blog";
+import { PAGE_META } from "@/lib/page-meta";
 import { openGraph } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
@@ -28,10 +29,10 @@ export async function generateMetadata({ searchParams }: PageProps<"/blog">): Pr
   const named = categories.find((item) => item.slug === category);
 
   const base = named ? `${named.name} articles` : "Blog";
-  const title = page > 1 ? `${base} – page ${page}` : base;
-  const description = named
-    ? named.description ?? `${named.name} articles from ${siteNameOf(settings)}.`
-    : `Property news, buying and renting guides and market updates from ${siteNameOf(settings)}.`;
+  // The unfiltered blog uses the SEO spec's title and description.
+  const plain = !named && page === 1;
+  const title = plain ? PAGE_META.blog.title : page > 1 ? `${base} – page ${page}` : base;
+  const description = named ? (named.description ?? `${named.name} articles from ${siteNameOf(settings)}.`) : PAGE_META.blog.description;
   const query = new URLSearchParams();
 
   if (category) {
@@ -45,7 +46,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/blog">): Pr
   const url = query.size > 0 ? `/blog?${query}` : "/blog";
 
   return {
-    title,
+    title: plain ? { absolute: title } : title,
     description,
     alternates: { canonical: url },
     openGraph: await openGraph({ title, description, url }),

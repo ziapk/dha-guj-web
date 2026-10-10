@@ -32,8 +32,7 @@ import {
   UsersIcon,
   WhatsAppIcon,
 } from "@/components/icons";
-import { ProjectCard } from "@/components/project-card";
-import { Rail } from "@/components/rail";
+import { PortfolioProjects } from "@/components/developer/portfolio-projects";
 import { SectionIcon } from "@/components/section-icon";
 import { SocialIcon } from "@/components/social-icon";
 import { DEVELOPER_TYPE_LABELS, developerHref, developerSocials, getDeveloper, sectionHeading, yearsInBusiness } from "@/lib/developers";
@@ -61,7 +60,7 @@ const STAT_LABELS: { key: DeveloperStat; label: string; icon: (props: { classNam
 /** Icons for the trust strip under the header; highlights are free text, so they take turns. */
 const HIGHLIGHT_ICONS = [ShieldCheckIcon, StarIcon, UsersIcon, LayersIcon, BuildingIcon, BadgeIcon];
 
-export async function generateMetadata({ params, searchParams }: PageProps<"/developers/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps<"/developer/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const page = pageOf((await searchParams).page);
   const result = await getDeveloper(slug, page);
@@ -165,6 +164,18 @@ function MemberPhoto({ member, sizes }: { member: DeveloperTeamMember | Develope
   );
 }
 
+/** A faint city skyline along the bottom of the expertise and experience cards. */
+function SkylineArt() {
+  return (
+    <svg className="dv-skyline" viewBox="0 0 400 80" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M0 80V58h18V44h14v14h10V30h20v50h6V50h16V22h8v-8h6v8h8v58h8V40h22v40h6V54h12V34h10V18h14v16h8v46h10V46h18v34h6V28h12v-6h10v6h12v58h8V52h16v28h10V36h24v44h8V58h14V42h12v38h10V30h18v50h10V50h20v30z"
+      />
+    </svg>
+  );
+}
+
 /** Registration facts in the order of the "Registered & verified" grid, skipping empty ones. */
 function registrationOf(developer: PublicDeveloper): { icon: ReactNode; label: string; value: string; note: string }[] {
   const facts: { icon: ReactNode; label: string; value: string | null; note: string }[] = [
@@ -182,7 +193,7 @@ function registrationOf(developer: PublicDeveloper): { icon: ReactNode; label: s
   return facts.filter((fact): fact is (typeof facts)[number] & { value: string } => Boolean(fact.value));
 }
 
-export default async function DeveloperPage({ params, searchParams }: PageProps<"/developers/[slug]">) {
+export default async function DeveloperPage({ params, searchParams }: PageProps<"/developer/[slug]">) {
   const { slug } = await params;
   const page = pageOf((await searchParams).page);
   const result = await getDeveloper(slug, page);
@@ -210,7 +221,10 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
   const faqs = developer.faqs ?? [];
   const coreValues = developer.core_values ?? [];
   const expertise = developer.expertise ?? [];
-  const overviewImage = sections.overview?.image_url ?? gallery[0]?.url ?? developer.cover_url;
+  // The header always carries a photo; without a cover the first work photo stands in.
+  const heroImage = developer.cover_url ?? gallery[0]?.url ?? null;
+  const overviewImage = sections.overview?.image_url ?? gallery.find((photo) => photo.url !== heroImage)?.url ?? heroImage;
+  const contactImage = gallery.find((photo) => photo.url !== heroImage && photo.url !== overviewImage)?.url ?? heroImage;
   const overviewButton = {
     label: sections.overview?.button_label?.trim() || "View Our Projects",
     href: sections.overview?.button_url?.trim() || (total > 0 ? "#projects" : null),
@@ -218,9 +232,9 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
   const registration = registrationOf(developer);
   const story = (
     [
-      { key: "history", eyebrow: "Our story", title: "Company History", text: developer.history, icon: <ClockIcon className="icon" /> },
-      { key: "mission", eyebrow: "Our purpose", title: "Our Mission", text: developer.mission, icon: <ChartIcon className="icon" /> },
-      { key: "vision", eyebrow: "Looking ahead", title: "Our Vision", text: developer.vision, icon: <GlobeIcon className="icon" /> },
+      { key: "history", title: "Company History", text: developer.history, icon: <ClockIcon className="icon" /> },
+      { key: "mission", title: "Our Mission", text: developer.mission, icon: <ChartIcon className="icon" /> },
+      { key: "vision", title: "Our Vision", text: developer.vision, icon: <GlobeIcon className="icon" /> },
     ] as const
   )
     .filter((card) => Boolean(card.text))
@@ -230,7 +244,8 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
       return {
         ...card,
         text: card.text as string,
-        eyebrow: typed?.label?.trim() || card.eyebrow,
+        // The design shows no eyebrow on these cards unless the admin writes one.
+        eyebrow: typed?.label?.trim() || null,
         title: typed?.heading?.trim() || card.title,
         image: typed?.image_url ?? null,
         icon: typed?.icon ? <SectionIcon name={typed.icon} className="icon" /> : card.icon,
@@ -291,6 +306,15 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
   }).filter((stat) => stat !== null);
   // The overview repeats the four headline figures, as in the spec's "Company Overview" block.
   const stats = allStats.filter((stat) => ["years_experience", "total_projects", "completed_projects", "ongoing_projects"].includes(stat.key));
+  // The blue experience card leads with the years (or, failing that, the project count)
+  // and lists the figures the header and overview don't already show.
+  const experience = years ? { value: `${years}+`, label: "Years of Experience" } : allStats.length > 1 ? { value: total.toLocaleString("en-PK"), label: "Total Projects" } : null;
+  const extraStats = allStats.filter((stat) => !stats.some((shown) => shown.key === stat.key));
+  const experienceHead = head("stats", {
+    eyebrow: "Our experience",
+    title: "Experience",
+    text: `${developer.established_year ? `Since ${developer.established_year}, ` : ""}${developer.name} has been delivering ${kind.toLowerCase()} work${cityName ? ` in ${cityName}` : ""} with a strong reputation for quality, reliability and timely delivery.`,
+  });
 
   return (
     <div className="container page-section dv-page">
@@ -307,10 +331,10 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
       </nav>
 
       {/* Header */}
-      <section className={`dv-hero${developer.cover_url ? " dv-hero-cover" : ""}`}>
-        {developer.cover_url && (
+      <section className={`dv-hero${heroImage ? " dv-hero-cover" : ""}`}>
+        {heroImage && (
           <div className="dv-hero-image" aria-hidden="true">
-            <Image src={developer.cover_url} alt="" fill priority sizes="(max-width: 900px) 100vw, 60vw" style={{ objectFit: "cover" }} />
+            <Image src={heroImage} alt="" fill priority sizes="(max-width: 900px) 100vw, 60vw" style={{ objectFit: "cover" }} />
           </div>
         )}
         <div className="dv-hero-body">
@@ -440,7 +464,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                       <span className="dv-icon-chip">{card.icon}</span>
                     </>
                   )}
-                  <span className="dv-eyebrow dv-story-eyebrow">{card.eyebrow}</span>
+                  {card.eyebrow && <span className="dv-eyebrow dv-story-eyebrow">{card.eyebrow}</span>}
                   <h3>{card.title}</h3>
                   <p>{card.text}</p>
                 </article>
@@ -448,8 +472,8 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
             </section>
           )}
 
-          {/* Values, expertise, experience */}
-          {(coreValues.length > 0 || expertise.length > 0) && (
+          {/* Values, expertise, experience: three cards side by side */}
+          {(coreValues.length > 0 || expertise.length > 0 || experience) && (
             <section className="dv-section dv-pillars">
               {coreValues.length > 0 && (
                 <div className="dv-card">
@@ -472,7 +496,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                 </div>
               )}
               {expertise.length > 0 && (
-                <div className="dv-card">
+                <div className="dv-card dv-expertise-card">
                   <SectionHead {...head("expertise", { eyebrow: "What we do", title: "Areas of Expertise" })} />
                   <ul className="dv-expertise">
                     {expertise.map((item) => (
@@ -485,28 +509,28 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                       </li>
                     ))}
                   </ul>
+                  <SkylineArt />
                 </div>
               )}
-            </section>
-          )}
-
-          {/* Experience & statistics */}
-          {allStats.length > 1 && (
-            <section className="dv-section dv-stats-section">
-              <div className="dv-experience-intro">
-                <SectionHead {...head("stats", { eyebrow: "Our experience", title: "Experience &", accent: "Statistics" })} />
-                {years ? (
-                  <p className="dv-text">
-                    {developer.established_year ? `Since ${developer.established_year}, ` : ""}
-                    {developer.name} has been delivering {kind.toLowerCase()} work{cityName ? ` in ${cityName}` : ""}.
-                  </p>
-                ) : null}
-              </div>
-              <ul className="dv-stats-grid">
-                {allStats.map(({ key, ...stat }) => (
-                  <Stat key={key} {...stat} />
-                ))}
-              </ul>
+              {experience && (
+                <div className="dv-card dv-experience-card">
+                  <span className="dv-eyebrow">{experienceHead.eyebrow}</span>
+                  <strong className="dv-experience-figure">{experience.value}</strong>
+                  <h3>{experience.label}</h3>
+                  <p>{experienceHead.text}</p>
+                  {extraStats.length > 0 && (
+                    <ul className="dv-experience-stats">
+                      {extraStats.map((stat) => (
+                        <li key={stat.key}>
+                          <strong>{stat.value}</strong>
+                          <small>{stat.label}</small>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <SkylineArt />
+                </div>
+              )}
             </section>
           )}
         </>
@@ -531,11 +555,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
           </div>
         ) : (
           <>
-            <Rail label={`Projects by ${developer.name}`}>
-              {projects.data.map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </Rail>
+            <PortfolioProjects label={`Projects by ${developer.name}`} projects={projects.data} />
             {projects.meta.last_page > 1 && (
               <nav className="simple-pagination" aria-label="Pagination">
                 {page > 1 ? <Link href={pageHref(page - 1)}>← Previous</Link> : <span />}
@@ -564,7 +584,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
 
           {/* Leadership */}
           {leaders.length > 0 && (
-            <section className="dv-section">
+            <section className="dv-section dv-leadership">
               <SectionHead
                 {...head("leadership", {
                   title: "Team /",
@@ -575,6 +595,11 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
               <div className="dv-leaders">
                 {leaders.map((leader) => (
                   <article key={`${leader.name}-${leader.designation ?? ""}`} className="dv-leader">
+                    {heroImage && (
+                      <div className="dv-leader-backdrop" aria-hidden="true">
+                        <Image src={heroImage} alt="" fill sizes="40vw" style={{ objectFit: "cover" }} />
+                      </div>
+                    )}
                     <div className="dv-leader-photo">
                       <MemberPhoto member={leader} sizes="(max-width: 900px) 100vw, 420px" />
                       {leader.designation && (
@@ -702,61 +727,68 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
 
           {/* Contact */}
           {(developer.phone || developer.email || location || whatsapp || socials.length > 0) && (
-            <section className="dv-section dv-contact" id="contact">
-              <SectionHead
-                {...head("contact", { eyebrow: "Contact us", title: "Get in", accent: "Touch", text: `Visit our office, call, WhatsApp or email ${developer.name} about any project.` })}
-              />
-              <ul className="dv-contact-list">
-                {developer.email && (
-                  <li>
-                    <span className="dv-icon-chip dv-icon-chip-sm">
-                      <MailIcon className="icon" />
-                    </span>
-                    <span>
-                      <small>Email</small>
-                      <a href={`mailto:${developer.email}`}>{developer.email}</a>
-                    </span>
-                  </li>
-                )}
-                {developer.phone && (
-                  <li>
-                    <span className="dv-icon-chip dv-icon-chip-sm">
-                      <PhoneIcon className="icon" />
-                    </span>
-                    <span>
-                      <small>Phone</small>
-                      <a href={`tel:${developer.phone}`}>{developer.phone}</a>
-                    </span>
-                  </li>
-                )}
-                {location && (
-                  <li>
-                    <span className="dv-icon-chip dv-icon-chip-sm">
-                      <PinIcon className="icon" />
-                    </span>
-                    <span>
-                      <small>Office address</small>
-                      <span>{location}</span>
-                      {developer.google_maps_url && (
-                        <a className="dv-map-link" href={developer.google_maps_url} target="_blank" rel="noopener noreferrer nofollow">
-                          <MapIcon className="icon" /> View on Google Maps
-                        </a>
-                      )}
-                    </span>
-                  </li>
-                )}
-                {developer.business_hours && (
-                  <li>
-                    <span className="dv-icon-chip dv-icon-chip-sm">
-                      <ClockIcon className="icon" />
-                    </span>
-                    <span>
-                      <small>Business hours</small>
-                      <span>{developer.business_hours}</span>
-                    </span>
-                  </li>
-                )}
-              </ul>
+            <section className={`dv-section dv-contact${contactImage ? " dv-contact-image" : ""}`} id="contact">
+              {contactImage && (
+                <div className="dv-contact-backdrop" aria-hidden="true">
+                  <Image src={contactImage} alt="" fill sizes="(max-width: 900px) 100vw, 55vw" style={{ objectFit: "cover" }} />
+                </div>
+              )}
+              <div className="dv-contact-info">
+                <SectionHead
+                  {...head("contact", { eyebrow: "Contact us", title: "Get in", accent: "Touch", text: `Visit our office, call, WhatsApp or email ${developer.name} about any project.` })}
+                />
+                <ul className="dv-contact-list">
+                  {developer.email && (
+                    <li>
+                      <span className="dv-icon-chip dv-icon-chip-sm">
+                        <MailIcon className="icon" />
+                      </span>
+                      <span>
+                        <small>Email</small>
+                        <a href={`mailto:${developer.email}`}>{developer.email}</a>
+                      </span>
+                    </li>
+                  )}
+                  {developer.phone && (
+                    <li>
+                      <span className="dv-icon-chip dv-icon-chip-sm">
+                        <PhoneIcon className="icon" />
+                      </span>
+                      <span>
+                        <small>Phone</small>
+                        <a href={`tel:${developer.phone}`}>{developer.phone}</a>
+                      </span>
+                    </li>
+                  )}
+                  {location && (
+                    <li>
+                      <span className="dv-icon-chip dv-icon-chip-sm">
+                        <PinIcon className="icon" />
+                      </span>
+                      <span>
+                        <small>Office address</small>
+                        <span>{location}</span>
+                        {developer.google_maps_url && (
+                          <a className="dv-map-link" href={developer.google_maps_url} target="_blank" rel="noopener noreferrer nofollow">
+                            <MapIcon className="icon" /> View on Google Maps
+                          </a>
+                        )}
+                      </span>
+                    </li>
+                  )}
+                  {developer.business_hours && (
+                    <li>
+                      <span className="dv-icon-chip dv-icon-chip-sm">
+                        <ClockIcon className="icon" />
+                      </span>
+                      <span>
+                        <small>Business hours</small>
+                        <span>{developer.business_hours}</span>
+                      </span>
+                    </li>
+                  )}
+                </ul>
+              </div>
               <div className="dv-contact-actions">
                 {developer.phone && (
                   <a className="dv-contact-btn dv-contact-call" href={`tel:${developer.phone}`}>

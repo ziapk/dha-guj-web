@@ -7,7 +7,7 @@ import type { Collection, Offer, OfferItem } from "@/types/api";
 
 export const revalidate = 300;
 
-const TITLE = "Pricing for owners and agencies";
+const TITLE = "Pricing for owners and dealers";
 const DESCRIPTION = "Compare listing plans for property owners and real estate agencies: property listings, featured ads, refresh credits and more.";
 
 export async function generateMetadata(): Promise<Metadata> {

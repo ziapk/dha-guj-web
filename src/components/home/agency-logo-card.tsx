@@ -16,7 +16,7 @@ function initials(name: string): string {
 /** An agency as a compact row: the logo on the left, the name and area beside it. */
 export function AgencyLogoCard({ agency }: { agency: AgencyProfile }) {
   return (
-    <Link href={`/agencies/${agency.slug}`} className="agency-tile">
+    <Link href={`/dealer/${agency.slug}`} className="agency-tile">
       <span className="agency-tile-plate">
         {agency.logo_url ? (
           <Image src={agency.logo_url} alt={`${agency.name} logo`} width={120} height={120} className="agency-tile-logo" />

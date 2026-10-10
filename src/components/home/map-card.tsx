@@ -23,10 +23,10 @@ const TONES: MapCardData["tone"][] = ["blue", "green", "purple"];
 export function societyMapCard(map: PublicSocietyMap, index = 0): MapCardData {
   return {
     key: `map-${map.id}`,
-    badge: map.category_label,
+    badge: map.card_label ?? map.category_label,
     tone: TONES[index % TONES.length],
     title: map.title,
-    description: map.description?.trim() || societyMapLocation(map) || "View and download the full-size map.",
+    description: map.description_text || societyMapLocation(map) || "View and download the full-size map.",
     image: map.image_url,
     href: societyMapHref(map.slug),
     external: false,

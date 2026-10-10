@@ -6,26 +6,26 @@ import { CrownIcon, BuildingIcon, HandshakeIcon, HomeIcon, SearchIcon, UsersIcon
 import { Rail } from "@/components/rail";
 import { SearchSuggest } from "@/components/search-suggest";
 import { publicApi } from "@/lib/api";
+import { PAGE_META } from "@/lib/page-meta";
 import { openGraph, robots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 import type { AgencyDirectoryStats, AgencyProfile, City, Collection, Paginated } from "@/types/api";
 
-const TITLE = "Authorized DHA Gujranwala property dealers";
-const DESCRIPTION = "Find registered and authorized DHA Gujranwala real estate agencies. Compare listed and sold properties, then call or WhatsApp a dealer.";
+const { title: TITLE, description: DESCRIPTION } = PAGE_META.dealers;
 const PER_PAGE = 12;
 // "Load more" re-renders every page up to the requested one, so keep that bounded.
 const MAX_PAGE = 20;
 
-export async function generateMetadata({ searchParams }: PageProps<"/agencies">): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: PageProps<"/dealers">): Promise<Metadata> {
   const params = await searchParams;
   // Filtered and "load more" pages are copies of the main list, so keep them out of the index.
   const filtered = Object.keys(params).some((key) => ["q", "city_id", "page"].includes(key));
 
   return {
-    title: TITLE,
+    title: { absolute: TITLE },
     description: DESCRIPTION,
-    alternates: { canonical: "/agencies" },
-    openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/agencies" }),
+    alternates: { canonical: "/dealers" },
+    openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/dealers" }),
     robots: robots(filtered ? { index: false, follow: true } : undefined),
   };
 }
@@ -40,7 +40,7 @@ function fetchAgencies(query: Record<string, string | number | undefined>): Prom
   return publicApi<AgencyPage>("agencies", { query: { per_page: PER_PAGE, ...query }, revalidate: 120 }).catch(() => null);
 }
 
-export default async function AgenciesPage({ searchParams }: PageProps<"/agencies">) {
+export default async function AgenciesPage({ searchParams }: PageProps<"/dealers">) {
   const params = await searchParams;
   const q = pick(params.q);
   const cityId = pick(params.city_id);
@@ -79,7 +79,7 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/agencie
       query.set("page", String(target));
     }
 
-    return query.size ? `/agencies?${query.toString()}` : "/agencies";
+    return query.size ? `/dealers?${query.toString()}` : "/dealers";
   }
 
   const heroStats = stats
@@ -123,8 +123,8 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/agencie
             </ul>
           )}
 
-          <form className="dealers-search" action="/agencies" role="search">
-            <SearchSuggest key={q} name="q" defaultValue={q} placeholder="Search by agency name" aria-label="Agency name" maxLength={100} groups={["agencies"]} />
+          <form className="dealers-search" action="/dealers" role="search">
+            <SearchSuggest key={q} name="q" defaultValue={q} placeholder="Search by dealer name" aria-label="Dealer name" maxLength={100} groups={["agencies"]} />
             <select name="city_id" defaultValue={cityId} aria-label="City">
               <option value="">All cities</option>
               {cities.map((city) => (
@@ -150,12 +150,12 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/agencie
                 <span />
               </p>
               <h2 id="titanium-heading">
-                <span>Titanium</span> Agencies
+                <span>Titanium</span> Dealers
               </h2>
-              <p>Our top verified real estate agencies in DHA Gujranwala with proven experience and trusted services.</p>
+              <p>Our top verified property dealers in DHA Gujranwala with proven experience and trusted services.</p>
             </div>
 
-            <Rail label="Titanium agencies">
+            <Rail label="Titanium dealers">
               {titanium.data.map((agency) => (
                 <AgencyDirectoryCard key={agency.id} agency={agency} fallbackWhatsapp={fallbackWhatsapp} />
               ))}
@@ -169,7 +169,7 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/agencie
           <div className="home-head">
             <div className="home-head-text">
               <p className="home-eyebrow">
-                <BuildingIcon className="icon" /> {filtered ? "Search results" : "More agencies"}
+                <BuildingIcon className="icon" /> {filtered ? "Search results" : "More dealers"}
               </p>
               <h2>
                 {filtered ? (
@@ -178,19 +178,19 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/agencie
                   </>
                 ) : (
                   <>
-                    Explore <span>{titanium?.data.length ? "More Agencies" : "All Agencies"}</span>
+                    Explore <span>{titanium?.data.length ? "More Dealers" : "All Dealers"}</span>
                   </>
                 )}
               </h2>
               <p className="home-head-sub">
                 {filtered
                   ? [q && `Name “${q}”`, cityId && cities.find((city) => String(city.id) === cityId)?.name].filter(Boolean).join(" · ")
-                  : "Browse our trusted network of real estate agencies in DHA Gujranwala."}
+                  : "Browse our trusted network of property dealers in DHA Gujranwala."}
               </p>
             </div>
             {filtered && (
               <div className="home-head-action">
-                <Link className="btn btn-outline" href="/agencies">
+                <Link className="btn btn-outline" href="/dealers">
                   Clear search
                 </Link>
               </div>
@@ -202,11 +202,11 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/agencie
               <div style={{ fontSize: 44 }} aria-hidden="true">
                 🏢
               </div>
-              <h2>{filtered ? "No agencies match your search" : "No agencies to show yet"}</h2>
-              <p>{filtered ? "Try another name or city." : "Agencies will appear here as they join."}</p>
+              <h2>{filtered ? "No dealers match your search" : "No dealers to show yet"}</h2>
+              <p>{filtered ? "Try another name or city." : "Dealers will appear here as they join."}</p>
               {filtered && (
-                <Link className="btn btn-primary" href="/agencies">
-                  Show all agencies
+                <Link className="btn btn-primary" href="/dealers">
+                  Show all dealers
                 </Link>
               )}
             </div>
@@ -221,7 +221,7 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/agencie
               {page < lastPage && page < MAX_PAGE && (
                 <div className="dealers-more">
                   <Link className="btn btn-primary dealers-more-btn" href={pageHref(page + 1)} scroll={false}>
-                    Load More Agencies
+                    Load More Dealers
                   </Link>
                   <small>
                     Showing {agencies.length.toLocaleString("en-PK")} of {total.toLocaleString("en-PK")}

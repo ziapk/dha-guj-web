@@ -57,7 +57,7 @@ export function AgentProfileCard({
           </h3>
           {agent.agency ? (
             <p className="agent-agency">
-              <Link href={`/agencies/${agent.agency.slug}`}>{agent.agency.name}</Link>
+              <Link href={`/dealer/${agent.agency.slug}`}>{agent.agency.name}</Link>
             </p>
           ) : (
             <p className="agent-agency">{agent.designation ?? "Independent agent"}</p>

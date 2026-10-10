@@ -35,7 +35,7 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-export async function generateMetadata({ params }: PageProps<"/agents/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/agent/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const agent = await getAgent(slug);
 
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps<"/agents/[slug]">):
 
   const title = `${agent.name}${agent.designation ? ` — ${agent.designation}` : ""}`;
   const description = metaText(agent.short_bio ?? agent.specialisation ?? `Contact ${agent.name} about property in DHA Gujranwala.`);
-  const url = `/agents/${agent.slug}`;
+  const url = `/agent/${agent.slug}`;
 
   return {
     title,
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: PageProps<"/agents/[slug]">):
   };
 }
 
-export default async function AgentPage({ params }: PageProps<"/agents/[slug]">) {
+export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) {
   const { slug } = await params;
   const agent = await getAgent(slug);
 
@@ -78,7 +78,7 @@ export default async function AgentPage({ params }: PageProps<"/agents/[slug]">)
   const phone = agent.phone ?? settings.contact.phone;
   const whatsapp = whatsappNumber(agent.whatsapp ?? agent.phone ?? settings.contact.whatsapp);
   const socials = agentSocials(agent);
-  const url = `${siteUrl()}/agents/${agent.slug}`;
+  const url = `${siteUrl()}/agent/${agent.slug}`;
   const total = listings?.meta.total ?? 0;
   const place = agent.city?.name ?? null;
   const cover = agent.agency?.cover_url ?? null;
@@ -110,7 +110,7 @@ export default async function AgentPage({ params }: PageProps<"/agents/[slug]">)
     email: agent.email ?? undefined,
     knowsLanguage: agent.languages ?? undefined,
     areaServed: agent.areas_of_expertise.length > 0 ? agent.areas_of_expertise : undefined,
-    worksFor: agent.agency ? { "@type": "Organization", name: agent.agency.name, url: `${siteUrl()}/agencies/${agent.agency.slug}` } : { "@type": "Organization", name: siteName, url: siteUrl() },
+    worksFor: agent.agency ? { "@type": "Organization", name: agent.agency.name, url: `${siteUrl()}/dealer/${agent.agency.slug}` } : { "@type": "Organization", name: siteName, url: siteUrl() },
     sameAs: socials.map((social) => social.url),
   };
 
@@ -254,14 +254,14 @@ export default async function AgentPage({ params }: PageProps<"/agents/[slug]">)
           <aside className="agent-panel">
             {agent.agency ? (
               <>
-                <h2>Agency</h2>
+                <h2>Dealer</h2>
                 <div className="agent-agency">
                   <AgencyLogo name={agent.agency.name} logoUrl={agent.agency.logo_url ?? null} size={84} />
                   <div>
                     <strong>{agent.agency.name}</strong>
-                    <span>Real Estate Agency</span>
-                    <Link href={`/agencies/${agent.agency.slug}`} className="agent-agency-link">
-                      View Agency Profile <ArrowRightIcon />
+                    <span>Property Dealer</span>
+                    <Link href={`/dealer/${agent.agency.slug}`} className="agent-agency-link">
+                      View Dealer Profile <ArrowRightIcon />
                     </Link>
                   </div>
                 </div>

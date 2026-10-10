@@ -14,17 +14,15 @@ import { getAgents } from "@/lib/agents";
 import { SECTOR_MAPS } from "@/lib/home-content";
 import { getSocietyMaps } from "@/lib/society-maps";
 import { getMasterData } from "@/lib/master-data";
+import { PAGE_META } from "@/lib/page-meta";
 import { openGraph } from "@/lib/seo";
-import { getSiteSettings, siteNameOf } from "@/lib/site-data";
+import { getSiteSettings } from "@/lib/site-data";
 import type { AgencyProfile, HomeData, HomeSections, Paginated, PublicProject, Resource } from "@/types/api";
 
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings();
-  const title = `${siteNameOf(settings)}: homes, plots and commercial property for sale and rent`;
-  const description =
-    "Search houses, plots, villas and commercial property for sale and rent in DHA Gujranwala. Verified listings, trusted dealers, sector maps and file rates.";
+  const { title, description } = PAGE_META.home;
 
   return {
     title: { absolute: title },
@@ -187,7 +185,7 @@ export default async function HomePage() {
             title="DHA Gujranwala"
             highlight="Maps"
             subtitle="Browse and download sector maps, commercial zones and key locations of DHA Gujranwala."
-            action={<PillLink href="/society-maps">View All Maps</PillLink>}
+            action={<PillLink href="/dha-gujranwala-maps">View All Maps</PillLink>}
             arrows="head"
             dots
           >
@@ -198,11 +196,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="section section-seo">
-        <div className="container">
-          <SeoLinks />
-        </div>
-      </section>
+      <SeoLinks />
     </>
   );
 }

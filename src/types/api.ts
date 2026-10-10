@@ -323,6 +323,18 @@ export type AboutSections = {
   cta: { heading: string | null; text: string | null; button_label: string | null; button_url: string | null };
 };
 
+/** A heading with a small label above it and a second, accented line. */
+export type SectionHeading = { eyebrow: string | null; title: string | null; highlight: string | null };
+
+/** Typed content around the society maps listing (/maps). */
+export type MapsSections = {
+  hero: SectionHeading & { subtitle: string | null; image_url: string | null };
+  about: SectionHeading & { text: string | null; image_url: string | null };
+  features: { icon: PageIcon | null; title: string; text: string | null }[];
+  collection: SectionHeading & { subtitle: string | null };
+  content_html: string | null;
+};
+
 /** Typed content for the Contact layout. */
 export type ContactSections = {
   hero: { title: string | null; subtitle: string | null; image_url: string | null };
@@ -800,6 +812,8 @@ export type ProjectProgress = {
 /** A live developer project (see dha-guj-api PublicProjectResource). contact is only on GET /public/projects/{slug}. */
 export type PublicProject = {
   id: number;
+  /** A portfolio project is a short showcase on its developer's page, with no page of its own. */
+  kind: "full" | "portfolio";
   slug: string;
 
   name: string;
@@ -871,6 +885,8 @@ export type PublicProject = {
   unit_size_unit: AreaUnit | null;
   currency: string | null;
   price_disclaimer: string | null;
+  /** The developer keeps prices private: every price field is null and the page shows "Price on request". */
+  hide_price: boolean;
   price_updated_at: string | null;
 
   features: ProjectFeatures;
@@ -989,7 +1005,14 @@ export type PublicSocietyMap = {
   slug: string;
   category: SocietyMapCategory;
   category_label: string;
+  /** The ribbon on the card image ("Commercial Zone 1"); the category when empty. */
+  card_label: string | null;
+  /** A short badge, e.g. "CZ-01". */
+  code: string | null;
+  subtitle: string | null;
+  /** HTML from the admin's rich text editor, sanitized by the API. */
   description: string | null;
+  description_text: string | null;
   society: { id: number; name: string; slug: string } | null;
   phase: { id: number; name: string; slug: string } | null;
   sector: { id: number; name: string; slug: string } | null;
@@ -1012,4 +1035,34 @@ export type PublicSocietyMap = {
 export type SocietyMapFilters = {
   categories: { value: SocietyMapCategory; label: string; count: number }[];
   societies: { id: number; name: string; slug: string }[];
+};
+
+/** A keyword landing page (/properties/{slug}): a saved search with its own heading and meta tags. */
+export type SearchPage = {
+  id: number;
+  title: string;
+  slug: string;
+  path: string;
+  group: string | null;
+  purpose: PropertyPurpose;
+  category: PropertyCategory | null;
+  property_type_id: number | null;
+  property_type?: { id: number; name: string; category: PropertyCategory } | null;
+  sector: string | null;
+  block: string | null;
+  min_area: string | null;
+  max_area: string | null;
+  area_unit: AreaUnit | null;
+  min_price: string | null;
+  max_price: string | null;
+  bedrooms: number | null;
+  keyword: string | null;
+  /** Ready-made public search query parameters. */
+  filters: Record<string, string>;
+  heading: string | null;
+  intro_html: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  meta_keywords: string | null;
+  updated_at: string | null;
 };

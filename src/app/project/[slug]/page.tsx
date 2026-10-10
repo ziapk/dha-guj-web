@@ -100,7 +100,7 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
   return projects.map((project) => ({ slug: project.slug }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/projects/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/project/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProject(slug);
 
@@ -204,7 +204,7 @@ function AdminIcon({ url, name, fallback }: { url: string | null; name: string |
   return name ? <SectionIcon name={name as PageIcon} className="pj-admin-icon" /> : <>{fallback}</>;
 }
 
-export default async function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
+export default async function ProjectPage({ params }: PageProps<"/project/[slug]">) {
   const { slug } = await params;
   const project = await getProject(slug);
 
@@ -437,12 +437,20 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               )}
             </p>
           </div>
-          {(project.price_from || project.price_to) && (
+          {project.hide_price ? (
+            <div className="pj-prices">
+              <a className="pj-price is-accent pj-price-request" href="#enquire">
+                <span>Price</span>
+                <strong>On request</strong>
+                <small>Contact us for the latest prices</small>
+              </a>
+            </div>
+          ) : project.price_from || project.price_to ? (
             <div className="pj-prices">
               <PriceBlock label="Starting From" value={project.price_from} accent />
               {project.price_to && project.price_to !== project.price_from && <PriceBlock label="Maximum Price" value={project.price_to} />}
             </div>
-          )}
+          ) : null}
         </header>
       </div>
 
@@ -553,6 +561,11 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                                 <strong>{formatCompactPrice(unit.price_from).replace(/^Rs/, "PKR")}</strong>
                                 <small>(Starting from)</small>
                               </>
+                            ) : project.hide_price ? (
+                              <a href="#enquire" className="pj-unit-request">
+                                <strong>On request</strong>
+                                <small>Contact us</small>
+                              </a>
                             ) : (
                               "—"
                             )}
@@ -612,6 +625,11 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                       </li>
                     ))}
                 </ul>
+              )}
+              {project.hide_price && (
+                <p className="pj-note">
+                  Prices for this project are shared on request. <a href="#enquire">Contact us</a> for the latest prices and payment plans.
+                </p>
               )}
               {project.price_disclaimer && <p className="pj-note">{project.price_disclaimer}</p>}
             </section>
@@ -753,6 +771,11 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                   <DocCard key={media.id} title={media.original_name?.replace(/\.[a-z0-9]+$/i, "") ?? `Payment plan ${index + 1}`} kind="Payment Plan" image={media.thumbnail_url ?? media.medium_url ?? media.url} href={media.url} />
                 ))}
               </Rail>
+              {project.hide_price && paymentPlans.length > 0 && (
+                <p className="pj-note">
+                  Payment plan amounts are shared on request. <a href="#enquire">Contact us</a> for the details.
+                </p>
+              )}
               {paymentPlans.some((plan) => plan.notes) && (
                 <ul className="pj-unit-plans">
                   {paymentPlans
@@ -1070,7 +1093,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
           {agency && (
             <div className="pj-agency">
-              <Link href={`/agencies/${agency.slug}`} className="pj-agency-cover" tabIndex={-1} aria-hidden="true">
+              <Link href={`/dealer/${agency.slug}`} className="pj-agency-cover" tabIndex={-1} aria-hidden="true">
                 {agency.cover_url ? (
                   <Image src={agency.cover_url} alt="" fill sizes="360px" style={{ objectFit: "cover" }} />
                 ) : (
@@ -1080,7 +1103,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               </Link>
               <div className="pj-agency-body">
                 <strong>
-                  <Link href={`/agencies/${agency.slug}`}>{agency.name}</Link>
+                  <Link href={`/dealer/${agency.slug}`}>{agency.name}</Link>
                 </strong>
                 {agency.is_verified && (
                   <span className="pj-agency-meta">
@@ -1115,7 +1138,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                     </span>
                   </li>
                 </ul>
-                <Link href={`/agencies/${agency.slug}`} className="btn btn-primary pj-agency-btn">
+                <Link href={`/dealer/${agency.slug}`} className="btn btn-primary pj-agency-btn">
                   View Dealer Profile <ArrowRightIcon />
                 </Link>
               </div>

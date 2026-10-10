@@ -18,7 +18,7 @@ export default async function NewRequirementPage() {
       <div className="section-head">
         <div>
           <h1 className="account-title">Post your requirement</h1>
-          <p>Tell owners and agencies what you want. It stays visible for 30 days; you can have up to 5 open at a time.</p>
+          <p>Tell owners and dealers what you want. It stays visible for 30 days; you can have up to 5 open at a time.</p>
         </div>
       </div>
       <RequirementForm {...masterData} />

@@ -1,10 +1,10 @@
-/** The Buy (/buy) and Rent (/rent) listing pages: one design, each locked to one purpose. */
+/** The Buy (/properties-for-sale) and Rent (/properties-for-rent) listing pages: one design, each locked to one purpose. */
 
 import type { Block, PropertyPurpose, Sector } from "@/types/api";
 
 export type PurposePage = {
   purpose: PropertyPurpose;
-  path: "/buy" | "/rent";
+  path: "/properties-for-sale" | "/properties-for-rent";
   /** Tab and menu label. */
   label: string;
   /** "Buy Property in", "Rent Property in"; the place name is added in the accent colour. */
@@ -14,8 +14,8 @@ export type PurposePage = {
 };
 
 export const PURPOSE_PAGES: Record<PropertyPurpose, PurposePage> = {
-  sale: { purpose: "sale", path: "/buy", label: "Buy", title: "Buy Property in", phrase: "for sale" },
-  rent: { purpose: "rent", path: "/rent", label: "Rent", title: "Rent Property in", phrase: "for rent" },
+  sale: { purpose: "sale", path: "/properties-for-sale", label: "Buy", title: "Buy Property in", phrase: "for sale" },
+  rent: { purpose: "rent", path: "/properties-for-rent", label: "Rent", title: "Rent Property in", phrase: "for rent" },
 };
 
 /** Results per page; "Load more" asks /api/properties for the next page of the same size. */
