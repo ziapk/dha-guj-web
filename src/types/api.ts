@@ -913,7 +913,7 @@ export type PublicProject = {
   /** Reviewed by the admin team. */
   is_verified?: boolean;
   /** Only on GET /public/projects/{slug}. */
-  contact?: { name: string; office: string | null; phone: string | null; whatsapp: string | null; email: string | null };
+  contact?: { name: string; office: string | null; image_url?: string | null; phone: string | null; whatsapp: string | null; email: string | null };
 };
 
 /** Keyword autocomplete from GET /public/search/suggestions; each group holds at most five matches. */

@@ -31,7 +31,7 @@ export function ProjectContactCard({ project }: { project: PublicProject }) {
   return (
     <div className="contact-card pd-contact">
       <div className="pd-contact-person">
-        <Avatar size={56} className="avatar-accent">
+        <Avatar size={56} className="avatar-accent" src={contact?.image_url || undefined} alt={name}>
           {name.slice(0, 1).toUpperCase()}
         </Avatar>
         <div style={{ minWidth: 0 }}>
