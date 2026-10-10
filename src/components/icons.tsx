@@ -506,3 +506,20 @@ export function ResetIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function RocketIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 15c-1.5 1-2 4-2 6 2 0 5-.5 6-2M9 12a22 22 0 0 1 11-9c0 3-1 8-9 11l-2-2zM9 12H5l2-4h5M12 15v4l4-2v-5" />
+    </Svg>
+  );
+}
+
+export function CheckCircleIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m8.5 12 2.5 2.5 4.5-5" />
+    </Svg>
+  );
+}

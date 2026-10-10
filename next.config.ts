@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const mediaUrl = new URL(process.env.API_MEDIA_URL ?? "http://localhost:8000");
+/** Public URL of the Cloudflare R2 bucket (same value as R2_URL in the API), once uploads move there. */
+const r2Url = process.env.R2_MEDIA_URL ? new URL(process.env.R2_MEDIA_URL) : null;
 
 /** Staging and other non-production deployments set NOINDEX=true at build time (see .env.example). */
 const noindex = process.env.NOINDEX === "true";
@@ -14,6 +16,7 @@ const nextConfig: NextConfig = {
         port: mediaUrl.port,
         pathname: "/storage/**",
       },
+      ...(r2Url ? [{ protocol: "https" as const, hostname: r2Url.hostname, pathname: "/**" }] : []),
     ],
     // Local development serves photos from localhost, which Next.js will not optimize.
     unoptimized: process.env.NEXT_IMAGE_UNOPTIMIZED === "true",
