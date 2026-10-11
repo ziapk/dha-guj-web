@@ -74,7 +74,7 @@ export default async function HomePage() {
     publicApi<Paginated<AgencyProfile>>("agencies", { query: { per_page: 12 }, revalidate: 300 }).then((response) => response.data).catch(() => [] as AgencyProfile[]),
     publicApi<Paginated<PublicProject>>("projects", { query: { per_page: 6 }, revalidate: 300 }).then((response) => response.data).catch(() => [] as PublicProject[]),
     getAgents(1, 12),
-    getSocietyMaps(1, {}, 8),
+    getSocietyMaps(1, { homepage: 1 }, 8),
   ]);
   // Maps published from the admin; the built-in placeholders until there are some.
   const mapCards = societyMaps?.data.length ? societyMaps.data.map(societyMapCard) : SECTOR_MAPS.map(sectorMapCard);

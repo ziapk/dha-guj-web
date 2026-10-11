@@ -18,7 +18,7 @@ export function isSocietyMapCategory(value: string | undefined): value is Societ
 
 /** One page of published maps with the filter options; null when the API is unavailable. */
 export const getSocietyMaps = cache(
-  async (page: number, filters: { category?: string; society?: string; search?: string } = {}, perPage = SOCIETY_MAPS_PER_PAGE): Promise<(Paginated<PublicSocietyMap> & { filters: SocietyMapFilters }) | null> => {
+  async (page: number, filters: { category?: string; society?: string; search?: string; homepage?: 1 } = {}, perPage = SOCIETY_MAPS_PER_PAGE): Promise<(Paginated<PublicSocietyMap> & { filters: SocietyMapFilters }) | null> => {
     try {
       return await publicApi<Paginated<PublicSocietyMap> & { filters: SocietyMapFilters }>("society-maps", {
         query: { page, per_page: perPage, ...filters },
