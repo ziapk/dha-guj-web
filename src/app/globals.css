@@ -2731,10 +2731,31 @@ main h3 {
 
 /* Footer */
 .site-footer {
+  --footer-skyline-height: clamp(110px, 13.4vw, 256px);
+  position: relative;
+  isolation: isolate;
   margin-top: 72px;
-  padding-block: 56px 20px;
+  /* Room below the links for the skyline, so text sits above the buildings rather than on them. */
+  padding-block: 56px calc(var(--footer-skyline-height) * 0.8);
   border-top: 1px solid var(--app-border);
   background: var(--app-surface);
+}
+
+/* City skyline along the bottom edge, behind the links. Transparent WebPs: a deeper, haze-free copy for the
+   light theme, and the original soft one for dark, where it reads on its own. */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  z-index: -1;
+  height: var(--footer-skyline-height);
+  background: url("/footer/skyline-light.webp") center bottom / auto 100% repeat-x;
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .site-footer::before {
+  background-image: url("/footer/skyline.webp");
+  opacity: 0.55;
 }
 
 /* The brand column is wider; the four link columns share the rest. */
