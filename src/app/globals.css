@@ -10029,7 +10029,7 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 
   body:has(.pd-mobile-bar) {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
   }
 
   /* Slider */
@@ -10387,34 +10387,48 @@ main:has(> .section-seo:last-child) + .site-footer {
     max-width: none;
   }
 
-  /* Sticky contact bar */
+  /* Sticky contact bar: a floating card pinned to the bottom of the screen */
   .pd-mobile-bar {
     position: fixed;
-    inset: auto 0 0;
+    inset: auto 8px calc(8px + env(safe-area-inset-bottom));
     z-index: 900;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--app-border);
+    padding: 8px 8px 8px 10px;
+    border: 1px solid var(--app-border);
+    border-radius: 18px;
     background: var(--app-surface);
-    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16);
+  }
+
+  .pd-mobile-bar .ant-avatar {
+    flex: none;
   }
 
   .pd-mobile-bar-price {
     display: flex;
     flex: 1;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
     min-width: 0;
+    padding-left: 10px;
+    border-left: 1px solid var(--app-border);
     line-height: 1.2;
   }
 
   .pd-mobile-bar-price small {
-    font-size: 11px;
-    color: var(--app-muted);
+    padding: 1px 7px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 600;
   }
 
   .pd-mobile-bar-price strong {
+    max-width: 100%;
     overflow: hidden;
     font-size: 15px;
     font-weight: 800;
@@ -10423,26 +10437,38 @@ main:has(> .section-seo:last-child) + .site-footer {
     white-space: nowrap;
   }
 
+  .pd-mobile-bar-price strong span {
+    font-weight: 500;
+  }
+
   .pd-mobile-bar-call,
   .pd-mobile-bar-chat {
     display: inline-flex;
+    flex: none;
     align-items: center;
     gap: 6px;
-    height: 40px;
-    padding: 0 16px;
-    border-radius: 999px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
     color: #fff !important;
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
   }
 
+  .pd-mobile-bar-call .anticon,
+  .pd-mobile-bar-chat .anticon {
+    font-size: 17px;
+  }
+
   .pd-mobile-bar-call {
     background: var(--btn-bg);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--btn-bg) 35%, transparent);
   }
 
   .pd-mobile-bar-chat {
     background: var(--whatsapp);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--whatsapp) 35%, transparent);
   }
 }
 

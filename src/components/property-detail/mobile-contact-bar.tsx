@@ -25,6 +25,8 @@ export function MobileContactBar({ property }: { property: PublicProperty }) {
     return null;
   }
 
+  const [, amount = "", ...unit] = formatCompactPrice(property.price).split(" ");
+
   return (
     <div className="pd-mobile-bar">
       <Avatar size={40} className={contact.photo_url ? undefined : "avatar-accent"} src={sizedImage(contact.photo_url, "thumbnail") ?? undefined} alt={contact.name}>
@@ -32,7 +34,9 @@ export function MobileContactBar({ property }: { property: PublicProperty }) {
       </Avatar>
       <div className="pd-mobile-bar-price">
         <small>Price</small>
-        <strong>{formatCompactPrice(property.price).replace(/^Rs\b/, "PKR")}</strong>
+        <strong>
+          PKR {amount} {unit.length > 0 && <span>{unit.join(" ")}</span>}
+        </strong>
       </div>
       {contact.phone && (
         <a className="pd-mobile-bar-call" href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`} onClick={() => track(property.slug, "phone")}>
