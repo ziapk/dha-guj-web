@@ -25,7 +25,8 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/pro
     .filter(Boolean);
 
   return {
-    title,
+    // The admin's meta title is used as written, without the site-wide "| DHA GUJ" suffix.
+    title: { absolute: title },
     description,
     keywords: keywords?.length ? keywords : undefined,
     alternates: { canonical: url },
