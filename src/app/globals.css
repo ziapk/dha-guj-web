@@ -9342,6 +9342,532 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
+/* ---------- Agents directory and agent profile on phones (designs: public/agents-list-responsive.png, public/agent-detail-responsive.png) ---------- */
+.agents-hero-eyebrow,
+.agents-highlights,
+.agent-pro-stat-short,
+.agent-pro-verified {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /* Directory hero: the DHA gate photo behind white text, the search card overlapping its bottom edge */
+  .agents-hero {
+    padding-top: 0;
+    background: var(--app-bg);
+  }
+
+  .agents-hero-inner {
+    margin-inline: 0;
+    max-width: none;
+    padding: 26px 20px 84px;
+    background:
+      linear-gradient(90deg, rgba(6, 16, 34, 0.9) 0%, rgba(6, 16, 34, 0.68) 60%, rgba(6, 16, 34, 0.35) 100%),
+      url("/home/hero-dha-gujranwala-960.webp") center / cover no-repeat;
+  }
+
+  .agents-hero .breadcrumbs {
+    display: none;
+  }
+
+  .agents-hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .agents-hero-eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .agents-hero h1 {
+    margin: 0 0 10px;
+    font-size: 27px;
+    color: #fff;
+  }
+
+  .agents-hero h1 span {
+    color: #4d9bff;
+  }
+
+  .agents-hero-text p {
+    max-width: 300px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .agents-search {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: -64px 0 0;
+    padding: 10px;
+  }
+
+  .agents-search-field {
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--radius-m);
+  }
+
+  .agents-search-field > .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .agents-search-field small {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .agents-search-field input {
+    font-size: 13px;
+  }
+
+  .agents-search .btn {
+    grid-column: 1 / -1;
+    min-height: 42px;
+  }
+
+  /* Four stat tiles under the search */
+  .agents-highlights {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin: 12px 0 0;
+    padding: 0;
+  }
+
+  .agents-highlights li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    padding: 8px 5px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-m);
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+  }
+
+  .agents-highlights .icon {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--accent);
+  }
+
+  .agents-highlights span {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.15;
+  }
+
+  .agents-highlights strong {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--app-heading);
+  }
+
+  .agents-highlights small {
+    font-size: 9px;
+    line-height: 1.2;
+    color: var(--app-muted);
+  }
+
+  .agents-superstars {
+    padding-top: 28px;
+    padding-bottom: 8px;
+    background: linear-gradient(180deg, var(--accent-tint), var(--app-bg));
+  }
+
+  .agents-hero + #all-agents {
+    padding-top: 28px;
+  }
+
+  /* Agent cards: verified tick beside the name, short stat labels, Call as an outline button */
+  .agent-pro-verified {
+    display: inline-block;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    vertical-align: -2px;
+    color: #fff;
+    fill: var(--accent);
+  }
+
+  .agent-pro-stat-long {
+    display: none;
+  }
+
+  .agent-pro-stat-short {
+    display: inline;
+  }
+
+  .agent-pro-card .agent-actions .btn-primary {
+    border: 1px solid var(--btn-bg);
+    background: var(--app-surface);
+    color: var(--btn-bg) !important;
+  }
+
+  /* Superstars: two cards side by side, photo over the cover, name underneath */
+  .agents-superstars .rail-track {
+    grid-auto-columns: calc((100% - 10px) / 2);
+    gap: 10px;
+  }
+
+  .agents-superstars .agent-pro-card {
+    padding-bottom: 10px;
+    border-radius: var(--radius-l);
+  }
+
+  .agents-superstars .agent-pro-cover {
+    height: 78px;
+  }
+
+  .agents-superstars .superstar-badge {
+    top: 6px;
+    left: 6px;
+    padding: 2px 6px;
+    font-size: 9.5px;
+  }
+
+  .agents-superstars .agent-pro-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: -36px;
+    padding-inline: 10px;
+  }
+
+  .agents-superstars .agent-pro-photo {
+    width: 68px;
+    height: 68px;
+    border-width: 3px;
+    font-size: 20px;
+  }
+
+  .agents-superstars .agent-pro-name {
+    width: 100%;
+    padding: 0;
+  }
+
+  .agents-superstars .agent-pro-name h3 {
+    font-size: 14.5px;
+  }
+
+  .agents-superstars .agent-pro-name .agent-agency {
+    font-size: 11.5px;
+  }
+
+  .agents-superstars .agent-pro-meta {
+    display: none;
+  }
+
+  .agents-superstars .agent-pro-stats,
+  .agent-pro-grid .agent-pro-stats {
+    margin: 8px 10px 10px;
+    padding: 0;
+    border: 0;
+  }
+
+  .agents-superstars .agent-pro-stats li,
+  .agent-pro-grid .agent-pro-stats li {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    column-gap: 3px;
+    border: 0;
+  }
+
+  .agents-superstars .agent-pro-stats li > div,
+  .agent-pro-grid .agent-pro-stats li > div {
+    display: contents;
+  }
+
+  .agents-superstars .agent-pro-stats small,
+  .agent-pro-grid .agent-pro-stats small {
+    grid-column: 1 / -1;
+    font-size: 9.5px;
+    white-space: nowrap;
+  }
+
+  .agents-superstars .agent-pro-stats .icon,
+  .agent-pro-grid .agent-pro-stats .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .agents-superstars .agent-pro-stats strong,
+  .agent-pro-grid .agent-pro-stats strong {
+    font-size: 12.5px;
+  }
+
+  .agents-superstars .agent-pro-card .agent-actions {
+    gap: 6px;
+    padding-inline: 10px;
+  }
+
+  .agents-superstars .agent-pro-card .agent-actions .btn {
+    height: 34px;
+    padding-inline: 6px;
+    font-size: 12px;
+  }
+
+  .agents-superstars .agent-pro-card .agent-actions .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* All agents: compact rows — square photo, name and stats, Call / WhatsApp stacked on the right */
+  .agent-pro-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .agent-pro-grid .agent-pro-card {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr) 100px;
+    grid-template-areas:
+      "photo name actions"
+      "photo stats actions";
+    align-items: center;
+    column-gap: 10px;
+    padding: 10px 0;
+    overflow: visible;
+    border: 0;
+    border-bottom: 1px solid var(--app-border);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .agent-pro-grid .agent-pro-card:hover {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .agent-pro-grid .agent-pro-cover,
+  .agent-pro-grid .agent-pro-meta {
+    display: none;
+  }
+
+  .agent-pro-grid .agent-pro-head {
+    display: contents;
+  }
+
+  .agent-pro-grid .agent-pro-photo {
+    grid-area: photo;
+    width: 80px;
+    height: 80px;
+    border: 0;
+    border-radius: var(--radius-m);
+    box-shadow: none;
+  }
+
+  .agent-pro-grid .agent-pro-name {
+    grid-area: name;
+    align-self: end;
+    padding: 0;
+  }
+
+  .agent-pro-grid .agent-pro-name h3 {
+    font-size: 15px;
+  }
+
+  .agent-pro-grid .agent-pro-name .agent-agency {
+    font-size: 12px;
+  }
+
+  .agent-pro-grid .agent-pro-stats {
+    grid-area: stats;
+    align-self: start;
+    margin: 6px 0 0;
+  }
+
+  .agent-pro-grid .agent-pro-card .agent-actions {
+    grid-area: actions;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0;
+  }
+
+  .agent-pro-grid .agent-pro-card .agent-actions .btn {
+    width: 100%;
+    height: 36px;
+    padding-inline: 6px;
+    font-size: 12.5px;
+  }
+
+  .agent-pro-grid .agent-pro-card .agent-actions .icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Agent profile: cover photo band, round photo overlapping it, dark text on the page background */
+  .agent-hero,
+  .agent-hero.has-cover {
+    padding: 0 0 4px;
+    color: var(--app-heading);
+    background:
+      linear-gradient(180deg, transparent 120px, var(--app-bg) 160px),
+      url("/home/hero-dha-gujranwala-960.webp") center top / 100% 160px no-repeat,
+      var(--app-bg);
+  }
+
+  .agent-hero.has-cover .agent-hero-cover {
+    height: 160px !important;
+    bottom: auto !important;
+  }
+
+  .agent-hero.has-cover::before {
+    height: 160px;
+    background: linear-gradient(180deg, rgba(8, 18, 36, 0.05) 50%, var(--app-bg) 100%);
+  }
+
+  .agent-hero .breadcrumbs {
+    display: none;
+  }
+
+  .agent-hero-inner {
+    padding-top: 74px;
+  }
+
+  .agent-hero-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px 14px;
+    margin-top: 0;
+  }
+
+  .agent-hero-photo {
+    width: 116px;
+    height: 116px;
+    color: #fff;
+  }
+
+  .agent-hero-body {
+    padding-top: 30px;
+  }
+
+  .agent-hero-body h1 {
+    margin: 8px 0 4px;
+    font-size: 26px;
+    color: var(--app-heading);
+  }
+
+  .agent-hero-badge {
+    color: #fff;
+  }
+
+  .agent-hero-kicker {
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    color: var(--app-heading);
+  }
+
+  .agent-hero-kicker span::before {
+    margin: 0 8px;
+  }
+
+  .agent-hero-meta {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--app-text);
+  }
+
+  .agent-hero-meta .icon {
+    color: var(--app-heading);
+  }
+
+  .agent-hero-meta li + li {
+    margin-left: 8px;
+    padding-left: 8px;
+    border-left-color: var(--app-border-strong);
+  }
+
+  .agent-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .agent-hero-actions .btn {
+    height: 44px;
+    min-width: 0;
+    border-radius: var(--radius-m);
+  }
+
+  .agent-hero-actions .btn:only-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Stats: icon beside the number and label, three columns with dividers */
+  .agent-stat-bar {
+    margin-top: 12px;
+    padding: 12px 4px;
+    box-shadow: var(--app-shadow);
+  }
+
+  .agent-stat-bar li {
+    flex-direction: row;
+    gap: 8px;
+    padding: 2px 8px;
+    text-align: left;
+  }
+
+  .agent-stat-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .agent-stat-icon .icon {
+    width: 19px;
+    height: 19px;
+  }
+
+  .agent-stat-bar strong {
+    font-size: 16px;
+  }
+
+  .agent-stat-bar small {
+    display: block;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .agent-intro {
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .agent-panel {
+    padding: 16px 18px;
+  }
+
+  .agent-panel h2 {
+    font-size: 18px;
+  }
+
+  .agent-agency {
+    gap: 14px;
+  }
+}
+
 /* ---------- Property detail page (design: public/property-detail-page.png) ---------- */
 .pd-breadcrumbs {
   align-items: center;

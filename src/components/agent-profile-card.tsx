@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ContactButtons, initials } from "@/components/home/agent-card";
-import { BriefcaseIcon, HandshakeIcon, KeyIcon, PinIcon, StarIcon, TagIcon } from "@/components/icons";
+import { BriefcaseIcon, HandshakeIcon, KeyIcon, PinIcon, ShieldCheckIcon, StarIcon, TagIcon } from "@/components/icons";
 import { agentHref } from "@/lib/agents";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
@@ -30,7 +30,7 @@ export function AgentProfileCard({
   const stats = [
     { icon: <TagIcon className="icon" />, value: agent.for_sale_count ?? agent.listings_count ?? 0, label: "For Sale" },
     { icon: <KeyIcon className="icon" />, value: agent.for_rent_count ?? 0, label: "For Rent" },
-    { icon: <HandshakeIcon className="icon" />, value: agent.closed_deals_count ?? 0, label: "Closed Deals" },
+    { icon: <HandshakeIcon className="icon" />, value: agent.closed_deals_count ?? 0, label: "Closed Deals", short: "Deals" },
   ];
 
   return (
@@ -55,6 +55,7 @@ export function AgentProfileCard({
         <div className="agent-pro-name">
           <h3>
             <Link href={href}>{agent.name}</Link>
+            <ShieldCheckIcon className="icon agent-pro-verified" aria-label="Verified agent" />
           </h3>
           {agent.agency ? (
             <p className="agent-agency">
@@ -85,7 +86,16 @@ export function AgentProfileCard({
             {stat.icon}
             <div>
               <strong>{stat.value}</strong>
-              <small>{stat.label}</small>
+              <small>
+                {"short" in stat ? (
+                  <>
+                    <span className="agent-pro-stat-long">{stat.label}</span>
+                    <span className="agent-pro-stat-short">{stat.short}</span>
+                  </>
+                ) : (
+                  stat.label
+                )}
+              </small>
             </div>
           </li>
         ))}

@@ -4,13 +4,15 @@ import Link from "next/link";
 import { AgentProfileCard } from "@/components/agent-profile-card";
 import { SectionHeading } from "@/components/home/section-heading";
 import { initials } from "@/components/home/agent-card";
-import { BuildingIcon, SearchIcon, StarIcon, UserIcon, UsersIcon } from "@/components/icons";
+import { BuildingIcon, HomeIcon, SearchIcon, ShieldCheckIcon, StarIcon, UserIcon, UsersIcon } from "@/components/icons";
 import { Rail } from "@/components/rail";
 import { getAgents } from "@/lib/agents";
+import { publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
 import { openGraph, robots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
+import type { Paginated } from "@/types/api";
 
 export const revalidate = 300;
 
@@ -42,6 +44,17 @@ export async function generateMetadata({ searchParams }: PageProps<"/agents">): 
   };
 }
 
+/** Directory-wide totals for the stats strip: unfiltered agents, live listings and agencies. */
+async function directoryCounts(): Promise<{ agents: number | null; properties: number | null; agencies: number | null }> {
+  const total = (path: string) =>
+    publicApi<Paginated<unknown>>(path, { query: { per_page: 1 }, revalidate: 3600 })
+      .then((response) => response.meta.total)
+      .catch(() => null);
+  const [agents, properties, agencies] = await Promise.all([total("agents"), total("properties"), total("agencies")]);
+
+  return { agents, properties, agencies };
+}
+
 export default async function AgentsPage({ searchParams }: PageProps<"/agents">) {
   const params = await searchParams;
   const name = pick(params.name);
@@ -50,16 +63,24 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
   const filtered = Boolean(name || agency);
 
   // Superstars lead the first page only; later pages are just more of the full list.
-  const [settings, superstars, agents] = await Promise.all([
+  const [settings, superstars, agents, counts] = await Promise.all([
     getSiteSettings(),
     page === 1 ? getAgents(1, 12, { name, agency, superstar: true }) : null,
     getAgents(page, 24, { name, agency }),
+    directoryCounts(),
   ]);
 
   const lastPage = agents?.meta.last_page ?? 1;
   const total = agents?.meta.total ?? 0;
   const faces = (superstars?.data.length ? superstars.data : (agents?.data ?? [])).slice(0, 4);
   const contact = { fallbackPhone: settings.contact.phone, fallbackWhatsapp: settings.contact.whatsapp };
+
+  /** The strip under the search box on phones; a count the API could not give is left out. */
+  const highlights = [
+    { icon: <UsersIcon className="icon" />, value: counts.agents, label: "Verified Agents" },
+    { icon: <HomeIcon className="icon" />, value: counts.properties, label: "Properties" },
+    { icon: <StarIcon className="icon" />, value: counts.agencies, label: "Agencies" },
+  ].filter((item): item is { icon: React.JSX.Element; value: number; label: string } => typeof item.value === "number" && item.value > 0);
 
   function pageHref(target: number): string {
     const query = new URLSearchParams();
@@ -89,6 +110,7 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
               <span aria-hidden="true">›</span>
               <span aria-current="page">Agents</span>
             </nav>
+            <p className="agents-hero-eyebrow">Trusted &amp; Verified Agents</p>
             <h1>
               Find Trusted Real Estate <span>Agents in DHA Gujranwala</span>
             </h1>
@@ -112,20 +134,41 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
               <UserIcon className="icon" />
               <span>
                 <small>Agent Name</small>
-                <input type="search" name="name" defaultValue={name} placeholder="Search agent name…" maxLength={100} />
+                <input type="search" name="name" defaultValue={name} placeholder="Agent name…" maxLength={100} />
               </span>
             </label>
             <label className="agents-search-field">
               <BuildingIcon className="icon" />
               <span>
                 <small>Dealer Name</small>
-                <input type="search" name="agency" defaultValue={agency} placeholder="Search agency name…" maxLength={100} />
+                <input type="search" name="agency" defaultValue={agency} placeholder="Agency name…" maxLength={100} />
               </span>
             </label>
             <button type="submit" className="btn btn-primary">
               <SearchIcon className="icon" /> Search Agents
             </button>
           </form>
+
+          {highlights.length > 0 && (
+            <ul className="agents-highlights">
+              {highlights.map((item) => (
+                <li key={item.label}>
+                  {item.icon}
+                  <span>
+                    <strong>{item.value.toLocaleString("en-PK")}+</strong>
+                    <small>{item.label}</small>
+                  </span>
+                </li>
+              ))}
+              <li>
+                <ShieldCheckIcon className="icon" />
+                <span>
+                  <strong>100%</strong>
+                  <small>Verified</small>
+                </span>
+              </li>
+            </ul>
+          )}
         </div>
       </section>
 
