@@ -129,3 +129,31 @@ export function descriptionText(html: string): string {
     .replace(/\s+/g, " ")
     .trim();
 }
+
+/** The player URL for a listing video; the portal only accepts YouTube and Vimeo links. Null for anything else. */
+export function videoEmbedUrl(url: string): string | null {
+  try {
+    const link = new URL(url);
+    const host = link.hostname.replace(/^www\./, "");
+
+    if (host === "youtu.be") {
+      return `https://www.youtube-nocookie.com/embed/${link.pathname.slice(1)}`;
+    }
+
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      const id = link.searchParams.get("v") ?? link.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/)?.[1];
+
+      return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+    }
+
+    if (host === "vimeo.com") {
+      const id = link.pathname.match(/^\/(\d+)/)?.[1];
+
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {
+    // not a URL
+  }
+
+  return null;
+}

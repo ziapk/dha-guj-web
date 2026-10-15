@@ -28,6 +28,8 @@ import { PropertyCard } from "@/components/property-card";
 import { PropertyGallery } from "@/components/property-gallery";
 import { Expandable } from "@/components/property-detail/expandable";
 import { ListingActions } from "@/components/property-detail/listing-actions";
+import { MobileContactBar } from "@/components/property-detail/mobile-contact-bar";
+import { ListingMobileGallery } from "@/components/listing-mobile-gallery";
 import { Rail } from "@/components/rail";
 import { RecordRecentlyViewed } from "@/components/recently-viewed";
 import { ViewTracker } from "@/components/view-tracker";
@@ -35,7 +37,7 @@ import { AmenityGroups } from "@/components/amenity-groups";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import { JsonLd } from "@/components/json-ld";
-import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref, purposeTagOf, thumbnailUrl } from "@/lib/property";
+import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref, purposeTagOf, thumbnailUrl, videoEmbedUrl } from "@/lib/property";
 import { openGraph, robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
@@ -146,6 +148,11 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
   const photos = photosOf(property);
   const videos = (property.media ?? []).filter((media) => media.type === "video");
   const isPlot = property.property_type?.category === "plot";
+  /** The "Location" amenity group (near a mosque, school, park…) gets its own section above the rest. */
+  const amenities = property.amenities ?? [];
+  const isNearby = (amenity: (typeof amenities)[number]) => /location|nearby/.test(amenity.group?.slug ?? "");
+  const nearby = amenities.filter(isNearby);
+  const features = amenities.filter((amenity) => !isNearby(amenity));
 
   const location = [property.block, property.sector, property.phase, locationOf(property)].filter(Boolean).join(", ");
   const fullAddress = [property.address, property.society?.name, property.city?.name].filter(Boolean).join(", ");
@@ -268,7 +275,10 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
         </div>
       )}
 
-      <PropertyGallery photos={photos} title={property.title} layout="stack" />
+      <div className="pd-gallery-desktop">
+        <PropertyGallery photos={photos} title={property.title} layout="stack" />
+      </div>
+      {photos.length > 0 && <ListingMobileGallery photos={photos} title={property.title} />}
 
       <div className="detail-layout pd-layout">
         <div className="pd-main">
@@ -276,12 +286,8 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
             <div className="pd-head-top">
               <div className={`pd-price${notice ? " is-closed" : ""}`}>
                 <small>{currency}</small> {priceWords.join(" ")}
-                {(property.purpose === "rent" || property.is_negotiable) && (
-                  <span>
-                    {property.purpose === "rent" ? " / month" : ""}
-                    {property.is_negotiable ? " · negotiable" : ""}
-                  </span>
-                )}
+                {property.purpose === "rent" && <span> / month</span>}
+                {property.is_negotiable && <span className="pd-negotiable">Negotiable</span>}
               </div>
               <ListingActions propertyId={property.id} title={property.title} />
             </div>
@@ -367,25 +373,46 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
             </section>
           )}
 
-          {(property.amenities ?? []).length > 0 && (
-            <section className="pd-section pd-amenities">
-              <h2>Amenities</h2>
+          {nearby.length > 0 && (
+            <section className="pd-section pd-amenities pd-nearby">
+              <h2>Nearby Locations</h2>
+              <AmenityGroups amenities={nearby.map((amenity) => ({ ...amenity, group: null }))} />
+            </section>
+          )}
+
+          {features.length > 0 && (
+            <section className="pd-section pd-amenities pd-features">
+              <h2>Features &amp; Amenities</h2>
               <Expandable collapsedHeight={330}>
-                <AmenityGroups amenities={property.amenities ?? []} />
+                <AmenityGroups amenities={features} />
               </Expandable>
             </section>
           )}
 
           {videos.length > 0 && (
             <section className="pd-section">
-              <h2>Video Tour</h2>
-              {videos.map((video) => (
-                <p key={video.id} style={{ margin: "0 0 8px" }}>
-                  <a href={video.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)" }}>
-                    ▶ Watch video
-                  </a>
-                </p>
-              ))}
+              <h2>Property Video</h2>
+              {videos.map((video) => {
+                const embed = videoEmbedUrl(video.url);
+
+                return embed ? (
+                  <div key={video.id} className={`pd-video${/\/shorts\//.test(video.url) ? " is-vertical" : ""}`}>
+                    <iframe
+                      src={embed}
+                      title={`${property.title} — video`}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <p key={video.id} style={{ margin: "0 0 8px" }}>
+                    <a href={video.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--accent)" }}>
+                      ▶ Watch video
+                    </a>
+                  </p>
+                );
+              })}
             </section>
           )}
         </div>
@@ -456,6 +483,8 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
           </Rail>
         </section>
       )}
+
+      {!notice && <MobileContactBar property={property} />}
     </div>
   );
 }

@@ -6,10 +6,11 @@ import { Avatar, Button, Drawer, Dropdown, Tooltip } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { HomeIcon, PhoneIcon, UserIcon } from "@/components/icons";
+import { HomeIcon, PhoneIcon, UserIcon, WhatsAppIcon } from "@/components/icons";
 import { useSession } from "@/components/session-provider";
 import { ContactList, SocialLinks } from "@/components/site-contact";
 import { SiteLogo } from "@/components/site-logo";
+import { whatsappNumber } from "@/lib/property";
 import { portalUrl } from "@/lib/site";
 import { useThemeSettings } from "@/theme/theme-provider";
 import type { SiteSettings } from "@/types/api";
@@ -119,6 +120,7 @@ function MobileAccountLinks({ onNavigate }: { onNavigate: () => void }) {
 export function SiteHeader({ settings }: { settings: SiteSettings }) {
   const siteName = settings.general.site_name ?? "DHA GUJ Properties";
   const phone = settings.contact.phone;
+  const whatsapp = whatsappNumber(settings.contact.whatsapp);
   const pathname = usePathname();
   const { resolvedMode, toggleMode } = useThemeSettings();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -158,6 +160,17 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
           )}
 
           <AccountMenu />
+
+          {phone && (
+            <a className="icon-button header-call show-mobile" href={`tel:${phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${phone}`}>
+              <PhoneIcon className="icon" />
+            </a>
+          )}
+          {whatsapp && (
+            <a className="icon-button header-whatsapp show-mobile" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+              <WhatsAppIcon className="icon" />
+            </a>
+          )}
 
           <button type="button" className="icon-button show-mobile" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
             <MenuOutlined />
