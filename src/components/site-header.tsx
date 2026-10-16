@@ -1,42 +1,50 @@
 "use client";
 
-import { BellOutlined, FileSearchOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { BellOutlined, FileSearchOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useQueryClient } from "@tanstack/react-query";
-import { Avatar, Button, Drawer, Dropdown, Tooltip } from "antd";
+import { Avatar, Dropdown } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { HomeIcon, PhoneIcon, UserIcon, WhatsAppIcon } from "@/components/icons";
+import { type ComponentType, useEffect, useState } from "react";
+import {
+  BuildingIcon,
+  ChevronRightIcon,
+  CloseIcon,
+  DocumentIcon,
+  HomeIcon,
+  KeyIcon,
+  MapIcon,
+  MenuIcon,
+  PhoneIcon,
+  PlusCircleIcon,
+  TagIcon,
+  UserIcon,
+  UsersIcon,
+  WhatsAppIcon,
+} from "@/components/icons";
 import { useSession } from "@/components/session-provider";
-import { ContactList, SocialLinks } from "@/components/site-contact";
 import { SiteLogo } from "@/components/site-logo";
 import { whatsappNumber } from "@/lib/property";
 import { portalUrl } from "@/lib/site";
 import { useThemeSettings } from "@/theme/theme-provider";
 import type { SiteSettings } from "@/types/api";
 
-const LINKS = [
-  { href: "/properties-for-sale", label: "Buy" },
-  { href: "/properties-for-rent", label: "Rent" },
-  { href: "/projects", label: "Projects" },
-  { href: "/developers", label: "Developers" },
-  { href: "/dha-gujranwala-maps", label: "Maps" },
-  { href: "/dealers", label: "Dealers" },
-  { href: "/agents", label: "Agents" },
-  { href: "/dha-gujranwala-files-rates", label: "File Rates" },
-  { href: "/blog", label: "Blog" },
+type NavLink = { href: string; label: string; icon: ComponentType<{ className?: string }> };
+
+/** The main menu (design: header-image.png); the mobile panel shows the same links with icons (nav-responsive.png). */
+const LINKS: NavLink[] = [
+  { href: "/properties-for-sale", label: "Buy", icon: HomeIcon },
+  { href: "/properties-for-rent", label: "Rent", icon: KeyIcon },
+  { href: "/projects", label: "Projects", icon: BuildingIcon },
+  { href: "/developers", label: "Developers", icon: UsersIcon },
+  { href: "/dha-gujranwala-maps", label: "Maps", icon: MapIcon },
+  { href: "/dealers", label: "Dealers", icon: UserIcon },
+  { href: "/dha-gujranwala-files-rates", label: "File Rates", icon: DocumentIcon },
 ];
 
-/** The links that only appear in the mobile drawer, where there is room for the full site. */
-const MORE_LINKS = [
-  { href: "/properties?category=plot", label: "Plots" },
-  { href: "/properties?category=commercial", label: "Commercial" },
-  { href: "/plot-finder", label: "Plot Finder" },
-  { href: "/wanted", label: "Wanted" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/about-us", label: "About Us" },
-  { href: "/contact", label: "Contact" },
-];
+const SELL_PROPERTY_HREF = "/sell-property";
+
+const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 
 /** The round account button, or the logged-in buyer's menu. */
 function AccountMenu() {
@@ -46,7 +54,7 @@ function AccountMenu() {
 
   if (!user) {
     return (
-      <Link href="/login" className="icon-button hide-mobile" aria-label="Log in">
+      <Link href="/login" className="icon-button header-account" aria-label="Log in">
         <UserIcon className="icon" />
       </Link>
     );
@@ -73,25 +81,23 @@ function AccountMenu() {
         ],
       }}
     >
-      <button type="button" className="user-trigger hide-mobile" aria-label="Account menu">
-        <Avatar size="small" className="avatar-accent">
+      <button type="button" className="icon-button header-account" aria-label={`Account menu for ${user.name}`}>
+        <Avatar size={30} className="avatar-accent">
           {user.name.slice(0, 1).toUpperCase()}
         </Avatar>
-        <span>{user.name.split(" ")[0]}</span>
       </button>
     </Dropdown>
   );
 }
 
+/** Account links at the foot of the mobile panel. */
 function MobileAccountLinks({ onNavigate }: { onNavigate: () => void }) {
   const { user } = useSession();
 
   if (!user) {
     return (
       <Link href="/login" onClick={onNavigate}>
-        <Button size="large" block>
-          Log in
-        </Button>
+        <UserIcon className="icon" /> Log in
       </Link>
     );
   }
@@ -99,19 +105,13 @@ function MobileAccountLinks({ onNavigate }: { onNavigate: () => void }) {
   return (
     <>
       <Link href="/account/favorites" onClick={onNavigate}>
-        <Button size="large" block icon={<HeartOutlined />}>
-          My favourites
-        </Button>
+        <HeartOutlined /> My favourites
       </Link>
       <Link href="/account/saved-searches" onClick={onNavigate}>
-        <Button size="large" block icon={<BellOutlined />}>
-          Saved searches
-        </Button>
+        <BellOutlined /> Saved searches
       </Link>
       <Link href="/account/requirements" onClick={onNavigate}>
-        <Button size="large" block icon={<FileSearchOutlined />}>
-          My requirements
-        </Button>
+        <FileSearchOutlined /> My requirements
       </Link>
     </>
   );
@@ -124,12 +124,30 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
   const pathname = usePathname();
   const { resolvedMode, toggleMode } = useThemeSettings();
   const [menuOpen, setMenuOpen] = useState(false);
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const close = () => setMenuOpen(false);
+
+  // The open panel covers the page: stop the page behind it from scrolling, and let Escape close it.
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (event: KeyboardEvent) => event.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
 
   return (
-    <header className="site-header" id="top">
+    <header className={`site-header${menuOpen ? " menu-open" : ""}`} id="top">
       <div className="container site-header-inner">
-        <SiteLogo siteName={siteName} logoUrl={settings.general.logo_url} />
+        <SiteLogo siteName={siteName} logoUrl={settings.general.logo_url} onClick={close} />
 
         <nav className="site-nav" aria-label="Main">
           {LINKS.map((link) => (
@@ -140,63 +158,99 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
         </nav>
 
         <div className="site-actions">
-          <Tooltip title={resolvedMode === "dark" ? "Light mode" : "Dark mode"}>
-            <button type="button" className="icon-button" aria-label="Toggle dark mode" onClick={toggleMode}>
-              {resolvedMode === "dark" ? <SunOutlined /> : <MoonOutlined />}
-            </button>
-          </Tooltip>
+          <span className="site-actions-divider hide-mobile" aria-hidden="true" />
 
-          <a className="pill-link hide-mobile" href={portalUrl("/listings/new")}>
-            <HomeIcon className="icon" /> List Property
+          <Link className="header-pill header-pill-outline hide-mobile" href={SELL_PROPERTY_HREF}>
+            <TagIcon className="icon" /> Sell Property
+          </Link>
+          <a className="header-pill header-pill-solid hide-mobile" href={portalUrl("/listings/new")}>
+            <PlusCircleIcon className="icon" /> Add Property
           </a>
 
           {phone && (
-            <>
-              <span className="site-actions-divider hide-mobile" aria-hidden="true" />
-              <a className="phone-pill hide-mobile" href={`tel:${phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${phone}`}>
-                <PhoneIcon className="icon" /> {phone}
-              </a>
-            </>
-          )}
-
-          <AccountMenu />
-
-          {phone && (
-            <a className="icon-button header-call show-mobile" href={`tel:${phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${phone}`}>
+            <a className="icon-button header-call" href={telHref(phone)} aria-label={`Call ${phone}`}>
               <PhoneIcon className="icon" />
             </a>
           )}
           {whatsapp && (
-            <a className="icon-button header-whatsapp show-mobile" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <a className="icon-button header-whatsapp" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp (opens in a new tab)">
               <WhatsAppIcon className="icon" />
             </a>
           )}
 
-          <button type="button" className="icon-button show-mobile" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
-            <MenuOutlined />
+          <span className="hide-mobile">
+            <AccountMenu />
+          </span>
+
+          <button
+            type="button"
+            className="header-menu-toggle show-mobile"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? <CloseIcon className="icon" /> : <MenuIcon className="icon" />}
           </button>
         </div>
       </div>
 
-      <Drawer title="Menu" placement="right" size={290} open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <nav className="mobile-nav" aria-label="Mobile">
-          {[{ href: "/", label: "Home" }, ...LINKS, ...MORE_LINKS].map((link) => (
-            <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
-          <Button type="primary" size="large" block href={portalUrl("/listings/new")}>
-            List Property
-          </Button>
-          <MobileAccountLinks onNavigate={() => setMenuOpen(false)} />
+      {menuOpen && (
+        <div className="mobile-menu" id="mobile-menu">
+          <div className="container">
+            <nav className="mobile-menu-links" aria-label="Mobile">
+              {LINKS.map(({ href, label, icon: Icon }) => (
+                <Link key={href} href={href} onClick={close} aria-current={isActive(href) ? "page" : undefined}>
+                  <Icon className="icon" />
+                  <span>{label}</span>
+                  <ChevronRightIcon className="icon mobile-menu-chevron" />
+                </Link>
+              ))}
+            </nav>
+
+            <div className="mobile-menu-ctas">
+              <Link className="mobile-menu-cta mobile-menu-sell" href={SELL_PROPERTY_HREF} onClick={close}>
+                <TagIcon className="icon" />
+                <span>Sell Property</span>
+                <ChevronRightIcon className="icon mobile-menu-chevron" />
+              </Link>
+              <a className="mobile-menu-cta mobile-menu-add" href={portalUrl("/listings/new")}>
+                <PlusCircleIcon className="icon" />
+                <span>Add Property</span>
+                <ChevronRightIcon className="icon mobile-menu-chevron" />
+              </a>
+            </div>
+
+            {(phone || whatsapp) && (
+              <div className="mobile-menu-contact">
+                {phone && (
+                  <a href={telHref(phone)} aria-label={`Call ${phone}`}>
+                    <span className="mobile-menu-contact-icon is-call">
+                      <PhoneIcon className="icon" />
+                    </span>
+                    Call Us
+                  </a>
+                )}
+                {whatsapp && (
+                  <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp (opens in a new tab)">
+                    <span className="mobile-menu-contact-icon is-whatsapp">
+                      <WhatsAppIcon className="icon" />
+                    </span>
+                    WhatsApp
+                  </a>
+                )}
+              </div>
+            )}
+
+            <div className="mobile-menu-extra">
+              <MobileAccountLinks onNavigate={close} />
+              <button type="button" onClick={toggleMode}>
+                {resolvedMode === "dark" ? <SunOutlined /> : <MoonOutlined />} {resolvedMode === "dark" ? "Light mode" : "Dark mode"}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="mobile-contact">
-          <ContactList contact={settings.contact} />
-          <SocialLinks social={settings.social} siteName={siteName} />
-        </div>
-      </Drawer>
+      )}
     </header>
   );
 }

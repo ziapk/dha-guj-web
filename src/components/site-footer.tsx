@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowUpIcon, ClockIcon, MailIcon, PhoneIcon, PinIcon } from "@/components/icons";
+import { FooterSection, FooterThemeToggle } from "@/components/footer-section";
+import { ArrowUpIcon, BuildingIcon, ChevronRightIcon, ClockIcon, HomeIcon, LinkIcon, MailIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "@/components/icons";
 import { SocialLinks } from "@/components/site-contact";
 import { SiteLogo } from "@/components/site-logo";
 import { whatsappNumber } from "@/lib/property";
@@ -27,12 +28,38 @@ const PROPERTY_LINKS = [
   { href: "/properties?category=plot", label: "Plots" },
   { href: "/properties?category=commercial", label: "Commercial" },
   { href: "/properties", label: "All Properties" },
+  { href: "/sell-property", label: "Sell Property" },
 ];
+
+type FooterLink = { href: string; label: string; external?: boolean };
+
+/** A column's links with the chevron bullets of the design. */
+function LinkList({ links }: { links: FooterLink[] }) {
+  return (
+    <ul className="footer-links">
+      {links.map((link) => (
+        <li key={link.href}>
+          <ChevronRightIcon className="icon" />
+          {link.external ? <a href={link.href}>{link.label}</a> : <Link href={link.href}>{link.label}</Link>}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function SiteFooter({ settings, pages }: { settings: SiteSettings; pages: CmsPageSummary[] }) {
   const siteName = siteNameOf(settings);
   const { contact } = settings;
   const whatsapp = whatsappNumber(contact.whatsapp);
+
+  const companyLinks: FooterLink[] = [
+    // About and Contact have their own designed pages, so they are linked directly.
+    { href: "/about-us", label: "About Us" },
+    { href: "/contact", label: "Contact" },
+    ...pages.map((page) => ({ href: cmsPageHref(page.slug), label: page.title })),
+    { href: portalUrl("/register"), label: "Create an account", external: true },
+    { href: "/login", label: "Buyer login" },
+  ];
 
   return (
     <footer className="site-footer">
@@ -44,96 +71,83 @@ export function SiteFooter({ settings, pages }: { settings: SiteSettings; pages:
             <SocialLinks social={settings.social} siteName={siteName} />
           </div>
 
-          <div>
-            <h2>Quick Links</h2>
-            <ul>
-              {QUICK_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href}>{link.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <FooterSection title="Quick Links" icon={<LinkIcon className="icon" />}>
+            <LinkList links={QUICK_LINKS} />
+          </FooterSection>
 
-          <div>
-            <h2>Properties</h2>
-            <ul>
-              {PROPERTY_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href}>{link.label}</Link>
-                </li>
-              ))}
-              <li>
-                <a href={portalUrl("/listings/new")}>List Property</a>
-              </li>
-            </ul>
-          </div>
+          <FooterSection title="Properties" icon={<HomeIcon className="icon" />}>
+            <LinkList links={[...PROPERTY_LINKS, { href: portalUrl("/listings/new"), label: "List Property", external: true }]} />
+          </FooterSection>
 
-          <div>
-            <h2>Company</h2>
-            <ul>
-              {/* About and Contact have their own designed pages, so they are linked directly. */}
-              <li>
-                <Link href="/about-us">About Us</Link>
-              </li>
-              <li>
-                <Link href="/contact">Contact</Link>
-              </li>
-              {pages.map((page) => (
-                <li key={page.id}>
-                  <Link href={cmsPageHref(page.slug)}>{page.title}</Link>
-                </li>
-              ))}
-              <li>
-                <a href={portalUrl("/register")}>Create an account</a>
-              </li>
-              <li>
-                <Link href="/login">Buyer login</Link>
-              </li>
-            </ul>
-          </div>
+          <FooterSection title="Company" icon={<BuildingIcon className="icon" />}>
+            <LinkList links={companyLinks} />
+          </FooterSection>
 
-          <div className="footer-contact-col">
-            <h2>Contact Us</h2>
+          <FooterSection title="Contact Us" icon={<PhoneIcon className="icon" />} className="footer-contact-col">
             <ul className="footer-contact">
-              {contact.email && (
-                <li>
-                  <MailIcon className="icon" />
-                  <a href={`mailto:${contact.email}`}>{contact.email}</a>
-                </li>
-              )}
               {contact.phone && (
                 <li>
-                  <PhoneIcon className="icon" />
-                  <a href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>{contact.phone}</a>
+                  <span className="footer-contact-icon">
+                    <PhoneIcon className="icon" />
+                  </span>
+                  <span>
+                    <a href={`tel:${contact.phone.replace(/[^\d+]/g, "")}`}>{contact.phone}</a>
+                    <small>Call Us</small>
+                  </span>
                 </li>
               )}
               {whatsapp && (
                 <li>
-                  <PhoneIcon className="icon" />
-                  <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
-                    WhatsApp {contact.whatsapp}
-                  </a>
+                  <span className="footer-contact-icon">
+                    <WhatsAppIcon className="icon" />
+                  </span>
+                  <span>
+                    <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
+                      {contact.whatsapp}
+                    </a>
+                    <small>WhatsApp</small>
+                  </span>
+                </li>
+              )}
+              {contact.email && (
+                <li>
+                  <span className="footer-contact-icon">
+                    <MailIcon className="icon" />
+                  </span>
+                  <span>
+                    <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                    <small>Email Us</small>
+                  </span>
                 </li>
               )}
               {contact.address && (
                 <li>
-                  <PinIcon className="icon" />
-                  <address>{contact.address}</address>
+                  <span className="footer-contact-icon">
+                    <PinIcon className="icon" />
+                  </span>
+                  <span>
+                    <address>{contact.address}</address>
+                    <small>Our Office</small>
+                  </span>
                 </li>
               )}
               {contact.office_hours && (
                 <li>
-                  <ClockIcon className="icon" />
-                  <span>{contact.office_hours}</span>
+                  <span className="footer-contact-icon">
+                    <ClockIcon className="icon" />
+                  </span>
+                  <span>
+                    <span className="footer-contact-value">{contact.office_hours}</span>
+                    <small>Office Hours</small>
+                  </span>
                 </li>
               )}
             </ul>
-          </div>
+          </FooterSection>
         </div>
 
         <div className="footer-bottom">
-          <span>
+          <span className="footer-copyright">
             © {new Date().getFullYear()} {siteName}. All Rights Reserved.
           </span>
           <nav aria-label="Legal">
@@ -144,8 +158,12 @@ export function SiteFooter({ settings, pages }: { settings: SiteSettings; pages:
             ))}
             <a href="/sitemap.xml">Sitemap</a>
           </nav>
+          <FooterThemeToggle />
           <a className="back-to-top" href="#top" aria-label="Back to top">
-            <ArrowUpIcon className="icon" />
+            <span className="back-to-top-icon">
+              <ArrowUpIcon className="icon" />
+            </span>
+            <span className="back-to-top-label">Back to top</span>
           </a>
         </div>
       </div>

@@ -523,3 +523,37 @@ export function CheckCircleIcon(props: IconProps) {
     </Svg>
   );
 }
+
+export function PlusCircleIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v8M8 12h8" />
+    </Svg>
+  );
+}
+
+export function MenuIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </Svg>
+  );
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M6 6l12 12M18 6 6 18" />
+    </Svg>
+  );
+}
+
+export function LinkIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5" />
+      <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5" />
+    </Svg>
+  );
+}

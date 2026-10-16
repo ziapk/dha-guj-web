@@ -120,7 +120,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
   const pageUrl = `/dealer/${agency.slug}`;
 
   const facts = [
-    { icon: <PinIcon />, label: "Location", value: agency.city?.name ?? agency.address },
+    { icon: <PinIcon />, label: "Location", value: agency.city?.name ?? agency.address, key: "location" },
     { icon: <BuildingIcon />, label: "Dealer Type", value: agency.is_verified ? "Authorized Dealer" : "Property Dealer" },
     { icon: <BriefcaseIcon />, label: "Years of Experience", value: experience(agency.established_year) },
     { icon: <DocumentIcon />, label: "Total Listings", value: liveListings.toLocaleString("en-PK") },
@@ -179,11 +179,17 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
               )}
               <h1>{agency.name}</h1>
               <p className="agency-banner-kicker">Real Estate Agency</p>
+              {(agency.city?.name ?? agency.address) && (
+                <p className="agency-banner-location">
+                  <PinIcon /> {agency.city?.name ?? agency.address}
+                </p>
+              )}
               {agency.about && <p className="agency-banner-about">{agency.about}</p>}
               <div className="agency-banner-actions">
                 {agency.phone && (
                   <a className="btn btn-primary" href={`tel:${agency.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${agency.name}`}>
-                    <PhoneIcon /> Contact Us
+                    <PhoneIcon /> <span className="text-long">Contact Us</span>
+                    <span className="text-short">Call Now</span>
                   </a>
                 )}
                 {whatsapp && (
@@ -199,7 +205,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
         {facts.length > 0 && (
           <ul className="agency-facts">
             {facts.map((fact) => (
-              <li key={fact.label}>
+              <li key={fact.label} className={"key" in fact ? `agency-fact-${fact.key}` : undefined}>
                 <span className="agency-facts-icon">{fact.icon}</span>
                 <div>
                   <small>{fact.label}</small>
@@ -212,7 +218,9 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
 
         <section className="agency-intro">
           <div className="agency-intro-about">
-            <h2>About {agency.name}</h2>
+            <h2>
+              <DocumentIcon className="icon agency-section-icon" /> About {agency.name}
+            </h2>
             <p>{agency.about ?? `${agency.name} is a real estate agency${agency.city ? ` in ${agency.city.name}` : ""}. Browse their live listings or get in touch with their agents.`}</p>
             <ul className="agency-highlights">
               {HIGHLIGHTS.map((highlight) => (
@@ -225,7 +233,9 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
           </div>
 
           <aside className="agency-contact">
-            <h2>Contact Information</h2>
+            <h2>
+              <MailIcon className="icon agency-section-icon" /> Contact Information
+            </h2>
             <ul>
               {agency.phone && (
                 <li>
@@ -252,12 +262,15 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
               )}
             </ul>
             {socials.length > 0 && (
-              <div className="agency-socials">
-                {socials.map((social) => (
-                  <a key={social.key} href={social.href ?? undefined} className={`social-${social.key}`} target="_blank" rel="noopener noreferrer nofollow" aria-label={`${agency.name} on ${social.label}`}>
-                    {social.icon}
-                  </a>
-                ))}
+              <div className="agency-follow">
+                <h3>Follow Us</h3>
+                <div className="agency-socials">
+                  {socials.map((social) => (
+                    <a key={social.key} href={social.href ?? undefined} className={`social-${social.key}`} target="_blank" rel="noopener noreferrer nofollow" aria-label={`${agency.name} on ${social.label}`}>
+                      {social.icon}
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
           </aside>
@@ -288,7 +301,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
               </div>
               {total > LISTINGS_SHOWN && (
                 <div className="listing-row-more">
-                  <Link className="btn btn-outline" href={`/properties?agency=${encodeURIComponent(agency.slug)}&sort=newest`}>
+                  <Link className="btn btn-outline agency-view-all" href={`/properties?agency=${encodeURIComponent(agency.slug)}&sort=newest`}>
                     View all {total.toLocaleString("en-PK")} properties
                   </Link>
                 </div>

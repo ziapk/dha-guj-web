@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { initials } from "@/components/home/agent-card";
-import { ArrowRightIcon, CrownIcon, HandshakeIcon, HomeIcon, PinIcon, ShieldCheckIcon, WhatsAppIcon } from "@/components/icons";
+import { ArrowRightIcon, CrownIcon, HandshakeIcon, HomeIcon, PhoneIcon, PinIcon, ShieldCheckIcon, WhatsAppIcon } from "@/components/icons";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import type { AgencyProfile } from "@/types/api";
@@ -65,22 +65,34 @@ export function AgencyDirectoryCard({ agency, fallbackWhatsapp }: { agency: Agen
           <HomeIcon className="icon" />
           <div>
             <strong>{listed.toLocaleString("en-PK")}</strong>
-            <small>Listed Properties</small>
+            <small>
+              <span className="text-long">Listed Properties</span>
+              <span className="text-short">Listed</span>
+            </small>
           </div>
         </li>
         <li>
           <HandshakeIcon className="icon" />
           <div>
             <strong>{sold.toLocaleString("en-PK")}</strong>
-            <small>Sold Properties</small>
+            <small>
+              <span className="text-long">Sold Properties</span>
+              <span className="text-short">Sold</span>
+            </small>
           </div>
         </li>
       </ul>
 
       <div className="dealer-actions">
-        <Link href={href} className="btn btn-primary">
+        <Link href={href} className="btn btn-primary dealer-view">
           View Profile <ArrowRightIcon className="icon" />
         </Link>
+        {/* Phones get Call Now in place of View Profile; the logo and name still open the profile. */}
+        {agency.phone && (
+          <a className="btn btn-primary dealer-call" href={`tel:${agency.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${agency.name}`}>
+            <PhoneIcon className="icon" /> Call Now
+          </a>
+        )}
         {whatsapp && (
           <a
             className="btn btn-whatsapp-outline"

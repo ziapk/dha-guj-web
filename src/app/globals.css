@@ -1352,6 +1352,8 @@ main h3 {
 }
 
 .rail-track {
+  /* Also the containing block for absolutely positioned bits such as .sr-only labels, so they scroll and clip with the cards. */
+  position: relative;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: calc((100% - 3 * 20px) / 4);
@@ -9339,6 +9341,748 @@ main:has(> .section-seo:last-child) + .site-footer {
 
   .agent-stat-bar small {
     font-size: 12px;
+  }
+}
+
+/* ---------- Dealers directory and dealer profile on phones (designs: public/agency-listing-responsive.png, public/agency-detail-responsive.png) ---------- */
+.text-short,
+.dealer-actions .dealer-call,
+.agency-banner-location,
+.agency-section-icon,
+.agency-follow h3 {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .text-long {
+    display: none;
+  }
+
+  .text-short {
+    display: inline;
+  }
+
+  /* Directory hero: three stat tiles in one row */
+  .dealers-hero {
+    padding-block: 20px 28px;
+  }
+
+  .dealers-hero-rule {
+    display: none;
+  }
+
+  .dealers-hero h1 {
+    margin: 12px 0 10px;
+    font-size: 28px;
+  }
+
+  .dealers-hero-body > p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .dealers-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .dealers-hero-stats li {
+    gap: 7px;
+    max-width: none;
+    padding: 10px 8px;
+  }
+
+  .dealers-stat-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .dealers-stat-icon .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .dealers-hero-stats strong {
+    font-size: 15px;
+  }
+
+  .dealers-hero-stats small {
+    font-size: 9.5px;
+  }
+
+  .dealers-search {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px;
+  }
+
+  .dealers-search .search-suggest {
+    grid-column: 1 / -1;
+  }
+
+  .dealers-search input,
+  .dealers-search select,
+  .dealers-search .btn {
+    height: 42px;
+  }
+
+  /* Titanium: heading on the left, two cards side by side */
+  .titanium-section {
+    padding-block: 24px 8px;
+  }
+
+  .titanium-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 8px;
+    margin: 0 0 14px;
+    text-align: left;
+  }
+
+  .titanium-head .titanium-crown {
+    margin: 0;
+  }
+
+  .titanium-crown span {
+    display: none;
+  }
+
+  .titanium-head h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+
+  .titanium-head p:not(.titanium-crown) {
+    grid-column: 1 / -1;
+    margin: 4px 0 0;
+    font-size: 12.5px;
+  }
+
+  .titanium-section .rail-track {
+    grid-auto-columns: calc((100% - 10px) / 2);
+    gap: 10px;
+  }
+
+  .dealer-cover-count {
+    display: none;
+  }
+
+  /* Card buttons: Call Now (blue) and WhatsApp (green) */
+  .dealer-view {
+    display: none !important;
+  }
+
+  .dealer-actions .dealer-call {
+    display: inline-flex;
+  }
+
+  .dealer-actions .btn-whatsapp-outline {
+    border-color: var(--whatsapp);
+    background: var(--whatsapp);
+    color: #fff !important;
+  }
+
+  .titanium-section .dealer-card {
+    padding-bottom: 10px;
+    border-radius: var(--radius-l);
+  }
+
+  .titanium-section .dealer-cover {
+    height: 84px;
+  }
+
+  .titanium-section .titanium-badge {
+    top: 6px;
+    left: 6px;
+    padding: 2px 6px;
+    font-size: 9.5px;
+  }
+
+  .titanium-section .dealer-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-top: -30px;
+    padding-inline: 8px;
+  }
+
+  .titanium-section .dealer-name {
+    width: 100%;
+    padding-bottom: 0;
+  }
+
+  .titanium-section .dealer-logo {
+    width: 58px;
+    height: 58px;
+    border-width: 3px;
+    font-size: 16px;
+  }
+
+  .titanium-section .dealer-name h3 {
+    font-size: 12.5px;
+  }
+
+  .titanium-section .dealer-name p {
+    font-size: 10.5px;
+  }
+
+  .titanium-section .dealer-stats {
+    margin: 8px;
+    padding: 6px 0;
+    border: 0;
+  }
+
+  .titanium-section .dealer-actions {
+    gap: 5px;
+    padding-inline: 8px;
+  }
+
+  .titanium-section .dealer-actions .btn {
+    gap: 4px;
+    height: 34px;
+    padding-inline: 2px;
+    font-size: 11px;
+  }
+
+  .titanium-section .dealer-actions .icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* All dealers: rows with a round logo, name and stats, Call Now / WhatsApp stacked on the right */
+  .dealer-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .dealer-grid .dealer-card {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr) 108px;
+    grid-template-areas:
+      "logo name actions"
+      "logo stats actions";
+    align-items: center;
+    column-gap: 10px;
+    padding: 10px;
+    border-radius: var(--radius-l);
+  }
+
+  .dealer-grid .dealer-card:hover {
+    transform: none;
+  }
+
+  .dealer-grid .dealer-cover {
+    display: none;
+  }
+
+  .dealer-grid .dealer-head {
+    display: contents;
+  }
+
+  .dealer-grid .dealer-logo {
+    grid-area: logo;
+    width: 76px;
+    height: 76px;
+    border: 1px solid var(--app-border);
+    box-shadow: none;
+  }
+
+  .dealer-grid .dealer-name {
+    grid-area: name;
+    align-self: end;
+    padding: 0;
+  }
+
+  .dealer-grid .dealer-name h3 {
+    font-size: 14.5px;
+  }
+
+  .dealer-grid .dealer-name p {
+    font-size: 11.5px;
+  }
+
+  .dealer-grid .dealer-stats {
+    grid-area: stats;
+    align-self: start;
+    margin: 6px 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .dealer-grid .dealer-stats li {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .dealer-grid .dealer-stats .icon,
+  .titanium-section .dealer-stats .icon {
+    width: 18px;
+    height: 18px;
+    color: var(--accent);
+  }
+
+  .dealer-grid .dealer-stats strong,
+  .titanium-section .dealer-stats strong {
+    font-size: 13px;
+  }
+
+  .dealer-grid .dealer-actions {
+    grid-area: actions;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dealer-grid .dealer-actions .btn {
+    width: 100%;
+    height: 38px;
+    font-size: 12.5px;
+  }
+
+  .dealers-more-btn {
+    width: 100%;
+    min-width: 0;
+    background: var(--accent-soft) !important;
+    color: var(--accent) !important;
+    border-color: transparent !important;
+  }
+
+  /* Dealer profile: logo beside the name, buttons across the banner */
+  .agency-page {
+    padding-top: 12px;
+  }
+
+  .agency-page > .container > .breadcrumbs {
+    display: none;
+  }
+
+  .agency-banner {
+    border-radius: var(--radius-l);
+  }
+
+  .agency-banner-cover {
+    inset: 0 0 0 45%;
+  }
+
+  .agency-banner.has-cover::before {
+    background: linear-gradient(90deg, var(--app-surface) 0%, var(--app-surface) 45%, color-mix(in srgb, var(--app-surface) 55%, transparent) 70%, transparent 100%);
+  }
+
+  .agency-banner-content {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: start;
+    gap: 6px 14px;
+    padding: 14px;
+  }
+
+  .agency-banner-logo {
+    grid-row: span 4;
+    padding: 6px;
+  }
+
+  .agency-banner-logo .agency-logo {
+    width: 84px !important;
+    height: 84px !important;
+  }
+
+  .agency-banner-body {
+    display: contents;
+  }
+
+  .agency-banner-badge {
+    justify-self: start;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    font-size: 11px;
+  }
+
+  .agency-banner-body h1 {
+    margin: 0;
+    font-size: 21px;
+  }
+
+  .agency-banner-kicker {
+    margin: 0;
+    font-size: 9.5px;
+    letter-spacing: 0.24em;
+    color: var(--app-heading);
+  }
+
+  .agency-banner-location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    font-size: 13px;
+    color: var(--app-text);
+  }
+
+  .agency-banner-location .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .agency-banner-about {
+    display: none;
+  }
+
+  .agency-banner-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .agency-banner-actions .btn {
+    min-width: 0;
+    height: 42px;
+  }
+
+  .agency-banner-actions .btn:only-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Facts: a row of tiles, icon on top; the location already shows in the banner */
+  .agency-facts {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .agency-facts li {
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 4px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+    text-align: center;
+  }
+
+  .agency-facts li + li {
+    border-left: 1px solid var(--app-border);
+  }
+
+  .agency-facts .agency-fact-location {
+    display: none;
+  }
+
+  .agency-facts-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .agency-facts-icon .icon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .agency-facts small {
+    font-size: 10.5px;
+  }
+
+  .agency-facts strong {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  /* About and contact as cards */
+  .agency-intro {
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .agency-intro-about,
+  .agency-contact {
+    padding: 14px 16px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+  }
+
+  .agency-intro h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 17px;
+  }
+
+  .agency-section-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+  }
+
+  .agency-intro-about p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .agency-highlights {
+    display: none;
+  }
+
+  .agency-contact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 14px;
+  }
+
+  .agency-contact > h2,
+  .agency-contact > ul {
+    grid-column: 1;
+  }
+
+  .agency-contact li {
+    padding: 4px 0;
+    border-bottom: 0;
+  }
+
+  .agency-follow {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding-left: 14px;
+    border-left: 1px solid var(--app-border);
+  }
+
+  .agency-follow h3 {
+    display: block;
+    margin: 2px 0 10px;
+    font-size: 14px;
+    color: var(--app-heading);
+  }
+
+  .agency-follow .agency-socials {
+    display: grid;
+    grid-template-columns: repeat(2, 34px);
+    gap: 8px;
+    margin: 0;
+  }
+
+  .agency-tabs {
+    margin: 20px 0 12px;
+  }
+
+  .agency-tabs a {
+    min-width: 0;
+    flex: 1;
+    padding: 10px 8px;
+    font-size: 15px;
+  }
+
+  /* Listing cards: photo on the left, details on the right, lister under the photo and buttons under the details */
+  .agency-page .agency-list {
+    gap: 10px;
+  }
+
+  .agency-page .listing-row {
+    position: relative;
+    padding: 8px;
+  }
+
+  .agency-page .listing-row-main,
+  .agency-page .listing-row-foot {
+    display: grid;
+    grid-template-columns: 44% minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .agency-page .listing-row-main > .listing-slider {
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .agency-page .listing-slider-arrow,
+  .agency-page .listing-slider-dots {
+    display: none;
+  }
+
+  .agency-page .listing-slider-badges {
+    top: 6px;
+    left: 6px;
+    gap: 4px;
+  }
+
+  .agency-page .listing-slider-badges .badge {
+    padding: 2px 6px;
+    font-size: 9.5px;
+  }
+
+  .agency-page .listing-slider-count {
+    left: 6px;
+    bottom: 6px;
+    font-size: 10.5px;
+  }
+
+  .agency-page .listing-row-body {
+    padding: 0 28px 0 0;
+  }
+
+  .agency-page .listing-row-top,
+  .agency-page .listing-row-location,
+  .agency-page .listing-row-highlights {
+    display: none;
+  }
+
+  .agency-page .listing-row-body h3 {
+    display: -webkit-box;
+    margin: 0 0 4px;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .agency-page .listing-row-price {
+    margin: 0 0 6px;
+    font-size: 16px;
+  }
+
+  .agency-page .listing-row-facts,
+  .agency-page .listing-row-facts:has(> li:nth-child(4)) {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-columns: none;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .agency-page .listing-row-facts li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 0;
+    background: none;
+  }
+
+  .agency-page .listing-row-facts li > span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .agency-page .listing-row-facts .icon {
+    width: 22px;
+    height: 22px;
+    padding: 2px;
+    background: none;
+    color: var(--app-heading);
+  }
+
+  .agency-page .listing-row-facts span {
+    font-size: 9.5px;
+  }
+
+  .agency-page .listing-row-facts strong {
+    font-size: 11px;
+  }
+
+  .agency-page .listing-row-foot {
+    align-items: center;
+    margin-top: 8px;
+    padding: 8px 0 0;
+  }
+
+  .agency-page .listing-row-agent {
+    gap: 6px;
+  }
+
+  .agency-page .listing-row-agent .listing-row-avatar,
+  .agency-page .listing-row-agent .agency-logo {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .agency-page .listing-row-agent .listing-row-avatar span {
+    font-size: 11px;
+  }
+
+  .agency-page .listing-row-agent > div {
+    min-width: 0;
+  }
+
+  .agency-page .listing-row-agent strong {
+    gap: 3px;
+    overflow: hidden;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .agency-page .listing-row-agent strong a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .agency-page .listing-row-agent .agency-verified-tick {
+    width: 13px;
+    height: 13px;
+    padding: 1px;
+  }
+
+  .agency-page .listing-row-agent span {
+    overflow: hidden;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .agency-page .listing-row-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .agency-page .listing-row-actions .btn {
+    min-width: 0;
+    height: 34px;
+    padding-inline: 4px;
+    font-size: 12px;
+  }
+
+  .agency-page .listing-row-actions .btn .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .agency-page .listing-row-actions .fav-square {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    background: none;
+    color: var(--accent);
+  }
+
+  .agency-view-all {
+    width: 100%;
+    border-color: var(--btn-bg) !important;
+    background: var(--btn-bg) !important;
+    color: #fff !important;
   }
 }
 
@@ -19293,5 +20037,887 @@ figure.dv-gallery-item {
 
   .pl-btn {
     justify-content: center;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Header (design: header-image.png) and mobile menu panel (nav-responsive.png)
+   --------------------------------------------------------------------------- */
+
+.site-header {
+  border-bottom: none;
+  box-shadow: 0 1px 0 var(--app-border), 0 6px 20px -12px rgba(13, 27, 51, 0.18);
+}
+
+.site-header-inner {
+  gap: 20px;
+}
+
+.site-nav {
+  gap: 6px;
+}
+
+.site-nav a {
+  font-weight: 500;
+}
+
+.site-nav a.active {
+  font-weight: 700;
+}
+
+.site-actions {
+  gap: 12px;
+}
+
+.header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 20px;
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.header-pill .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.header-pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.header-pill-outline {
+  color: var(--accent) !important;
+  background: transparent;
+}
+
+.header-pill-outline:hover {
+  background: var(--accent-soft);
+}
+
+.header-pill-solid {
+  border-color: var(--btn-bg);
+  color: #fff !important;
+  background: var(--btn-bg);
+}
+
+.header-pill-solid:hover {
+  border-color: var(--btn-bg-hover);
+  background: var(--btn-bg-hover);
+}
+
+.site-actions .icon-button {
+  width: 46px;
+  height: 46px;
+}
+
+.site-actions .header-account {
+  background: var(--app-surface-2);
+  padding: 0;
+}
+
+.site-actions .header-account .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.header-menu-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--app-heading);
+  cursor: pointer;
+}
+
+.header-menu-toggle .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.header-menu-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Seven links and two pills: tighten before anything is dropped. */
+@media (max-width: 1360px) {
+  .site-nav {
+    gap: 0;
+  }
+
+  .header-pill {
+    padding-inline: 14px;
+    font-size: 14px;
+  }
+
+  .site-actions {
+    gap: 8px;
+  }
+}
+
+/* Laptops: call and WhatsApp stay in the footer and contact page; then Sell Property moves to the menu. */
+@media (min-width: 1081px) and (max-width: 1300px) {
+  .site-actions .header-call,
+  .site-actions .header-whatsapp {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1081px) and (max-width: 1180px) {
+  .header-pill-outline {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1080px) {
+  .site-header-inner {
+    height: 68px;
+  }
+
+  .site-actions .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .site-logo-img {
+    height: 40px;
+  }
+}
+
+/* Mobile menu: a full-height panel under the header */
+.mobile-menu {
+  position: fixed;
+  inset: 68px 0 0;
+  z-index: 39;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 8px 32px;
+  background: var(--app-surface);
+  border-top: 1px solid var(--app-border);
+  animation: mobile-menu-in 0.18s ease-out;
+}
+
+@keyframes mobile-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu {
+    animation: none;
+  }
+}
+
+@media (min-width: 1081px) {
+  .mobile-menu {
+    display: none;
+  }
+}
+
+.mobile-menu-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu-links a {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 62px;
+  padding-inline: 4px;
+  border-bottom: 1px solid var(--app-border);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--app-heading) !important;
+  text-decoration: none;
+}
+
+.mobile-menu-links a .icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.7;
+}
+
+.mobile-menu-links a span,
+.mobile-menu-cta span {
+  flex: 1;
+}
+
+.mobile-menu-links a[aria-current="page"],
+.mobile-menu-links a:hover {
+  color: var(--accent) !important;
+}
+
+.mobile-menu .mobile-menu-chevron {
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+}
+
+.mobile-menu-links .mobile-menu-chevron {
+  color: var(--app-heading);
+}
+
+.mobile-menu-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.mobile-menu-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 60px;
+  padding-inline: 20px;
+  border: 1.5px solid var(--accent);
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mobile-menu-cta .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.mobile-menu-sell {
+  color: var(--accent) !important;
+}
+
+.mobile-menu-add {
+  border-color: var(--btn-bg);
+  color: #fff !important;
+  background: var(--btn-bg);
+}
+
+.mobile-menu-contact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  margin-top: 16px;
+  padding: 20px 12px;
+  border-radius: 16px;
+  background: var(--app-surface-2);
+}
+
+.mobile-menu-contact a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--app-heading) !important;
+  text-decoration: none;
+}
+
+.mobile-menu-contact-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.mobile-menu-contact-icon .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.mobile-menu-contact-icon.is-call {
+  background: var(--btn-bg);
+}
+
+.mobile-menu-contact-icon.is-whatsapp {
+  background: var(--whatsapp);
+}
+
+.mobile-menu-extra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 20px;
+  margin-top: 20px;
+}
+
+.mobile-menu-extra a,
+.mobile-menu-extra button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--app-muted) !important;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mobile-menu-extra .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------------------------------------------------------------------------
+   Footer (design: footer-responsive.png): chevron links, round contact icons, accordion on phones
+   --------------------------------------------------------------------------- */
+
+.footer-section-toggle {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: default;
+  pointer-events: none;
+}
+
+.footer-section-icon,
+.footer-section-sign {
+  display: none;
+}
+
+.footer-links li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-links .icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--accent);
+}
+
+.site-footer .footer-contact {
+  gap: 20px;
+  margin-top: 0;
+}
+
+.footer-contact li {
+  align-items: center;
+  gap: 14px;
+}
+
+.footer-contact-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--btn-bg);
+}
+
+.footer-contact .footer-contact-icon .icon {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  color: #fff;
+}
+
+.footer-contact li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.site-footer .footer-contact a,
+.footer-contact address,
+.footer-contact-value {
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--app-heading);
+}
+
+.footer-contact address {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.footer-contact small {
+  font-size: 13px;
+  color: var(--app-muted);
+}
+
+.footer-bottom nav {
+  gap: 8px 0;
+}
+
+.footer-bottom nav a + a::before {
+  content: "|";
+  margin-inline: 12px;
+  color: var(--app-border-strong);
+}
+
+.footer-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--app-muted);
+  cursor: pointer;
+}
+
+.footer-theme-toggle:hover {
+  color: var(--accent);
+}
+
+.back-to-top {
+  width: auto;
+  height: auto;
+  gap: 10px;
+  border-radius: 999px;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--app-heading) !important;
+}
+
+.back-to-top:hover {
+  background: none;
+  color: var(--accent) !important;
+}
+
+.back-to-top-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--btn-bg);
+  transition: background 0.15s;
+}
+
+.back-to-top:hover .back-to-top-icon {
+  background: var(--btn-bg-hover);
+}
+
+/* Tablets: brand on its own row above the four columns. */
+@media (min-width: 769px) and (max-width: 1000px) {
+  .footer-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Phones: the columns fold into rows that open one at a time. */
+@media (max-width: 768px) {
+  .site-footer {
+    padding-top: 36px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .footer-brand {
+    margin-bottom: 16px;
+  }
+
+  .footer-brand .site-logo {
+    justify-content: center;
+  }
+
+  .footer-brand p {
+    max-width: none;
+    margin-top: 14px;
+  }
+
+  .footer-section {
+    border-bottom: 1px solid var(--app-border);
+  }
+
+  .footer-brand + .footer-section {
+    border-top: 1px solid var(--app-border);
+  }
+
+  .site-footer .footer-section h2 {
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-footer .footer-section h2::after {
+    display: none;
+  }
+
+  .footer-section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 56px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--app-heading);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .footer-section-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  .footer-section-icon,
+  .footer-section-sign {
+    display: inline-grid;
+    place-items: center;
+    color: var(--accent);
+  }
+
+  .footer-section-icon .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .footer-section-title {
+    flex: 1;
+  }
+
+  .footer-section-sign .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .footer-section-body {
+    display: none;
+    padding: 0 0 16px 38px;
+  }
+
+  .footer-section.is-open .footer-section-body {
+    display: block;
+  }
+
+  .site-footer .footer-links {
+    gap: 10px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 28px;
+    border-top: none;
+    text-align: center;
+  }
+
+  .footer-bottom nav {
+    justify-content: center;
+    margin-left: 0;
+  }
+
+  .back-to-top-label {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Sell Property page
+   --------------------------------------------------------------------------- */
+
+.sell-hero {
+  margin-bottom: 28px;
+  padding: clamp(24px, 4vw, 40px);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--accent-tint), var(--app-surface-2));
+  border: 1px solid var(--app-border);
+}
+
+.sell-hero h1 {
+  margin: 0 0 10px;
+  font-size: clamp(26px, 3.6vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--app-heading);
+}
+
+.sell-hero > p {
+  max-width: 720px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--app-muted);
+}
+
+.sell-steps {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 24px 0 0;
+  padding: 0;
+}
+
+.sell-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-l);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+}
+
+.sell-step-number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 700;
+  color: #fff;
+  background: var(--btn-bg);
+}
+
+.sell-steps strong,
+.sell-benefits strong {
+  display: block;
+  font-size: 15px;
+  color: var(--app-heading);
+}
+
+.sell-steps small,
+.sell-benefits small {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--app-muted);
+}
+
+.sell-badges {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 18px 0 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.sell-badges li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sell-badges .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--tag-verified);
+}
+
+.sell-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 28px;
+  align-items: start;
+}
+
+.sell-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.sell-card {
+  padding: 22px 22px 6px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-l);
+  background: var(--app-surface);
+}
+
+.sell-card:first-child {
+  padding-bottom: 22px;
+}
+
+.sell-card h2 {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--app-heading);
+}
+
+.sell-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.sell-input-group > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.sell-upload .ant-upload-drag {
+  border-radius: var(--radius-l);
+}
+
+.sell-form-note {
+  margin: 10px 0 18px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--app-muted);
+}
+
+.sell-aside {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sell-aside h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--app-heading);
+}
+
+.sell-benefits {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.sell-benefits li {
+  display: flex;
+  gap: 12px;
+}
+
+.sell-benefits .aside-icon {
+  flex: none;
+  margin: 0;
+}
+
+.sell-help {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-color: var(--accent-soft);
+  background: var(--accent-tint);
+}
+
+.sell-help h2 {
+  margin: 0;
+}
+
+.sell-help p {
+  margin: 0 0 4px;
+}
+
+.sell-help-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.sell-sent {
+  align-items: center;
+  padding: 48px 24px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-l);
+  background: var(--app-surface);
+  text-align: center;
+}
+
+.sell-sent > .icon {
+  width: 56px;
+  height: 56px;
+  color: var(--tag-verified);
+}
+
+.sell-sent h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--app-heading);
+}
+
+.sell-sent p {
+  max-width: 520px;
+  margin: 0;
+  color: var(--app-muted);
+}
+
+.sell-sent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+@media (max-width: 1000px) {
+  .sell-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sell-aside {
+    position: static;
+  }
+
+  .sell-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .sell-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .sell-card {
+    padding: 18px 16px 4px;
+  }
+
+  .sell-card:first-child {
+    padding-bottom: 18px;
+  }
+
+  .sell-input-group .ant-select {
+    width: 100px !important;
   }
 }
