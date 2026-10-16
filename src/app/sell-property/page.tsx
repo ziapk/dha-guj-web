@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircleIcon, HandshakeIcon, PhoneIcon, ShieldCheckIcon, TagIcon, UsersIcon, WhatsAppIcon } from "@/components/icons";
+import { HandshakeIcon, PhoneIcon, ShieldCheckIcon, TagIcon, UsersIcon, WhatsAppIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { SellPropertyForm } from "@/components/sell-property-form";
 import { publicApi } from "@/lib/api";
@@ -28,10 +28,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const STEPS = [
-  { title: "Submit", text: "Fill this form with your property details & photos." },
-  { title: "Verify", text: "Our team confirms details and valuation with you." },
-  { title: "List", text: "We publish it and market to active buyers." },
-  { title: "Close", text: "We negotiate & complete the deal. You pay on success." },
+  { title: "Submit details", text: "Fill this form with your property details & photos." },
+  { title: "We verify", text: "Our team confirms details and valuation with you." },
+  { title: "We list it", text: "We publish it and market to active buyers." },
+  { title: "Deal closed", text: "We negotiate & complete the deal. You pay on success." },
 ];
 
 const BENEFITS = [
@@ -74,79 +74,61 @@ export default async function SellPropertyPage() {
         ]}
       />
 
-      <nav className="breadcrumbs" aria-label="Breadcrumb">
-        <Link href="/">Home</Link>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">Sell Property</span>
-      </nav>
 
-      <header className="sell-hero">
-        <h1>List Your Property With Us</h1>
-        <p>
-          Submit your plot, file, or house and our team will verify, price, and market it to serious buyers across DHA Gujranwala. Listing is free — you only pay on a
-          successful deal.
-        </p>
-
-        <ol className="sell-steps">
-          {STEPS.map((step, index) => (
-            <li key={step.title}>
-              <span className="sell-step-number">{index + 1}</span>
-              <span>
-                <strong>{step.title}</strong>
-                <small>{step.text}</small>
-              </span>
-            </li>
-          ))}
-        </ol>
-
-        <ul className="sell-badges">
-          {["Verified buyer network", "Free listing & valuation", "Dedicated dealer support"].map((text) => (
-            <li key={text}>
-              <CheckCircleIcon className="icon" /> {text}
-            </li>
-          ))}
-        </ul>
-      </header>
-
-      <div className="sell-layout">
-        <SellPropertyForm propertyTypes={propertyTypes} phases={location.phases} defaultPhaseId={defaultPhase?.id ?? null} siteName={siteName} />
-
-        <aside className="sell-aside">
-          <section className="aside-card">
-            <h2>Why sell with us</h2>
-            <ul className="sell-benefits">
-              {BENEFITS.map(({ icon: Icon, title, text }) => (
-                <li key={title}>
-                  <span className="aside-icon">
-                    <Icon className="icon" />
-                  </span>
-                  <span>
-                    <strong>{title}</strong>
-                    <small>{text}</small>
-                  </span>
+      <div className="listing-create">
+        <nav className="breadcrumbs" aria-label="Breadcrumb">
+          <Link href="/">Home</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Sell Property</span>
+        </nav>
+        <div className="lf-hero sell-hero">
+          <div>
+            <h1>List Your Property With Us</h1>
+            <p>
+              Submit your plot, file, or house and our team will verify, price, and market it to serious buyers across DHA Gujranwala. Listing is free — you only
+              pay on a successful deal.
+            </p>
+            <ol className="lf-hero-steps">
+              {STEPS.map((step, index) => (
+                <li key={step.title} title={step.text}>
+                  <span className="lf-hero-step-number">{index + 1}</span> {step.title}
                 </li>
               ))}
-            </ul>
-          </section>
+            </ol>
+          </div>
 
           {(phone || whatsapp) && (
-            <section className="aside-card sell-help">
-              <span className="sell-help-kicker">Need help?</span>
-              <h2>Prefer to talk first?</h2>
-              <p>Call or WhatsApp our team and we&apos;ll list the property for you.</p>
+            <div className="sell-hero-contact">
+              <span>Prefer to talk first?</span>
               {phone && (
-                <a className="btn btn-primary btn-block" href={`tel:${phone.replace(/[^\d+]/g, "")}`}>
-                  <PhoneIcon className="icon" /> {phone}
+                <a className="btn btn-primary" href={`tel:${phone.replace(/[^\d+]/g, "")}`}>
+                  <PhoneIcon className="icon" /> Call us
                 </a>
               )}
               {whatsapp && (
-                <a className="btn btn-whatsapp btn-block" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="icon" /> Chat on WhatsApp
+                <a className="btn btn-whatsapp" href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer">
+                  <WhatsAppIcon className="icon" /> WhatsApp
                 </a>
               )}
-            </section>
+            </div>
           )}
-        </aside>
+        </div>
+
+        <ul className="sell-benefits">
+          {BENEFITS.map(({ icon: Icon, title, text }) => (
+            <li key={title}>
+              <span className="lf-block-icon">
+                <Icon className="icon" />
+              </span>
+              <span>
+                <strong>{title}</strong>
+                <small>{text}</small>
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <SellPropertyForm propertyTypes={propertyTypes} phases={location.phases} defaultPhaseId={defaultPhase?.id ?? null} siteName={siteName} />
       </div>
     </div>
   );

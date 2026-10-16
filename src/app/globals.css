@@ -20646,221 +20646,631 @@ figure.dv-gallery-item {
 }
 
 /* ---------------------------------------------------------------------------
-   Sell Property page
+   Sell Property: the Property Admin's Add listing form layout (copied from dha-guj-portal globals.css, "lf-" rules)
    --------------------------------------------------------------------------- */
 
-.sell-hero {
-  margin-bottom: 28px;
-  padding: clamp(24px, 4vw, 40px);
-  border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, var(--accent-tint), var(--app-surface-2));
+:root {
+  --hero-bg: linear-gradient(120deg, #eaf2fe 0%, #d9e8fd 55%, #c6dcfb 100%);
+}
+
+:root[data-theme="dark"] {
+  --hero-bg: linear-gradient(120deg, #13223d 0%, #152a4d 55%, #17325c 100%);
+}
+
+.listing-create {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.lf-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+  padding: 24px 28px;
   border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: var(--hero-bg);
 }
-
-.sell-hero h1 {
-  margin: 0 0 10px;
-  font-size: clamp(26px, 3.6vw, 38px);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--app-heading);
+.lf-hero h2 {
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
+  font-size: 18px;
+  color: var(--app-text);
 }
-
-.sell-hero > p {
-  max-width: 720px;
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.6;
+.lf-hero p {
+  margin: 0 0 14px;
   color: var(--app-muted);
-}
-
-.sell-steps {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin: 24px 0 0;
-  padding: 0;
-}
-
-.sell-steps li {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  border-radius: var(--radius-l);
-  background: var(--app-surface);
-  box-shadow: var(--app-shadow);
-}
-
-.sell-step-number {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  font-weight: 700;
-  color: #fff;
-  background: var(--btn-bg);
-}
-
-.sell-steps strong,
-.sell-benefits strong {
-  display: block;
-  font-size: 15px;
-  color: var(--app-heading);
-}
-
-.sell-steps small,
-.sell-benefits small {
-  display: block;
-  margin-top: 2px;
   font-size: 13px;
-  line-height: 1.5;
-  color: var(--app-muted);
 }
-
-.sell-badges {
-  list-style: none;
+.lf-hero-steps {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
-  margin: 18px 0 0;
-  padding: 0;
+  gap: 8px 18px;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+.lf-hero-steps span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.lf-hero-steps .anticon {
+  color: var(--accent);
+  background: var(--app-surface);
+  border-radius: 50%;
+  padding: 5px;
+}
+
+.lf-block {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+  margin-bottom: 16px;
+  padding: 28px 32px 8px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  box-shadow: var(--app-shadow);
+}
+.lf-block-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-size: 18px;
+}
+.lf-block-title {
+  margin: 10px 0 0;
+  font-family: var(--font-heading);
   font-size: 14px;
   font-weight: 600;
   color: var(--app-text);
 }
+.lf-block-hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+.lf-block-body {
+  max-width: 640px;
+}
 
-.sell-badges li {
+.lf-field {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.lf-field-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-size: 13px;
+}
+.lf-field-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.lf-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-text);
+  line-height: 26px;
+}
+.lf-field-hint {
+  margin-top: -4px;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+.listing-form .ant-form-item {
+  margin-bottom: 12px;
+}
+
+.lf-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  gap: 10px;
+}
+.lf-pair.even {
+  grid-template-columns: 1fr 1fr;
+}
+
+.lf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.lf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 32px;
+  justify-content: center;
+  padding: 5px 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--app-muted) 6%, var(--app-surface));
+  color: var(--app-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.lf-chip:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+.lf-chip.active {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-weight: 600;
+}
+.lf-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.lf-tag.ant-tag {
+  margin: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.lf-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--app-border);
+}
+.lf-tab {
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  color: var(--app-muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.lf-tab.active {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.lf-tab:disabled {
+  cursor: not-allowed;
+}
+
+.lf-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+}
+.lf-toggle .lf-field-hint {
+  margin-top: 0;
+}
+
+.lf-tip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--accent-tint);
+}
+.lf-tip-icon {
+  font-size: 18px;
+  color: var(--accent);
+}
+.lf-tip-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+.lf-tip-text strong {
+  font-size: 13px;
+  color: var(--app-text);
+}
+.lf-tip-score {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, #e5484d 12%, transparent);
+  color: #e5484d;
+  font-size: 12px;
+  font-weight: 600;
+}
+.lf-tip.done .lf-tip-score {
+  background: color-mix(in srgb, #1f9d55 14%, transparent);
+  color: #1f9d55;
+}
+
+.lf-upload {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  padding: 20px;
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, var(--app-border));
+  border-radius: 12px;
+}
+.lf-upload-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.lf-upload-actions small {
+  color: var(--app-muted);
+  font-size: 11px;
+}
+.lf-upload-art {
+  font-size: 30px;
+  color: var(--accent);
+}
+.lf-upload-tips {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+.lf-upload-tips li + li {
+  margin-top: 6px;
+}
+.lf-upload-tips .anticon {
+  margin-right: 6px;
+  color: #1f9d55;
+}
+.lf-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.lf-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--app-border);
+}
+.lf-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.lf-thumb-cover {
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 10px;
+}
+.lf-thumb button {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+}
+.lf-outline-btn.ant-btn {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.lf-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 0 32px;
+}
+
+@media (max-width: 900px) {
+  .lf-block {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px 16px 4px;
+  }
+  .lf-block-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .lf-block-title {
+    margin: 0;
+  }
+  .lf-block-hint {
+    flex-basis: 100%;
+    margin: 0;
+  }
+  .lf-upload {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .lf-field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .lf-field-icon {
+    display: none;
+  }
+}
+
+.lf-feature-group + .lf-feature-group {
+  margin-top: 14px;
+}
+.lf-feature-group-title {
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--app-muted);
+}
+.lf-feature-groups {
+  margin-bottom: 4px;
+}
+.lf-state-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--app-border);
+}
+.lf-state-row:last-child {
+  border-bottom: 0;
+  margin-bottom: 12px;
+}
+.lf-state-row .lf-field-hint {
+  margin-top: 0;
+}
+.lf-serp {
+  margin-bottom: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  background: var(--app-surface);
+  font-family: Arial, sans-serif;
+}
+.lf-serp-url {
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--app-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lf-serp-title {
+  margin: 2px 0;
+  font-size: 18px;
+  color: #1a0dab;
+}
+:root[data-theme="dark"] .lf-serp-title {
+  color: #8ab4f8;
+}
+.lf-serp-desc {
+  font-size: 13px;
+  color: var(--app-muted);
+}
+
+/* ---------- Listing form: area presets, price units, sortable photos, rich text ---------- */
+.lf-area-presets {
+  margin-bottom: 12px;
+}
+.lf-price {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px;
+  gap: 8px;
+}
+.lf-thumb[draggable="true"] {
+  cursor: grab;
+}
+.lf-thumb.dragging {
+  opacity: 0.4;
+}
+.lf-thumb.drop-target {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+}
+.lf-thumb-index {
+  background: rgba(0, 0, 0, 0.45);
+}
+.lf-thumb-grip {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 3px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 11px;
+}
+.lf-thumb .lf-thumb-moves {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: flex;
+  gap: 4px;
+}
+.lf-thumb .lf-thumb-moves button {
+  position: static;
+  width: 22px;
+  height: 22px;
+}
+.lf-thumb .lf-thumb-moves button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.lf-rich-text .tox-tinymce {
+  border-radius: 8px;
+}
+.lf-private-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: -12px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--app-muted);
+}
+
+/* Sell Property page additions */
+.sell-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+.sell-hero h1 {
+  margin: 0 0 6px;
+  font-size: clamp(22px, 2.6vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--app-heading);
+}
+
+.sell-hero p {
+  max-width: 680px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.lf-hero-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.lf-hero-steps li {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.sell-badges .icon {
-  width: 18px;
-  height: 18px;
-  color: var(--tag-verified);
+.lf-hero-steps .lf-hero-step-number {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 12px;
+  color: #fff;
+  background: var(--btn-bg);
 }
 
-.sell-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 28px;
-  align-items: start;
-}
-
-.sell-form {
+.sell-hero-contact {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
-}
-
-.sell-card {
-  padding: 22px 22px 6px;
-  border: 1px solid var(--app-border);
-  border-radius: var(--radius-l);
-  background: var(--app-surface);
-}
-
-.sell-card:first-child {
-  padding-bottom: 22px;
-}
-
-.sell-card h2 {
-  margin: 0 0 16px;
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--app-heading);
-}
-
-.sell-input-group {
-  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
-.sell-input-group > :first-child {
-  flex: 1;
-  min-width: 0;
-}
-
-.sell-upload .ant-upload-drag {
-  border-radius: var(--radius-l);
-}
-
-.sell-form-note {
-  margin: 10px 0 18px;
+.sell-hero-contact > span {
+  flex-basis: 100%;
   font-size: 13px;
-  text-align: center;
+  font-weight: 600;
   color: var(--app-muted);
 }
 
-.sell-aside {
-  position: sticky;
-  top: 96px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.sell-aside h2 {
-  margin: 0 0 14px;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--app-heading);
+.sell-hero-contact .btn {
+  height: 40px;
+  padding-inline: 16px;
+  font-size: 14px;
 }
 
 .sell-benefits {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 16px;
   padding: 0;
 }
 
 .sell-benefits li {
   display: flex;
+  align-items: flex-start;
   gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+  background: var(--app-surface);
 }
 
-.sell-benefits .aside-icon {
+.sell-benefits .lf-block-icon {
   flex: none;
-  margin: 0;
 }
 
-.sell-help {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-color: var(--accent-soft);
-  background: var(--accent-tint);
+.sell-benefits .icon {
+  width: 20px;
+  height: 20px;
 }
 
-.sell-help h2 {
-  margin: 0;
+.sell-benefits strong {
+  display: block;
+  font-size: 14px;
+  color: var(--app-heading);
 }
 
-.sell-help p {
-  margin: 0 0 4px;
-}
-
-.sell-help-kicker {
+.sell-benefits small {
+  display: block;
+  margin-top: 2px;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
+  line-height: 1.5;
+  color: var(--app-muted);
+}
+
+.listing-form .lf-block-title {
+  font-size: 15px;
+}
+
+.listing-form .lf-footer {
+  padding-bottom: 20px;
+}
+
+.lf-thumb-remove {
+  right: 6px;
+  top: 6px;
 }
 
 .sell-sent {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 12px;
   padding: 48px 24px;
-  border: 1px solid var(--app-border);
-  border-radius: var(--radius-l);
-  background: var(--app-surface);
   text-align: center;
 }
 
@@ -20890,34 +21300,14 @@ figure.dv-gallery-item {
   margin-top: 8px;
 }
 
-@media (max-width: 1000px) {
-  .sell-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .sell-aside {
-    position: static;
-  }
-
-  .sell-steps {
+@media (max-width: 900px) {
+  .sell-benefits {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 560px) {
-  .sell-steps {
+@media (max-width: 520px) {
+  .sell-benefits {
     grid-template-columns: 1fr;
-  }
-
-  .sell-card {
-    padding: 18px 16px 4px;
-  }
-
-  .sell-card:first-child {
-    padding-bottom: 18px;
-  }
-
-  .sell-input-group .ant-select {
-    width: 100px !important;
   }
 }
