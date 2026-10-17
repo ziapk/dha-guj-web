@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRightIcon, CalendarIcon, HomeIcon } from "@/components/icons";
+import { ArrowRightIcon, CalendarIcon, HomeIcon, StarIcon } from "@/components/icons";
 import { SocialIcon } from "@/components/social-icon";
 import { authorHref, authorInitials, authorSocials } from "@/lib/authors";
 import { postHref } from "@/lib/blog";
@@ -38,9 +38,16 @@ export function AuthorCard({ author }: { author: PublicAuthor }) {
     <article className="author-card">
       <Link href={href} className="author-card-photo" tabIndex={-1} aria-hidden="true">
         {author.photo_url ? (
-          <Image src={sizedImage(author.photo_url, "medium")} alt="" fill sizes="(max-width: 640px) 100vw, 360px" style={{ objectFit: "cover", objectPosition: "top" }} />
+          <Image src={sizedImage(author.photo_url, "medium")} alt="" fill sizes="(max-width: 640px) 45vw, 360px" style={{ objectFit: "cover", objectPosition: "top" }} />
         ) : (
           <span>{authorInitials(author.name)}</span>
+        )}
+        {/* Phones show the role as a badge on the photo instead of under the name. */}
+        {author.designation && (
+          <span className="author-card-badge">
+            <StarIcon className="icon" />
+            {author.designation}
+          </span>
         )}
       </Link>
 

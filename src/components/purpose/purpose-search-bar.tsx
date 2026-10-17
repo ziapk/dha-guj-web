@@ -4,7 +4,7 @@ import { Select } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
-import { BathIcon, BedIcon, BuildingIcon, HomeIcon, KeyIcon, LayersIcon, MapIcon, SearchIcon, TagIcon } from "@/components/icons";
+import { ArrowRightIcon, BathIcon, BedIcon, BuildingIcon, HomeIcon, KeyIcon, LayersIcon, MapIcon, SearchIcon, TagIcon } from "@/components/icons";
 import { PROPERTY_CATEGORY_LABELS } from "@/lib/labels";
 import { PURPOSE_PAGES, purposeHref, type PurposePage, type SectorOption } from "@/lib/purpose-search";
 import { BED_OPTIONS, priceRangeKey, priceRangesFor } from "@/lib/search-options";
@@ -13,7 +13,7 @@ import type { PropertyCategory, PropertyType } from "@/types/api";
 const BATH_OPTIONS = ["1", "2", "3", "4", "5"].map((value) => ({ value, label: `${value}+ baths` }));
 
 /** Keys the bar sets; every other filter already in the URL (keyword, society, area…) is kept when searching. */
-const BAR_KEYS = ["property_type_id", "sector", "block", "bedrooms", "bathrooms", "min_price", "max_price", "page"];
+const BAR_KEYS = ["q", "property_type_id", "sector", "block", "bedrooms", "bathrooms", "min_price", "max_price", "page"];
 
 /** One labelled select in the bar: an icon chip, then the select. */
 function Field({ icon, children }: { icon: ReactNode; children: ReactNode }) {
@@ -45,6 +45,7 @@ export function PurposeSearchBar({
   const router = useRouter();
   const isCommercial = filters.category === "commercial";
 
+  const [keyword, setKeyword] = useState(filters.q ?? "");
   const [typeId, setTypeId] = useState<string | undefined>(filters.property_type_id);
   const [sector, setSector] = useState<string | undefined>(filters.sector);
   const [block, setBlock] = useState<string | undefined>(filters.block);
@@ -76,6 +77,7 @@ export function PurposeSearchBar({
       }
     };
 
+    set("q", keyword.trim());
     set("property_type_id", typeId);
     set("sector", sector);
     set("block", sector ? block : undefined);
@@ -104,6 +106,18 @@ export function PurposeSearchBar({
       </nav>
 
       <div className="purpose-bar">
+        {/* Shown on phones only (as in the mobile design); on desktop the keyword from the URL is still kept. */}
+        <label className="purpose-keyword">
+          <SearchIcon />
+          <input
+            type="search"
+            aria-label="Keyword"
+            placeholder="Society, sector, block or keyword"
+            maxLength={100}
+            value={keyword}
+            onChange={(event) => setKeyword(event.target.value)}
+          />
+        </label>
         <Field icon={<HomeIcon />}>
           <Select
             variant="borderless"
@@ -187,6 +201,7 @@ export function PurposeSearchBar({
         </Field>
         <button type="submit" className="purpose-submit">
           <SearchIcon /> Search Properties
+          <ArrowRightIcon className="icon purpose-submit-arrow" />
         </button>
       </div>
     </form>

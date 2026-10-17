@@ -256,6 +256,10 @@ export function KeywordSearch({ filters }: { filters: Record<string, string> }) 
         onValueChange={setKeyword}
         hrefFor={(suggestion) => suggestionHref(suggestion, new URLSearchParams(filters))}
       />
+      {/* Phones get a visible button; wider screens search on Enter. */}
+      <button type="submit" className="search-keyword-submit">
+        Search
+      </button>
     </form>
   );
 }

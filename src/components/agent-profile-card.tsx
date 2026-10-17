@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ContactButtons, initials } from "@/components/home/agent-card";
-import { BriefcaseIcon, HandshakeIcon, KeyIcon, PinIcon, ShieldCheckIcon, StarIcon, TagIcon } from "@/components/icons";
+import { BriefcaseIcon, HandshakeIcon, KeyIcon, LayersIcon, PinIcon, ShieldCheckIcon, StarIcon, TagIcon } from "@/components/icons";
 import { agentHref } from "@/lib/agents";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
@@ -26,6 +26,7 @@ export function AgentProfileCard({
   const phone = agent.phone ?? fallbackPhone;
   const whatsapp = whatsappNumber(agent.whatsapp ?? fallbackWhatsapp);
   const cover = agent.agency?.cover_url;
+  const dealsIn = agent.specialisation || agent.areas_of_expertise?.slice(0, 3).join(", ");
 
   const stats = [
     { icon: <TagIcon className="icon" />, value: agent.for_sale_count ?? agent.listings_count ?? 0, label: "For Sale" },
@@ -100,6 +101,16 @@ export function AgentProfileCard({
           </li>
         ))}
       </ul>
+
+      {dealsIn && (
+        <p className="agent-pro-deals">
+          <LayersIcon className="icon" />
+          <span>
+            <small>Deals in</small>
+            {dealsIn}
+          </span>
+        </p>
+      )}
 
       <ContactButtons agent={agent} phone={phone} whatsapp={whatsapp} />
     </article>

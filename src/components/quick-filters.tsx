@@ -48,8 +48,21 @@ export function QuickFilters({ cities, societies, propertyTypes, filters }: Prop
 
   return (
     <div className="quick-filters">
+      {/* Phones get Buy and Rent as one-tap toggles in place of the select. */}
+      <div className="purpose-toggle" role="group" aria-label="Buy or rent">
+        {(["sale", "rent"] as const).map((purpose) => (
+          <button
+            key={purpose}
+            type="button"
+            aria-pressed={filters.purpose === purpose}
+            onClick={() => apply({ purpose: filters.purpose === purpose ? undefined : purpose, min_price: undefined, max_price: undefined })}
+          >
+            {purpose === "sale" ? "Buy" : "Rent"}
+          </button>
+        ))}
+      </div>
       <Select
-        className="pill-select"
+        className="pill-select pill-purpose"
         aria-label="Buy or rent"
         popupMatchSelectWidth={false}
         value={filters.purpose ?? "any"}
@@ -100,7 +113,7 @@ export function QuickFilters({ cities, societies, propertyTypes, filters }: Prop
       />
       {category !== "plot" && (
         <Select
-          className="pill-select"
+          className="pill-select pill-beds"
           aria-label="Bedrooms"
           placeholder="Beds"
           allowClear
@@ -123,9 +136,10 @@ export function QuickFilters({ cities, societies, propertyTypes, filters }: Prop
           apply({ min_price: range?.min ? String(range.min) : undefined, max_price: range?.max ? String(range.max) : undefined });
         }}
       />
-      <Badge count={moreCount} size="small" color="#1a73e8">
+      <Badge className="more-filters" count={moreCount} size="small" color="#1a73e8">
         <Button className="pill-button" icon={<FilterOutlined />} onClick={() => setMoreOpen(true)}>
-          More filters
+          <span className="more-filters-full">More filters</span>
+          <span className="more-filters-short">Filters</span>
         </Button>
       </Badge>
       {activeCount > 0 && (

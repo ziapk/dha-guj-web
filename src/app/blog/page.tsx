@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDownIcon, ChevronRightIcon, HomeIcon } from "@/components/icons";
+import { ArrowRightIcon, CalendarIcon, ChevronDownIcon, ChevronRightIcon, HomeIcon, PlusIcon } from "@/components/icons";
 import { longDate, PostCard } from "@/components/post-card";
 import { getPostCategories, getPosts, postHref } from "@/lib/blog";
 import { sizedImage } from "@/lib/image";
@@ -112,7 +112,15 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
               <span aria-current="page">Blog</span>
             )}
           </nav>
-          <h1>{named ? named.name : "Real Estate Insights"}</h1>
+          <h1>
+            {named ? (
+              named.name
+            ) : (
+              <>
+                Real Estate <span className="blog-hero-accent">Insights</span>
+              </>
+            )}
+          </h1>
           <p>{named?.description ?? "Useful guides, market updates and expert insights about DHA Gujranwala."}</p>
         </div>
       </header>
@@ -151,11 +159,14 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
                   <div className="blog-featured-body">
                     {featured.published_at && (
                       <p className="post-card-date">
-                        <time dateTime={featured.published_at}>{longDate(featured.published_at)}</time>
+                        <CalendarIcon className="icon blog-mobile-only" /> <time dateTime={featured.published_at}>{longDate(featured.published_at)}</time>
                       </p>
                     )}
                     <h3>{featured.title}</h3>
                     {featured.excerpt && <p className="blog-featured-excerpt">{featured.excerpt}</p>}
+                    <span className="blog-arrow blog-mobile-only" aria-hidden="true">
+                      <ArrowRightIcon />
+                    </span>
                   </div>
                 </Link>
               </article>
@@ -164,7 +175,7 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
             {latest.length > 0 && (
               <section className="blog-section" aria-labelledby="blog-latest">
                 <h2 id="blog-latest" className="blog-section-title">
-                  Latest Blogs
+                  Latest <span className="blog-title-accent">Blogs</span>
                 </h2>
                 <div className="blog-grid">
                   {latest.map((post) => (
@@ -177,7 +188,7 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
             {more.length > 0 && (
               <section className="blog-section" aria-labelledby="blog-more">
                 <h2 id="blog-more" className="blog-section-title">
-                  More Insights
+                  More <span className="blog-title-accent">Insights</span>
                 </h2>
                 <div className="blog-grid">
                   {more.map((post) => (
@@ -190,7 +201,13 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
             {page < lastPage && page < MAX_LOADED_PAGES && (
               <div className="blog-load-more">
                 <Link className="btn btn-primary" href={pageHref(page + 1)} scroll={false}>
-                  <ChevronDownIcon /> Load More Blogs
+                  <ChevronDownIcon className="icon blog-desktop-only" />
+                  <span className="blog-load-plus blog-mobile-only" aria-hidden="true">
+                    <PlusIcon />
+                  </span>
+                  <span className="blog-desktop-only">Load More Blogs</span>
+                  <span className="blog-mobile-only">Load More Articles</span>
+                  <ArrowRightIcon className="icon blog-mobile-only" />
                 </Link>
               </div>
             )}

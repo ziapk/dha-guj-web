@@ -154,14 +154,17 @@ export default async function AuthorPage({ params, searchParams }: PageProps<"/a
           </nav>
 
           <div className="author-hero-grid">
-            <div className="author-hero-photo">
-              {author.photo_url ? (
-                <Image src={sizedImage(author.photo_url, "medium")} alt={author.name} fill priority sizes="(max-width: 900px) 100vw, 360px" style={{ objectFit: "cover", objectPosition: "top" }} />
-              ) : (
-                <span className="author-hero-initials" aria-hidden="true">
-                  {authorInitials(author.name)}
-                </span>
-              )}
+            {/* On phones the media box dissolves so the quote can sit under the socials as its own card. */}
+            <div className="author-hero-media">
+              <div className="author-hero-photo">
+                {author.photo_url ? (
+                  <Image src={sizedImage(author.photo_url, "medium")} alt={author.name} fill priority sizes="(max-width: 900px) 100vw, 360px" style={{ objectFit: "cover", objectPosition: "top" }} />
+                ) : (
+                  <span className="author-hero-initials" aria-hidden="true">
+                    {authorInitials(author.name)}
+                  </span>
+                )}
+              </div>
               {quote && (
                 <blockquote className="author-hero-quote">
                   <span className="author-hero-quote-mark" aria-hidden="true">

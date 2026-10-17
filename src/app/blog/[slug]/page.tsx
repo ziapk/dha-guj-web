@@ -166,7 +166,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
           <h2 id="blog-explore">Explore Available Properties</h2>
           <Link href="/properties">View all →</Link>
         </div>
-        <Rail label="Available properties">
+        <Rail label="Available properties" dots>
           {railProperties.map((item) => (
             <PropertyCard key={item.id} property={item} />
           ))}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AgentProfileCard } from "@/components/agent-profile-card";
 import { SectionHeading } from "@/components/home/section-heading";
 import { initials } from "@/components/home/agent-card";
-import { BuildingIcon, HomeIcon, SearchIcon, ShieldCheckIcon, StarIcon, UserIcon, UsersIcon } from "@/components/icons";
+import { BuildingIcon, HomeIcon, ResetIcon, SearchIcon, ShieldCheckIcon, StarIcon, UserIcon, UsersIcon } from "@/components/icons";
 import { Rail } from "@/components/rail";
 import { getAgents } from "@/lib/agents";
 import { publicApi } from "@/lib/api";
@@ -17,6 +17,9 @@ import type { Paginated } from "@/types/api";
 export const revalidate = 300;
 
 const { title: TITLE, description: DESCRIPTION } = PAGE_META.agents;
+const PER_PAGE = 24;
+// "Load more" re-renders every page up to the requested one, so keep that bounded.
+const MAX_PAGE = 20;
 
 function pick(value: string | string[] | undefined): string {
   return (Array.isArray(value) ? (value[0] ?? "") : (value ?? "")).trim().slice(0, 100);
@@ -25,21 +28,19 @@ function pick(value: string | string[] | undefined): string {
 function pageNumber(value: string | string[] | undefined): number {
   const page = Number.parseInt(pick(value), 10);
 
-  return Number.isInteger(page) && page > 1 ? page : 1;
+  return Number.isInteger(page) && page > 1 ? Math.min(page, MAX_PAGE) : 1;
 }
 
 export async function generateMetadata({ searchParams }: PageProps<"/agents">): Promise<Metadata> {
   const params = await searchParams;
-  const page = pageNumber(params.page);
-  const title = page > 1 ? `${TITLE} — page ${page}` : TITLE;
-  // Search results are thin copies of the main list, so keep them out of the index.
-  const filtered = Boolean(pick(params.name) || pick(params.agency));
+  // Search results and "load more" pages are copies of the main list, so keep them out of the index.
+  const filtered = Boolean(pick(params.name) || pick(params.agency) || pageNumber(params.page) > 1);
 
   return {
-    title: { absolute: title },
+    title: { absolute: TITLE },
     description: DESCRIPTION,
-    alternates: { canonical: page > 1 ? `/agents?page=${page}` : "/agents" },
-    openGraph: await openGraph({ title, description: DESCRIPTION, url: "/agents" }),
+    alternates: { canonical: "/agents" },
+    openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/agents" }),
     robots: robots(filtered ? { index: false, follow: true } : undefined),
   };
 }
@@ -62,17 +63,19 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
   const page = pageNumber(params.page);
   const filtered = Boolean(name || agency);
 
-  // Superstars lead the first page only; later pages are just more of the full list.
-  const [settings, superstars, agents, counts] = await Promise.all([
+  // Every page up to the requested one is fetched together, so "load more" keeps earlier cards on screen.
+  const [settings, superstars, counts, ...pages] = await Promise.all([
     getSiteSettings(),
-    page === 1 ? getAgents(1, 12, { name, agency, superstar: true }) : null,
-    getAgents(page, 24, { name, agency }),
+    getAgents(1, 12, { name, agency, superstar: true }),
     directoryCounts(),
+    ...Array.from({ length: page }, (_, index) => getAgents(index + 1, PER_PAGE, { name, agency })),
   ]);
 
-  const lastPage = agents?.meta.last_page ?? 1;
-  const total = agents?.meta.total ?? 0;
-  const faces = (superstars?.data.length ? superstars.data : (agents?.data ?? [])).slice(0, 4);
+  const first = pages[0];
+  const agents = pages.flatMap((result) => result?.data ?? []);
+  const lastPage = first?.meta.last_page ?? 1;
+  const total = first?.meta.total ?? 0;
+  const faces = (superstars?.data.length ? superstars.data : agents).slice(0, 4);
   const contact = { fallbackPhone: settings.contact.phone, fallbackWhatsapp: settings.contact.whatsapp };
 
   /** The strip under the search box on phones; a count the API could not give is left out. */
@@ -97,7 +100,7 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
       query.set("page", String(target));
     }
 
-    return query.size ? `/agents?${query.toString()}#all-agents` : "/agents#all-agents";
+    return query.size ? `/agents?${query.toString()}` : "/agents";
   }
 
   return (
@@ -187,7 +190,7 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
               </div>
             </div>
 
-            <Rail label="Superstar agents">
+            <Rail label="Superstar agents" dots>
               {superstars.data.map((agent) => (
                 <AgentProfileCard key={agent.id} agent={agent} {...contact} />
               ))}
@@ -226,7 +229,7 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
             />
           )}
 
-          {!agents || agents.data.length === 0 ? (
+          {agents.length === 0 ? (
             <div className="empty-results">
               <div style={{ fontSize: 44 }} aria-hidden="true">
                 🔍
@@ -240,19 +243,20 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
           ) : (
             <>
               <div className="agent-pro-grid">
-                {agents.data.map((agent) => (
+                {agents.map((agent) => (
                   <AgentProfileCard key={agent.id} agent={agent} {...contact} />
                 ))}
               </div>
 
-              {lastPage > 1 && (
-                <nav className="simple-pagination" aria-label="Pagination">
-                  {page > 1 ? <Link href={pageHref(page - 1)}>← Previous</Link> : <span />}
-                  <span>
-                    Page {page} of {lastPage}
-                  </span>
-                  {page < lastPage ? <Link href={pageHref(page + 1)}>Next →</Link> : <span />}
-                </nav>
+              {page < lastPage && page < MAX_PAGE && (
+                <div className="dealers-more agents-more">
+                  <Link className="btn btn-primary dealers-more-btn" href={pageHref(page + 1)} scroll={false}>
+                    <ResetIcon className="icon" /> Load More Agents
+                  </Link>
+                  <small>
+                    Showing {agents.length.toLocaleString("en-PK")} of {total.toLocaleString("en-PK")}
+                  </small>
+                </div>
               )}
             </>
           )}

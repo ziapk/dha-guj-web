@@ -143,7 +143,7 @@ export default async function PropertiesPage({ searchParams }: PageProps<"/prope
             )}
           </section>
 
-          <aside className="results-aside">
+          <aside className="results-aside properties-aside">
             <BannerSlot key={`side:${JSON.stringify(filters)}`} placement="search_sidebar" />
             <div className="aside-card tinted">
               <span className="aside-icon">

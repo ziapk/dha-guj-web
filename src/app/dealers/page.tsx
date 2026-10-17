@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AgencyDirectoryCard } from "@/components/agency-directory-card";
 import { heroStyle } from "@/components/home/hero";
-import { CrownIcon, BuildingIcon, HandshakeIcon, HomeIcon, SearchIcon, UsersIcon } from "@/components/icons";
+import { ArrowRightIcon, BuildingIcon, ChevronRightIcon, CrownIcon, HandshakeIcon, HomeIcon, PinIcon, SearchIcon, TrophyIcon, UsersIcon } from "@/components/icons";
 import { Rail } from "@/components/rail";
 import { SearchSuggest } from "@/components/search-suggest";
 import { publicApi } from "@/lib/api";
@@ -84,9 +84,11 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/dealers
 
   const heroStats = stats
     ? [
-        { icon: <UsersIcon className="icon" />, value: stats.agencies, label: "Total Dealers", tone: "blue" },
-        { icon: <HomeIcon className="icon" />, value: stats.listings, label: "Listed Properties by Dealers", tone: "green" },
-        { icon: <HandshakeIcon className="icon" />, value: stats.sold, label: "Sold Properties by Dealers", tone: "amber" },
+        { icon: <UsersIcon className="icon" />, value: `${stats.agencies.toLocaleString("en-PK")}+`, label: "Total Dealers", short: "Total Dealers", tone: "blue", href: "#all-agencies" },
+        { icon: <HomeIcon className="icon" />, value: `${stats.listings.toLocaleString("en-PK")}+`, label: "Listed Properties by Dealers", short: "Listed Properties", tone: "green", href: "/properties" },
+        { icon: <HandshakeIcon className="icon" />, value: `${stats.sold.toLocaleString("en-PK")}+`, label: "Sold Properties by Dealers", short: "Sold Properties", tone: "amber", href: "#all-agencies" },
+        // Phones fill the 2×2 grid with a cities tile that jumps to the city filter.
+        { icon: <PinIcon className="icon" />, value: "All Cities", label: "Covered", short: "Covered", tone: "violet", href: "#dealer-city", phoneOnly: true },
       ]
     : [];
 
@@ -105,19 +107,28 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/dealers
             Find Authorized <span>DHA Gujranwala</span> Property Dealers
           </h1>
           <p>
-            Buy, sell and invest with confidence through our network of registered and authorized DHA Gujranwala dealers. We connect you with verified real
-            estate professionals who give transparent guidance on plots, files, houses and commercial properties.
+            <span className="text-long">
+              Buy, sell and invest with confidence through our network of registered and authorized DHA Gujranwala dealers. We connect you with verified real
+              estate professionals who give transparent guidance on plots, files, houses and commercial properties.
+            </span>
+            <span className="text-short">Buy, sell and invest with confidence through verified DHA Gujranwala dealers.</span>
           </p>
 
           {heroStats.length > 0 && (
             <ul className="dealers-hero-stats">
               {heroStats.map((stat) => (
-                <li key={stat.label}>
-                  <span className={`dealers-stat-icon is-${stat.tone}`}>{stat.icon}</span>
-                  <div>
-                    <strong>{stat.value.toLocaleString("en-PK")}+</strong>
-                    <small>{stat.label}</small>
-                  </div>
+                <li key={stat.label} className={stat.phoneOnly ? "is-phone-only" : undefined}>
+                  <Link href={stat.href}>
+                    <span className={`dealers-stat-icon is-${stat.tone}`}>{stat.icon}</span>
+                    <div>
+                      <strong>{stat.value}</strong>
+                      <small>
+                        <span className="text-long">{stat.label}</span>
+                        <span className="text-short">{stat.short}</span>
+                      </small>
+                    </div>
+                    <ChevronRightIcon className="icon dealers-stat-chevron" />
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -125,7 +136,7 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/dealers
 
           <form className="dealers-search" action="/dealers" role="search">
             <SearchSuggest key={q} name="q" defaultValue={q} placeholder="Search by dealer name" aria-label="Dealer name" maxLength={100} groups={["agencies"]} />
-            <select name="city_id" defaultValue={cityId} aria-label="City">
+            <select id="dealer-city" name="city_id" defaultValue={cityId} aria-label="City">
               <option value="">All cities</option>
               {cities.map((city) => (
                 <option key={city.id} value={city.id}>
@@ -134,7 +145,10 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/dealers
               ))}
             </select>
             <button type="submit" className="btn btn-primary">
-              <SearchIcon className="icon" /> Search
+              <SearchIcon className="icon" />
+              <span>
+                Search<span className="text-short"> Dealers</span>
+              </span>
             </button>
           </form>
         </div>
@@ -146,18 +160,28 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/dealers
             <div className="titanium-head">
               <p className="titanium-crown" aria-hidden="true">
                 <span />
-                <CrownIcon className="icon" />
+                <CrownIcon className="icon titanium-crown-icon" />
+                <TrophyIcon className="icon titanium-trophy-icon" />
                 <span />
               </p>
+              {/* Phones title this "Top DHA Dealers", following dealers listing page responsive.png. */}
               <h2 id="titanium-heading">
-                <span>Titanium</span> Dealers
+                <span className="text-short">Top </span>
+                <span className="titanium-accent">
+                  <span className="text-long">Titanium</span>
+                  <span className="text-short">DHA</span>
+                </span>{" "}
+                <span className="titanium-tail">Dealers</span>
               </h2>
+              <Link className="titanium-all" href="#all-agencies">
+                View All Dealers <ArrowRightIcon className="icon" />
+              </Link>
               <p>Our top verified property dealers in DHA Gujranwala with proven experience and trusted services.</p>
             </div>
 
-            <Rail label="Titanium dealers">
+            <Rail label="Titanium dealers" dots>
               {titanium.data.map((agency) => (
-                <AgencyDirectoryCard key={agency.id} agency={agency} fallbackWhatsapp={fallbackWhatsapp} />
+                <AgencyDirectoryCard key={agency.id} agency={agency} fallbackWhatsapp={fallbackWhatsapp} featured />
               ))}
             </Rail>
           </div>

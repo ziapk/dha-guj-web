@@ -241,6 +241,15 @@ export function StarIcon(props: IconProps) {
   );
 }
 
+export function TrophyIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M7 4h10v5a5 5 0 0 1-10 0V4z" />
+      <path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 4.5M17 6h2.5a2.5 2.5 0 0 1-2.6 4.5M12 14v3M8 21h8M9.5 17h5l.5 4h-6l.5-4z" />
+    </Svg>
+  );
+}
+
 export function CrownIcon(props: IconProps) {
   return (
     <Svg {...props}>

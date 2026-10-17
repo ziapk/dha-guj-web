@@ -110,6 +110,7 @@ export async function PurposeListingPage({ purpose, searchParams, landing }: { p
       <section className="purpose-hero">
         <div className="purpose-hero-image" style={heroStyle(sizedImage(heroImage, "medium"))} aria-hidden="true" />
         <div className="container purpose-hero-inner">
+          <p className="purpose-eyebrow">Find your dream property</p>
           {landing ? (
             <h1>{landing.heading ?? landing.title}</h1>
           ) : (
@@ -117,6 +118,7 @@ export async function PurposeListingPage({ purpose, searchParams, landing }: { p
               {filters.category === "commercial" ? `${page.label} Commercial Property in` : page.title} <span>{PLACE}</span>
             </h1>
           )}
+          <p className="purpose-lead">Explore the best houses, plots, commercial properties and files in {PLACE}.</p>
           <PurposeSearchBar key={searchKey} page={page} filters={filters} propertyTypes={propertyTypes} sectors={sectorOptions(sectors, blocks)} />
         </div>
       </section>

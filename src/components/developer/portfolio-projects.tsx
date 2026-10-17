@@ -67,7 +67,7 @@ export function PortfolioProjects({ projects, label }: { projects: PublicProject
 
   return (
     <>
-      <Rail label={label}>
+      <Rail label={label} dots>
         {projects.map((project) => (
           <PortfolioCard key={project.id} project={project} onOpen={() => setOpen(project)} />
         ))}
@@ -94,6 +94,10 @@ function PortfolioCard({ project, onOpen }: { project: PublicProject; onOpen: ()
   const photos = projectPhotosOf(project);
   const cover = photos[0] ? mediumUrl(photos[0]) : sizedImage(project.cover_url, "medium");
   const location = locationText(project);
+  const price = projectPriceOf(project);
+  const units = unitsOf(project);
+  const status = CONSTRUCTION_STATUS_LABELS[project.construction_status];
+  const type = project.project_type || project.category;
 
   return (
     <article className="pf-card">
@@ -121,6 +125,53 @@ function PortfolioCard({ project, onOpen }: { project: PublicProject; onOpen: ()
           </div>
         </div>
       </button>
+      {/* Phones show the key facts on the card itself; wider screens keep them in the showcase. */}
+      <div className="pf-card-details">
+        <h3>{project.name}</h3>
+        {type && <p className="pf-card-type">{type}</p>}
+        {location && (
+          <p className="pf-card-location">
+            <PinIcon /> <span>{location}</span>
+          </p>
+        )}
+        <dl className="pf-card-facts">
+          {price && (
+            <div>
+              <TagIcon />
+              <dt>Price Range</dt>
+              <dd>{price}</dd>
+            </div>
+          )}
+          {units && (
+            <div>
+              <HomeIcon />
+              <dt>Units</dt>
+              <dd>{units}</dd>
+            </div>
+          )}
+          <div>
+            <BuildingIcon />
+            <dt>Developer</dt>
+            <dd>{project.developer_name}</dd>
+          </div>
+          <div>
+            <ClockIcon />
+            <dt>Status</dt>
+            <dd>
+              <span className={`pf-pill pf-pill-${project.construction_status}`}>{status}</span>
+            </dd>
+          </div>
+        </dl>
+        {project.kind !== "portfolio" ? (
+          <Link href={projectHref(project.slug)} className="btn btn-primary pf-card-cta">
+            View Project <ArrowRightIcon />
+          </Link>
+        ) : (
+          <button type="button" className="btn btn-primary pf-card-cta" onClick={onOpen}>
+            View Project <ArrowRightIcon />
+          </button>
+        )}
+      </div>
     </article>
   );
 }

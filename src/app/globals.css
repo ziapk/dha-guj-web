@@ -5039,6 +5039,216 @@ a.feature-card {
   }
 }
 
+/* Pieces only the mobile blog design shows: category badge, date/read-time row, arrow buttons. */
+.post-card-badge,
+.post-card-meta,
+.blog-mobile-only {
+  display: none !important;
+}
+
+.blog-arrow {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.blog-arrow .icon {
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 560px) {
+  .blog-desktop-only {
+    display: none !important;
+  }
+
+  .blog-mobile-only {
+    display: revert !important;
+  }
+
+  .blog-hero {
+    padding-block: 18px 26px;
+  }
+
+  .blog-hero h1,
+  .blog-hero p {
+    max-width: 62%;
+  }
+
+  .blog-hero-art {
+    width: 62%;
+    opacity: 0.55;
+    filter: saturate(0.7);
+  }
+
+  .blog-hero h1 {
+    font-size: 30px;
+  }
+
+  .blog-hero-accent {
+    display: block;
+    color: var(--accent);
+  }
+
+  .blog-hero p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .blog-breadcrumbs {
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+
+  .blog-title-accent {
+    color: var(--accent);
+  }
+
+  .blog-section-title {
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+
+  .blog-section + .blog-section {
+    margin-top: 28px;
+  }
+
+  /* Featured: the cover sits inset in the card, the arrow at the bottom right. */
+  .blog-featured-link {
+    padding: 10px;
+  }
+
+  .blog-featured-cover {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-m, 10px);
+  }
+
+  .blog-featured-body {
+    position: relative;
+    gap: 8px;
+    padding: 14px 6px 6px;
+  }
+
+  .blog-featured-body h3 {
+    font-size: 19px;
+  }
+
+  .blog-featured-excerpt {
+    padding-right: 40px;
+    font-size: 13px;
+  }
+
+  .blog-featured-body .blog-arrow {
+    display: inline-grid !important;
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+  }
+
+  .blog-grid {
+    gap: 16px;
+  }
+
+  .post-card-plain .post-card-cover {
+    aspect-ratio: 16 / 8.5;
+  }
+
+  .post-card-plain .post-card-badge {
+    display: inline-block !important;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--app-surface);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.12);
+  }
+
+  .post-card-plain .post-card-body {
+    gap: 6px;
+    padding: 12px 14px 14px;
+  }
+
+  .post-card-plain .post-card-date {
+    display: none;
+  }
+
+  .post-card-plain .post-card-title {
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .post-card-plain .post-card-excerpt {
+    font-size: 12px;
+    -webkit-line-clamp: 2;
+  }
+
+  .post-card-plain .post-card-meta {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--app-muted);
+  }
+
+  .post-card-meta > span:not(.blog-arrow) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .post-card-meta > span:not(.blog-arrow) + span:not(.blog-arrow)::before {
+    content: "";
+    width: 1px;
+    height: 12px;
+    margin-right: 5px;
+    background: var(--app-border);
+  }
+
+  .post-card-meta .icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .post-card-meta .blog-arrow {
+    margin-left: auto;
+  }
+
+  /* A compact pill: a circled plus, the label and an arrow. */
+  .blog-load-more .btn {
+    min-width: 0;
+    gap: 10px;
+    padding: 8px 16px 8px 8px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  .blog-load-plus {
+    display: inline-grid !important;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.22);
+  }
+
+  .blog-load-plus .icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 .article {
   max-width: 820px;
   margin: 0 auto;
@@ -6925,6 +7135,23 @@ a.feature-card {
   box-shadow: var(--app-shadow-hover);
 }
 
+.dealers-hero-stats a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Phone-only: the cities tile, tile chevrons, the trophy and "View All Dealers" beside the Top Dealers heading. */
+.dealers-hero-stats .is-phone-only,
+.dealers-stat-chevron,
+.titanium-trophy-icon,
+.titanium-all {
+  display: none;
+}
+
 .dealers-stat-icon {
   display: grid;
   place-items: center;
@@ -6950,6 +7177,10 @@ a.feature-card {
 
 .dealers-stat-icon.is-amber {
   background: #f5a524;
+}
+
+.dealers-stat-icon.is-violet {
+  background: #8b3ff0;
 }
 
 .dealers-hero-stats strong {
@@ -7045,7 +7276,7 @@ a.feature-card {
   color: var(--app-heading);
 }
 
-.titanium-head h2 span {
+.titanium-head h2 .titanium-accent {
   color: var(--accent);
 }
 
@@ -7232,6 +7463,10 @@ a.feature-card {
   margin: 14px 14px;
   padding: 10px 0;
   border-block: 1px solid var(--app-border);
+}
+
+.dealer-stats.has-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .dealer-stats li {
@@ -8863,6 +9098,398 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
+/* ---------- /properties on phones ---------- */
+.search-keyword-submit,
+.purpose-toggle,
+.more-filters-short {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .search-bar {
+    gap: 10px;
+  }
+
+  .search-keyword-form {
+    position: relative;
+  }
+
+  .search-keyword {
+    height: 44px;
+    padding-right: 92px;
+    border-radius: 10px;
+  }
+
+  .search-keyword-submit {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    bottom: 4px;
+    display: block;
+    padding: 0 20px;
+    border: none;
+    border-radius: 8px;
+    background: var(--btn-bg);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .search-keyword-submit:hover {
+    background: var(--btn-bg-hover);
+  }
+
+  .quick-filters {
+    gap: 6px;
+    scrollbar-width: none;
+  }
+
+  .quick-filters .pill-purpose,
+  .quick-filters .pill-beds {
+    display: none !important;
+  }
+
+  .purpose-toggle {
+    display: inline-flex;
+    padding: 2px;
+    border: 1px solid var(--app-border-strong);
+    border-radius: 999px;
+    background: var(--app-surface);
+  }
+
+  .purpose-toggle button {
+    height: 28px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--app-text);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .purpose-toggle button[aria-pressed="true"] {
+    background: var(--btn-bg);
+    color: #fff;
+  }
+
+  .quick-filters .pill-select.ant-select {
+    flex: none;
+    min-width: 0;
+    height: 34px;
+    padding-inline: 10px 6px;
+    font-size: 12px;
+  }
+
+  .quick-filters .more-filters {
+    margin-left: auto;
+  }
+
+  .quick-filters .pill-button.ant-btn {
+    height: 34px;
+    padding-inline: 10px;
+    font-size: 12px;
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .more-filters-full {
+    display: none;
+  }
+
+  .more-filters-short {
+    display: inline;
+  }
+
+  .breadcrumbs:has(+ .search-header) {
+    display: none;
+  }
+
+  /* Title and sort share a row; a long heading pushes sort and alert onto the next one. */
+  .search-header {
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0 0 14px;
+  }
+
+  .search-header h1 {
+    font-size: 22px;
+  }
+
+  .search-header p {
+    margin-top: 2px;
+    font-size: 13px;
+  }
+
+  .search-header .search-bar-actions {
+    flex: none;
+    width: auto;
+    gap: 4px;
+  }
+
+  .search-header .search-bar-actions > * {
+    flex: none;
+  }
+
+  .search-header .search-bar-actions .ant-select {
+    order: -1;
+    width: 136px;
+    min-width: 0 !important;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .search-header .search-bar-actions .ant-btn {
+    height: 32px;
+    padding: 0 4px;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    color: var(--accent);
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .properties-aside {
+    display: none;
+  }
+}
+
+/* The wide card keeps the photo beside the details on phones, sized down to fit. */
+@media (max-width: 640px) {
+  .listing-row {
+    padding: 8px;
+  }
+
+  .listing-row-main {
+    grid-template-columns: 42% minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .listing-row-main > .listing-slider {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 150px;
+  }
+
+  .listing-row .listing-slider-badges {
+    top: 6px;
+    left: 6px;
+    gap: 3px;
+  }
+
+  .listing-row .badge {
+    gap: 3px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 8px;
+  }
+
+  .listing-row .badge .icon {
+    width: 9px;
+    height: 9px;
+  }
+
+  .listing-row .listing-slider-arrow {
+    width: 20px;
+    height: 20px;
+  }
+
+  .listing-row .listing-slider-arrow .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .listing-row .listing-slider-arrow.is-prev {
+    left: 4px;
+  }
+
+  .listing-row .listing-slider-arrow.is-next {
+    right: 4px;
+  }
+
+  .listing-row .listing-slider-dots {
+    bottom: 8px;
+    gap: 3px;
+  }
+
+  .listing-row .listing-slider-dots span {
+    width: 4px;
+    height: 4px;
+  }
+
+  .listing-row .listing-slider-count {
+    left: 6px;
+    bottom: 6px;
+    gap: 3px;
+    padding: 1px 5px;
+    font-size: 10px;
+  }
+
+  .listing-row .listing-slider-count .icon {
+    width: 11px;
+    height: 11px;
+  }
+
+  .listing-row-body {
+    padding: 2px 0 0;
+  }
+
+  .listing-row-top {
+    gap: 6px;
+  }
+
+  .listing-row-type {
+    font-size: 11px;
+  }
+
+  .listing-row-body h3 {
+    display: -webkit-box;
+    margin: 2px 0 4px;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.3;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .listing-row-location {
+    gap: 4px;
+    font-size: 10.5px;
+  }
+
+  .listing-row-location .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .listing-row-price {
+    margin: 6px 0 0;
+    font-size: 16px;
+  }
+
+  .listing-row-price small {
+    font-size: 11px;
+  }
+
+  .listing-row-highlights {
+    display: none;
+  }
+
+  .listing-row-facts,
+  .listing-row-facts:has(> li:nth-child(4)) {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .listing-row-facts li {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 3px;
+    padding: 0;
+    background: none;
+  }
+
+  .listing-row-facts .icon {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    background: none;
+  }
+
+  .listing-row-facts span {
+    font-size: 8.5px;
+    line-height: 1.2;
+  }
+
+  .listing-row-facts strong {
+    font-size: 11px;
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+
+  .listing-row-foot {
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 8px 0 0;
+  }
+
+  .listing-row-agent {
+    flex: 1 1 auto;
+    gap: 6px;
+  }
+
+  .listing-row-avatar,
+  .listing-row-agent .agency-logo {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 11px !important;
+  }
+
+  .listing-row-agent .listing-row-avatar span {
+    font-size: 11px;
+  }
+
+  .listing-row-agent strong,
+  .listing-row-agent span {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .listing-row-agent strong {
+    font-size: 11px;
+  }
+
+  .listing-row-agent span {
+    font-size: 9.5px;
+  }
+
+  .listing-row-agent .agency-verified-tick {
+    width: 12px;
+    height: 12px;
+    margin-left: 3px;
+    padding: 1px;
+    vertical-align: -2px;
+  }
+
+  .listing-row-actions {
+    flex: none;
+    width: auto;
+    gap: 5px;
+  }
+
+  .listing-row-actions .btn {
+    flex: none;
+    min-width: 0;
+    height: 30px;
+    padding: 0 10px;
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .listing-row-actions .btn .icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .listing-row-actions .fav-square {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+}
+
 /* ---------- Agent profile page ---------- */
 .agent-page {
   padding-bottom: 56px;
@@ -9344,7 +9971,7 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
-/* ---------- Dealers directory and dealer profile on phones (designs: public/agency-listing-responsive.png, public/agency-detail-responsive.png) ---------- */
+/* ---------- Dealers directory and dealer profile on phones (designs: public/dealers listing page responsive.png, public/agency-detail-responsive.png) ---------- */
 .text-short,
 .dealer-actions .dealer-call,
 .agency-banner-location,
@@ -9362,213 +9989,362 @@ main:has(> .section-seo:last-child) + .site-footer {
     display: inline;
   }
 
-  /* Directory hero: three stat tiles in one row */
+  /* Directory hero (design: public/dealers listing page responsive.png): 2×2 stat tiles, then a stacked search panel */
   .dealers-hero {
-    padding-block: 20px 28px;
+    padding-block: 22px 30px;
   }
 
-  .dealers-hero-rule {
+  .dealers-hero .breadcrumbs {
     display: none;
   }
 
+  .dealers-hero::after {
+    background: linear-gradient(180deg, rgba(4, 13, 28, 0.9) 0%, rgba(5, 18, 38, 0.55) 40%, rgba(5, 18, 38, 0.75) 62%, rgba(4, 13, 28, 0.96) 100%);
+  }
+
+  .dealers-hero-rule {
+    margin-top: 0;
+  }
+
   .dealers-hero h1 {
-    margin: 12px 0 10px;
-    font-size: 28px;
+    margin: 16px 0 12px;
+    font-size: 31px;
+    line-height: 1.15;
   }
 
   .dealers-hero-body > p {
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.55;
   }
 
   .dealers-hero-stats {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin-top: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 118px;
+  }
+
+  .dealers-hero-stats .is-phone-only {
+    display: flex;
   }
 
   .dealers-hero-stats li {
-    gap: 7px;
     max-width: none;
-    padding: 10px 8px;
+    padding: 12px 10px;
+    border-radius: 14px;
+  }
+
+  .dealers-hero-stats a {
+    gap: 8px;
   }
 
   .dealers-stat-icon {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
   }
 
   .dealers-stat-icon .icon {
-    width: 16px;
-    height: 16px;
+    width: 19px;
+    height: 19px;
+  }
+
+  .dealers-hero-stats div {
+    flex: 1;
+    min-width: 0;
   }
 
   .dealers-hero-stats strong {
-    font-size: 15px;
+    font-size: 16px;
+    white-space: nowrap;
   }
 
   .dealers-hero-stats small {
-    font-size: 9.5px;
+    max-width: none;
+    overflow: hidden;
+    font-size: 10.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dealers-stat-chevron {
+    display: block;
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--app-muted);
   }
 
   .dealers-search {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
-    margin-top: 12px;
-    padding: 8px;
-  }
-
-  .dealers-search .search-suggest {
-    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.07);
   }
 
   .dealers-search input,
-  .dealers-search select,
-  .dealers-search .btn {
-    height: 42px;
+  .dealers-search select {
+    height: 46px;
+    padding-left: 42px;
+    border-radius: 10px;
+    background-repeat: no-repeat;
+    background-size: 18px;
+    font-size: 14.5px;
   }
 
-  /* Titanium: heading on the left, two cards side by side */
+  .dealers-search input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+    background-position: 14px center;
+  }
+
+  .dealers-search select {
+    appearance: none;
+    padding-right: 40px;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z'/%3E%3Ccircle cx='12' cy='9' r='2.5'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position:
+      14px center,
+      right 14px center;
+  }
+
+  .dealers-search .btn {
+    height: 48px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+
+  /* Top DHA Dealers: trophy, heading and "View All Dealers" in one row; cards in a swipeable rail with dots */
   .titanium-section {
-    padding-block: 24px 8px;
+    padding-block: 24px 20px;
+    background: linear-gradient(180deg, var(--accent-tint), var(--app-bg) 70%);
   }
 
   .titanium-head {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     column-gap: 8px;
+    max-width: none;
     margin: 0 0 14px;
     text-align: left;
   }
 
   .titanium-head .titanium-crown {
     margin: 0;
+    color: #f5a524;
   }
 
-  .titanium-crown span {
+  .titanium-crown span,
+  .titanium-crown .titanium-crown-icon {
     display: none;
+  }
+
+  .titanium-crown .titanium-trophy-icon {
+    display: block;
+    width: 30px;
+    height: 30px;
+    fill: none;
   }
 
   .titanium-head h2 {
     margin: 0;
-    font-size: 22px;
+    font-size: 21px;
+    white-space: nowrap;
+  }
+
+  .titanium-head h2 .titanium-tail {
+    color: var(--accent);
+  }
+
+  .titanium-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--app-border));
+    border-radius: 999px;
+    background: var(--app-surface);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .titanium-all .icon {
+    width: 12px;
+    height: 12px;
   }
 
   .titanium-head p:not(.titanium-crown) {
-    grid-column: 1 / -1;
-    margin: 4px 0 0;
-    font-size: 12.5px;
+    grid-column: 2 / -1;
+    margin: 2px 0 0;
+    font-size: 11.5px;
+    line-height: 1.45;
   }
 
   .titanium-section .rail-track {
-    grid-auto-columns: calc((100% - 10px) / 2);
+    grid-auto-columns: 68%;
     gap: 10px;
+    padding-bottom: 10px;
   }
 
-  .dealer-cover-count {
-    display: none;
+  .titanium-section .rail-arrow {
+    display: grid;
+    top: calc(50% - 30px);
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
   }
 
-  /* Card buttons: Call Now (blue) and WhatsApp (green) */
-  .dealer-view {
-    display: none !important;
+  .titanium-section .rail-arrow.prev {
+    left: -8px;
   }
 
-  .dealer-actions .dealer-call {
-    display: inline-flex;
+  .titanium-section .rail-arrow.next {
+    right: -8px;
   }
 
-  .dealer-actions .btn-whatsapp-outline {
-    border-color: var(--whatsapp);
-    background: var(--whatsapp);
-    color: #fff !important;
-  }
-
-  .titanium-section .dealer-card {
+  /* Featured card in the rail */
+  .dealer-card.is-featured {
     padding-bottom: 10px;
     border-radius: var(--radius-l);
   }
 
-  .titanium-section .dealer-cover {
-    height: 84px;
+  .dealer-card.is-featured:hover {
+    transform: none;
   }
 
-  .titanium-section .titanium-badge {
-    top: 6px;
-    left: 6px;
-    padding: 2px 6px;
-    font-size: 9.5px;
+  .is-featured .dealer-cover {
+    height: 128px;
   }
 
-  .titanium-section .dealer-head {
-    flex-direction: column;
-    align-items: flex-start;
+  .is-featured .dealer-cover-count {
+    display: none;
+  }
+
+  .is-featured .titanium-badge {
+    top: 8px;
+    left: 8px;
     gap: 4px;
-    margin-top: -30px;
+    padding: 3px 8px;
+    background: #f5a524;
+    font-size: 10px;
+    color: #1d1300;
+  }
+
+  .is-featured .titanium-badge .icon {
+    width: 11px;
+    height: 11px;
+    fill: currentColor;
+    color: currentColor;
+  }
+
+  .is-featured .dealer-head {
+    gap: 8px;
+    margin-top: -26px;
     padding-inline: 8px;
   }
 
-  .titanium-section .dealer-name {
-    width: 100%;
-    padding-bottom: 0;
-  }
-
-  .titanium-section .dealer-logo {
+  .is-featured .dealer-logo {
     width: 58px;
     height: 58px;
     border-width: 3px;
     font-size: 16px;
   }
 
-  .titanium-section .dealer-name h3 {
-    font-size: 12.5px;
+  .is-featured .dealer-name {
+    padding-bottom: 2px;
   }
 
-  .titanium-section .dealer-name p {
+  .is-featured .dealer-name h3 {
+    font-size: 13px;
+  }
+
+  .is-featured .dealer-verified .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .is-featured .dealer-name p {
     font-size: 10.5px;
   }
 
-  .titanium-section .dealer-stats {
-    margin: 8px;
-    padding: 6px 0;
+  .is-featured .dealer-stats {
+    margin: 10px 8px;
+    padding: 0;
     border: 0;
   }
 
-  .titanium-section .dealer-actions {
+  .is-featured .dealer-stats li {
     gap: 5px;
+  }
+
+  .is-featured .dealer-stats li + li {
+    border: 0;
+  }
+
+  .is-featured .dealer-stats .icon {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+  }
+
+  .is-featured .dealer-stats strong {
+    font-size: 12px;
+  }
+
+  .is-featured .dealer-stats small {
+    font-size: 9.5px;
+  }
+
+  .is-featured .dealer-actions {
+    gap: 6px;
     padding-inline: 8px;
   }
 
-  .titanium-section .dealer-actions .btn {
+  .is-featured .dealer-actions .btn {
     gap: 4px;
-    height: 34px;
-    padding-inline: 2px;
+    height: 32px;
+    padding-inline: 4px;
     font-size: 11px;
   }
 
-  .titanium-section .dealer-actions .icon {
+  .is-featured .dealer-actions .icon {
     width: 13px;
     height: 13px;
   }
 
-  /* All dealers: rows with a round logo, name and stats, Call Now / WhatsApp stacked on the right */
+  .is-featured .dealer-view {
+    border-color: transparent;
+    background: var(--accent-soft);
+    color: var(--accent) !important;
+  }
+
+  .is-featured .dealer-view .icon {
+    display: none;
+  }
+
+  .is-featured .dealer-actions .dealer-call {
+    display: inline-flex;
+  }
+
+  /* With a phone number, Contact Now takes the WhatsApp button's place. */
+  .is-featured .dealer-call ~ .btn-whatsapp-outline {
+    display: none;
+  }
+
+  /* Explore More Dealers: full-width cards with the cover, Call and WhatsApp */
   .dealer-grid {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
 
   .dealer-grid .dealer-card {
-    display: grid;
-    grid-template-columns: 76px minmax(0, 1fr) 108px;
-    grid-template-areas:
-      "logo name actions"
-      "logo stats actions";
-    align-items: center;
-    column-gap: 10px;
-    padding: 10px;
-    border-radius: var(--radius-l);
+    padding-bottom: 14px;
   }
 
   .dealer-grid .dealer-card:hover {
@@ -9576,73 +10352,73 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 
   .dealer-grid .dealer-cover {
-    display: none;
+    height: 132px;
   }
 
   .dealer-grid .dealer-head {
-    display: contents;
+    margin-top: -30px;
   }
 
   .dealer-grid .dealer-logo {
-    grid-area: logo;
     width: 76px;
     height: 76px;
-    border: 1px solid var(--app-border);
-    box-shadow: none;
-  }
-
-  .dealer-grid .dealer-name {
-    grid-area: name;
-    align-self: end;
-    padding: 0;
   }
 
   .dealer-grid .dealer-name h3 {
-    font-size: 14.5px;
-  }
-
-  .dealer-grid .dealer-name p {
-    font-size: 11.5px;
+    font-size: 15px;
   }
 
   .dealer-grid .dealer-stats {
-    grid-area: stats;
-    align-self: start;
-    margin: 6px 0 0;
-    padding: 0;
-    border: 0;
+    margin: 12px 14px;
+    padding: 12px 0;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-m);
   }
 
   .dealer-grid .dealer-stats li {
     justify-content: flex-start;
-    gap: 6px;
+    gap: 10px;
+    padding-inline: 14px;
   }
 
-  .dealer-grid .dealer-stats .icon,
-  .titanium-section .dealer-stats .icon {
-    width: 18px;
-    height: 18px;
+  .dealer-grid .dealer-stats .icon {
+    width: 24px;
+    height: 24px;
     color: var(--accent);
   }
 
-  .dealer-grid .dealer-stats strong,
-  .titanium-section .dealer-stats strong {
-    font-size: 13px;
+  .dealer-grid .dealer-stats strong {
+    font-size: 15px;
   }
 
-  .dealer-grid .dealer-actions {
-    grid-area: actions;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin: 0;
-    padding: 0;
+  .dealer-grid .dealer-stats small {
+    font-size: 11.5px;
+  }
+
+  .dealer-grid .dealer-stats .text-long {
+    display: inline;
+  }
+
+  .dealer-grid .dealer-stats .text-short {
+    display: none;
+  }
+
+  .dealer-grid .dealer-view {
+    display: none !important;
+  }
+
+  .dealer-grid .dealer-actions .dealer-call {
+    display: inline-flex;
   }
 
   .dealer-grid .dealer-actions .btn {
-    width: 100%;
-    height: 38px;
-    font-size: 12.5px;
+    height: 42px;
+    font-size: 14px;
+  }
+
+  .dealer-grid .dealer-actions .icon {
+    width: 17px;
+    height: 17px;
   }
 
   .dealers-more-btn {
@@ -9893,57 +10669,57 @@ main:has(> .section-seo:last-child) + .site-footer {
     gap: 10px;
   }
 
-  .agency-page .listing-row {
+  :is(.agency-page, .purpose-layout) .listing-row {
     position: relative;
     padding: 8px;
   }
 
-  .agency-page .listing-row-main,
-  .agency-page .listing-row-foot {
+  :is(.agency-page, .purpose-layout) .listing-row-main,
+  :is(.agency-page, .purpose-layout) .listing-row-foot {
     display: grid;
     grid-template-columns: 44% minmax(0, 1fr);
     gap: 10px;
   }
 
-  .agency-page .listing-row-main > .listing-slider {
+  :is(.agency-page, .purpose-layout) .listing-row-main > .listing-slider {
     min-height: 0;
     height: auto;
     aspect-ratio: 4 / 3;
   }
 
-  .agency-page .listing-slider-arrow,
-  .agency-page .listing-slider-dots {
+  :is(.agency-page, .purpose-layout) .listing-slider-arrow,
+  :is(.agency-page, .purpose-layout) .listing-slider-dots {
     display: none;
   }
 
-  .agency-page .listing-slider-badges {
+  :is(.agency-page, .purpose-layout) .listing-slider-badges {
     top: 6px;
     left: 6px;
     gap: 4px;
   }
 
-  .agency-page .listing-slider-badges .badge {
+  :is(.agency-page, .purpose-layout) .listing-slider-badges .badge {
     padding: 2px 6px;
     font-size: 9.5px;
   }
 
-  .agency-page .listing-slider-count {
+  :is(.agency-page, .purpose-layout) .listing-slider-count {
     left: 6px;
     bottom: 6px;
     font-size: 10.5px;
   }
 
-  .agency-page .listing-row-body {
+  :is(.agency-page, .purpose-layout) .listing-row-body {
     padding: 0 28px 0 0;
   }
 
-  .agency-page .listing-row-top,
-  .agency-page .listing-row-location,
-  .agency-page .listing-row-highlights {
+  :is(.agency-page, .purpose-layout) .listing-row-top,
+  :is(.agency-page, .purpose-layout) .listing-row-location,
+  :is(.agency-page, .purpose-layout) .listing-row-highlights {
     display: none;
   }
 
-  .agency-page .listing-row-body h3 {
+  :is(.agency-page, .purpose-layout) .listing-row-body h3 {
     display: -webkit-box;
     margin: 0 0 4px;
     overflow: hidden;
@@ -9954,13 +10730,13 @@ main:has(> .section-seo:last-child) + .site-footer {
     line-clamp: 2;
   }
 
-  .agency-page .listing-row-price {
+  :is(.agency-page, .purpose-layout) .listing-row-price {
     margin: 0 0 6px;
     font-size: 16px;
   }
 
-  .agency-page .listing-row-facts,
-  .agency-page .listing-row-facts:has(> li:nth-child(4)) {
+  :is(.agency-page, .purpose-layout) .listing-row-facts,
+  :is(.agency-page, .purpose-layout) .listing-row-facts:has(> li:nth-child(4)) {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: minmax(0, 1fr);
@@ -9969,7 +10745,7 @@ main:has(> .section-seo:last-child) + .site-footer {
     margin: 0;
   }
 
-  .agency-page .listing-row-facts li {
+  :is(.agency-page, .purpose-layout) .listing-row-facts li {
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
@@ -9977,14 +10753,14 @@ main:has(> .section-seo:last-child) + .site-footer {
     background: none;
   }
 
-  .agency-page .listing-row-facts li > span {
+  :is(.agency-page, .purpose-layout) .listing-row-facts li > span {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .agency-page .listing-row-facts .icon {
+  :is(.agency-page, .purpose-layout) .listing-row-facts .icon {
     width: 22px;
     height: 22px;
     padding: 2px;
@@ -9992,82 +10768,82 @@ main:has(> .section-seo:last-child) + .site-footer {
     color: var(--app-heading);
   }
 
-  .agency-page .listing-row-facts span {
+  :is(.agency-page, .purpose-layout) .listing-row-facts span {
     font-size: 9.5px;
   }
 
-  .agency-page .listing-row-facts strong {
+  :is(.agency-page, .purpose-layout) .listing-row-facts strong {
     font-size: 11px;
   }
 
-  .agency-page .listing-row-foot {
+  :is(.agency-page, .purpose-layout) .listing-row-foot {
     align-items: center;
     margin-top: 8px;
     padding: 8px 0 0;
   }
 
-  .agency-page .listing-row-agent {
+  :is(.agency-page, .purpose-layout) .listing-row-agent {
     gap: 6px;
   }
 
-  .agency-page .listing-row-agent .listing-row-avatar,
-  .agency-page .listing-row-agent .agency-logo {
+  :is(.agency-page, .purpose-layout) .listing-row-agent .listing-row-avatar,
+  :is(.agency-page, .purpose-layout) .listing-row-agent .agency-logo {
     width: 30px !important;
     height: 30px !important;
   }
 
-  .agency-page .listing-row-agent .listing-row-avatar span {
+  :is(.agency-page, .purpose-layout) .listing-row-agent .listing-row-avatar span {
     font-size: 11px;
   }
 
-  .agency-page .listing-row-agent > div {
+  :is(.agency-page, .purpose-layout) .listing-row-agent > div {
     min-width: 0;
   }
 
-  .agency-page .listing-row-agent strong {
+  :is(.agency-page, .purpose-layout) .listing-row-agent strong {
     gap: 3px;
     overflow: hidden;
     font-size: 11px;
     white-space: nowrap;
   }
 
-  .agency-page .listing-row-agent strong a {
+  :is(.agency-page, .purpose-layout) .listing-row-agent strong a {
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .agency-page .listing-row-agent .agency-verified-tick {
+  :is(.agency-page, .purpose-layout) .listing-row-agent .agency-verified-tick {
     width: 13px;
     height: 13px;
     padding: 1px;
   }
 
-  .agency-page .listing-row-agent span {
+  :is(.agency-page, .purpose-layout) .listing-row-agent span {
     overflow: hidden;
     font-size: 10px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .agency-page .listing-row-actions {
+  :is(.agency-page, .purpose-layout) .listing-row-actions {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     gap: 6px;
   }
 
-  .agency-page .listing-row-actions .btn {
+  :is(.agency-page, .purpose-layout) .listing-row-actions .btn {
     min-width: 0;
     height: 34px;
     padding-inline: 4px;
     font-size: 12px;
   }
 
-  .agency-page .listing-row-actions .btn .icon {
+  :is(.agency-page, .purpose-layout) .listing-row-actions .btn .icon {
     width: 14px;
     height: 14px;
   }
 
-  .agency-page .listing-row-actions .fav-square {
+  :is(.agency-page, .purpose-layout) .listing-row-actions .fav-square {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -10086,9 +10862,10 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
-/* ---------- Agents directory and agent profile on phones (designs: public/agents-list-responsive.png, public/agent-detail-responsive.png) ---------- */
+/* ---------- Agents directory and agent profile on phones (designs: public/agent lisitng page responsive.png, public/agent-detail-responsive.png) ---------- */
 .agents-hero-eyebrow,
 .agents-highlights,
+.agent-pro-deals,
 .agent-pro-stat-short,
 .agent-pro-verified {
   display: none;
@@ -10241,7 +11018,7 @@ main:has(> .section-seo:last-child) + .site-footer {
     padding-top: 28px;
   }
 
-  /* Agent cards: verified tick beside the name, short stat labels, Call as an outline button */
+  /* Agent cards: verified tick beside the name, location and experience split by a rule */
   .agent-pro-verified {
     display: inline-block;
     flex: none;
@@ -10253,159 +11030,163 @@ main:has(> .section-seo:last-child) + .site-footer {
     fill: var(--accent);
   }
 
-  .agent-pro-stat-long {
-    display: none;
-  }
-
-  .agent-pro-stat-short {
-    display: inline;
-  }
-
-  .agent-pro-card .agent-actions .btn-primary {
-    border: 1px solid var(--btn-bg);
-    background: var(--app-surface);
-    color: var(--btn-bg) !important;
-  }
-
-  /* Superstars: two cards side by side, photo over the cover, name underneath */
-  .agents-superstars .rail-track {
-    grid-auto-columns: calc((100% - 10px) / 2);
-    gap: 10px;
-  }
-
-  .agents-superstars .agent-pro-card {
-    padding-bottom: 10px;
-    border-radius: var(--radius-l);
-  }
-
-  .agents-superstars .agent-pro-cover {
-    height: 78px;
-  }
-
-  .agents-superstars .superstar-badge {
-    top: 6px;
-    left: 6px;
-    padding: 2px 6px;
-    font-size: 9.5px;
-  }
-
-  .agents-superstars .agent-pro-head {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    margin-top: -36px;
-    padding-inline: 10px;
-  }
-
-  .agents-superstars .agent-pro-photo {
-    width: 68px;
-    height: 68px;
-    border-width: 3px;
-    font-size: 20px;
-  }
-
-  .agents-superstars .agent-pro-name {
-    width: 100%;
-    padding: 0;
-  }
-
-  .agents-superstars .agent-pro-name h3 {
-    font-size: 14.5px;
-  }
-
-  .agents-superstars .agent-pro-name .agent-agency {
-    font-size: 11.5px;
-  }
-
-  .agents-superstars .agent-pro-meta {
-    display: none;
-  }
-
-  .agents-superstars .agent-pro-stats,
-  .agent-pro-grid .agent-pro-stats {
-    margin: 8px 10px 10px;
-    padding: 0;
-    border: 0;
+  .agents-superstars .agent-pro-meta span + span,
+  .agent-pro-grid .agent-pro-meta span + span {
+    padding-left: 12px;
+    border-left: 1px solid var(--app-border);
   }
 
   .agents-superstars .agent-pro-stats li,
   .agent-pro-grid .agent-pro-stats li {
-    display: grid;
-    grid-template-columns: auto auto;
-    justify-content: start;
-    column-gap: 3px;
-    border: 0;
+    justify-content: flex-start;
+    padding-left: 10px;
   }
 
-  .agents-superstars .agent-pro-stats li > div,
-  .agent-pro-grid .agent-pro-stats li > div {
-    display: contents;
+  .agents-superstars .agent-pro-stats li:first-child,
+  .agent-pro-grid .agent-pro-stats li:first-child {
+    padding-left: 4px;
   }
 
-  .agents-superstars .agent-pro-stats small,
-  .agent-pro-grid .agent-pro-stats small {
-    grid-column: 1 / -1;
-    font-size: 9.5px;
-    white-space: nowrap;
+  /* Superstars: one wide card with the next peeking in, photo over the cover, name beside it */
+  .agents-superstars .rail-track {
+    grid-auto-columns: 84%;
+    gap: 12px;
   }
 
-  .agents-superstars .agent-pro-stats .icon,
-  .agent-pro-grid .agent-pro-stats .icon {
-    width: 14px;
-    height: 14px;
+  .agents-superstars .agent-pro-card {
+    padding-bottom: 14px;
+    border-radius: var(--radius-l);
   }
 
-  .agents-superstars .agent-pro-stats strong,
-  .agent-pro-grid .agent-pro-stats strong {
-    font-size: 12.5px;
+  .agents-superstars .agent-pro-cover {
+    height: 128px;
   }
 
-  .agents-superstars .agent-pro-card .agent-actions {
-    gap: 6px;
-    padding-inline: 10px;
+  .agents-superstars .agent-pro-head {
+    gap: 10px;
+    margin-top: -34px;
+    padding-inline: 12px;
   }
 
-  .agents-superstars .agent-pro-card .agent-actions .btn {
-    height: 34px;
-    padding-inline: 6px;
+  .agents-superstars .agent-pro-photo {
+    width: 76px;
+    height: 76px;
+    border-width: 3px;
+    font-size: 22px;
+  }
+
+  .agents-superstars .agent-pro-name {
+    padding-bottom: 2px;
+  }
+
+  .agents-superstars .agent-pro-name h3 {
+    font-size: 15px;
+  }
+
+  .agents-superstars .agent-pro-name .agent-agency {
     font-size: 12px;
   }
 
-  .agents-superstars .agent-pro-card .agent-actions .icon {
-    width: 14px;
-    height: 14px;
+  .agents-superstars .agent-pro-meta {
+    gap: 4px 12px;
+    margin: 8px 12px 0 98px;
+    font-size: 11px;
   }
 
-  /* All agents: compact rows — square photo, name and stats, Call / WhatsApp stacked on the right */
+  .agents-superstars .agent-pro-stats {
+    margin: 10px 12px 0;
+    padding: 10px 4px;
+    border: 0;
+    border-radius: var(--radius-m);
+    background: var(--accent-tint);
+  }
+
+  .agents-superstars .agent-pro-stats .icon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .agents-superstars .agent-pro-stats strong {
+    font-size: 14px;
+  }
+
+  .agents-superstars .agent-pro-stats small {
+    font-size: 10px;
+  }
+
+  /* "Deals in" line under the superstar stats */
+  .agents-superstars .agent-pro-deals {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 12px 0;
+    padding: 8px 10px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-m);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--app-heading);
+  }
+
+  .agents-superstars .agent-pro-deals .icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+  }
+
+  .agents-superstars .agent-pro-deals span {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .agents-superstars .agent-pro-deals small {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--app-muted);
+  }
+
+  .agents-superstars .agent-pro-card .agent-actions {
+    gap: 8px;
+    margin-top: 12px;
+    padding-inline: 12px;
+  }
+
+  .agents-superstars .agent-pro-card .agent-actions .btn {
+    height: 38px;
+    padding-inline: 6px;
+    font-size: 13px;
+  }
+
+  .agents-superstars .agent-pro-card .agent-actions .icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* All agents: one card per row — round photo beside name and meta, stats between rules, buttons across */
   .agent-pro-grid {
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: 14px;
   }
 
   .agent-pro-grid .agent-pro-card {
     display: grid;
-    grid-template-columns: 80px minmax(0, 1fr) 100px;
+    grid-template-columns: 84px minmax(0, 1fr);
     grid-template-areas:
-      "photo name actions"
-      "photo stats actions";
-    align-items: center;
-    column-gap: 10px;
-    padding: 10px 0;
-    overflow: visible;
-    border: 0;
-    border-bottom: 1px solid var(--app-border);
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
+      "photo name"
+      "photo meta"
+      "stats stats"
+      "actions actions";
+    column-gap: 14px;
+    padding: 14px;
+    border-radius: var(--radius-l);
   }
 
-  .agent-pro-grid .agent-pro-card:hover {
-    box-shadow: none;
-    transform: none;
-  }
-
-  .agent-pro-grid .agent-pro-cover,
-  .agent-pro-grid .agent-pro-meta {
+  .agent-pro-grid .agent-pro-cover {
     display: none;
   }
 
@@ -10415,11 +11196,15 @@ main:has(> .section-seo:last-child) + .site-footer {
 
   .agent-pro-grid .agent-pro-photo {
     grid-area: photo;
-    width: 80px;
-    height: 80px;
-    border: 0;
-    border-radius: var(--radius-m);
-    box-shadow: none;
+    align-self: center;
+    width: 84px;
+    height: 84px;
+    border-width: 3px;
+    box-shadow: 0 0 0 1px var(--app-border);
+  }
+
+  .agent-pro-grid .is-superstar .agent-pro-photo {
+    box-shadow: 0 0 0 2px #f5a524;
   }
 
   .agent-pro-grid .agent-pro-name {
@@ -10429,37 +11214,57 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 
   .agent-pro-grid .agent-pro-name h3 {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .agent-pro-grid .agent-pro-name .agent-agency {
-    font-size: 12px;
+    font-size: 13px;
+  }
+
+  .agent-pro-grid .agent-pro-meta {
+    grid-area: meta;
+    align-self: start;
+    gap: 4px 12px;
+    margin: 8px 0 0;
+    font-size: 11.5px;
   }
 
   .agent-pro-grid .agent-pro-stats {
     grid-area: stats;
-    align-self: start;
-    margin: 6px 0 0;
+    margin: 14px 0 12px;
+  }
+
+  .agent-pro-grid .agent-pro-stats strong {
+    font-size: 14.5px;
+  }
+
+  .agent-pro-grid .agent-pro-stats small {
+    font-size: 11px;
   }
 
   .agent-pro-grid .agent-pro-card .agent-actions {
     grid-area: actions;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
     padding: 0;
   }
 
   .agent-pro-grid .agent-pro-card .agent-actions .btn {
-    width: 100%;
-    height: 36px;
-    padding-inline: 6px;
-    font-size: 12.5px;
+    height: 42px;
   }
 
-  .agent-pro-grid .agent-pro-card .agent-actions .icon {
-    width: 15px;
-    height: 15px;
+  /* Load more: full-width solid button */
+  .agents-more {
+    margin-top: 22px;
+  }
+
+  .agents-more .dealers-more-btn {
+    gap: 10px;
+    background: var(--btn-bg) !important;
+    color: #fff !important;
+  }
+
+  .agents-more .dealers-more-btn .icon {
+    width: 18px;
+    height: 18px;
   }
 
   /* Agent profile: cover photo band, round photo overlapping it, dark text on the page background */
@@ -11298,10 +12103,6 @@ main:has(> .section-seo:last-child) + .site-footer {
     padding-top: 12px;
   }
 
-  body:has(.pd-mobile-bar) {
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
-  }
-
   /* Slider */
   .mgallery {
     display: block;
@@ -11670,6 +12471,25 @@ main:has(> .section-seo:last-child) + .site-footer {
     border-radius: 18px;
     background: var(--app-surface);
     box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16);
+    opacity: 0;
+    transform: translateY(calc(100% + 16px));
+    pointer-events: none;
+    transition:
+      transform 0.25s ease,
+      opacity 0.25s ease;
+  }
+
+  /* Only between the hero and the footer (toggled by MobileContactBar) */
+  .pd-mobile-bar.is-visible {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pd-mobile-bar {
+      transition: none;
+    }
   }
 
   .pd-mobile-bar .ant-avatar {
@@ -11829,6 +12649,19 @@ main:has(> .section-seo:last-child) + .site-footer {
 .blog-detail-fact svg {
   width: 16px;
   height: 16px;
+}
+
+/* A thin bar between the byline facts. */
+.blog-detail-fact::before {
+  content: "";
+  width: 1px;
+  height: 16px;
+  margin-right: 10px;
+  background: var(--app-border);
+}
+
+.blog-detail-facts > .blog-detail-fact:first-child::before {
+  display: none;
 }
 
 /* Share buttons in the networks' own colours. */
@@ -12116,6 +12949,295 @@ main:has(> .section-seo:last-child) + .site-footer {
   margin-top: 64px;
 }
 
+/* Blog article on phones, following blog-detail-page-responsive.png */
+@media (max-width: 640px) {
+  .blog-detail > .breadcrumbs {
+    display: none;
+  }
+
+  .blog-detail-header h1 {
+    margin: 0 0 12px;
+    font-size: 22px;
+  }
+
+  .blog-detail-meta {
+    gap: 10px 8px;
+    margin-bottom: 14px;
+  }
+
+  /* Avatar beside two lines: the name, then the date and read time. */
+  .blog-detail-facts {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    align-content: center;
+    gap: 2px 5px;
+    font-size: 10.5px;
+  }
+
+  .blog-detail-facts:has(.blog-detail-author) {
+    min-height: 32px;
+    padding-left: 40px;
+  }
+
+  .blog-detail-author {
+    grid-column: 1 / -1;
+    font-size: 13px;
+  }
+
+  .blog-detail-avatar {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    translate: 0 -50%;
+  }
+
+  .blog-detail-fact {
+    gap: 3px;
+  }
+
+  .blog-detail-fact::before {
+    height: 11px;
+    margin-right: 3px;
+  }
+
+  .blog-detail-author + .blog-detail-fact::before {
+    display: none;
+  }
+
+  .blog-detail-fact svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .share-links.is-brand {
+    gap: 6px;
+  }
+
+  .share-links.is-brand .share-links-label {
+    font-size: 12px;
+  }
+
+  .share-links.is-brand ul {
+    gap: 3px;
+  }
+
+  .share-links.is-brand a,
+  .share-links.is-brand button {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+
+  .share-links.is-brand [data-network="x"] {
+    display: none;
+  }
+
+  .blog-detail-cover {
+    aspect-ratio: 7 / 5;
+    margin-bottom: 16px;
+    border-radius: var(--radius-l);
+  }
+
+  .blog-detail-layout {
+    gap: 24px;
+  }
+
+  .blog-detail-main .prose {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .blog-detail-main .prose h2 {
+    margin: 22px 0 10px;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  /* Inline property rail: open (no box), one card with the next peeking in, arrows either side of the dots. */
+  .blog-inline-rail {
+    margin: 28px 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .blog-inline-rail-head h2 {
+    font-size: 17px;
+  }
+
+  .blog-inline-rail-head a {
+    display: none;
+  }
+
+  .blog-inline-rail .rail-track {
+    grid-auto-columns: 86%;
+    gap: 12px;
+  }
+
+  .blog-inline-rail .rail-dots {
+    min-height: 32px;
+    align-items: center;
+    margin-top: 2px;
+  }
+
+  .blog-inline-rail .rail-dots button {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    transition: width 0.2s;
+  }
+
+  .blog-inline-rail .rail-dots button.is-active {
+    width: 24px;
+  }
+
+  .blog-inline-rail .rail-arrow {
+    display: grid;
+    top: auto;
+    bottom: 0;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: var(--accent-soft);
+    color: var(--accent);
+    box-shadow: none;
+    font-size: 12px;
+  }
+
+  .blog-inline-rail .rail-arrow:disabled {
+    opacity: 0.45;
+  }
+
+  .blog-inline-rail .rail-arrow.prev {
+    left: 18px;
+  }
+
+  .blog-inline-rail .rail-arrow.next {
+    right: 18px;
+  }
+
+  /* Author box: photo beside the name, then the bio and centred socials across the full width. */
+  .blog-author-box {
+    position: relative;
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    align-items: start;
+    gap: 0 16px;
+    margin-top: 28px;
+    padding: 20px 18px 24px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .blog-author-box::after {
+    content: "";
+    position: absolute;
+    right: -40px;
+    bottom: -40px;
+    z-index: -1;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .blog-author-body {
+    display: contents;
+  }
+
+  .blog-author-photo {
+    grid-row: 1 / span 3;
+    align-self: center;
+    width: 104px;
+    height: 104px;
+    font-size: 28px;
+  }
+
+  .blog-author-eyebrow {
+    justify-self: start;
+    align-self: end;
+    margin-bottom: 6px;
+    font-size: 10px;
+  }
+
+  .blog-author-body h2 {
+    grid-column: 2;
+    font-size: 18px;
+  }
+
+  .blog-author-role {
+    grid-column: 2;
+    align-self: start;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--app-muted);
+  }
+
+  .blog-author-bio {
+    grid-column: 1 / -1;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+
+  .blog-author-socials {
+    grid-column: 1 / -1;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .blog-author-socials a {
+    width: 36px;
+    height: 36px;
+    font-size: 17px;
+  }
+
+  /* The inline rail already lists properties, so the sidebar keeps the project (and banners). */
+  .blog-detail-aside > .property-card:not(.project-card),
+  .blog-detail-aside > .agency-card {
+    display: none;
+  }
+
+  .blog-related {
+    margin-top: 36px;
+  }
+
+  .blog-related .rail-track {
+    grid-auto-columns: 84%;
+    gap: 12px;
+  }
+
+  .blog-related .rail-arrow {
+    display: grid;
+    top: 118px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 11px;
+  }
+
+  .blog-related .rail-arrow.prev {
+    left: -10px;
+  }
+
+  .blog-related .rail-arrow.next {
+    right: -10px;
+  }
+}
+
+/* Narrow phones: the share buttons keep their row beside the byline without the label (each button names itself). */
+@media (max-width: 440px) {
+  .share-links.is-brand .share-links-label {
+    display: none;
+  }
+}
+
 /* Buy / Rent pages (/buy, /rent): photo hero with tabs and a filter bar, listing rows, dealer spotlight */
 .purpose-hero {
   position: relative;
@@ -12164,6 +13286,14 @@ main:has(> .section-seo:last-child) + .site-footer {
 .purpose-search {
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Mobile-only parts of the hero (eyebrow, lead, keyword box, arrow on the button) */
+.purpose-eyebrow,
+.purpose-lead,
+.purpose-keyword,
+.purpose-submit-arrow {
+  display: none;
 }
 
 .purpose-tabs {
@@ -12594,6 +13724,220 @@ main:has(> .section-seo:last-child) + .site-footer {
   .purpose-head .search-bar-actions {
     width: 100%;
   }
+
+  /* Hero: left-aligned eyebrow, title and lead over full-width tabs and a two-column filter card */
+  .purpose-hero-inner {
+    padding-block: 28px 24px;
+    text-align: left;
+  }
+
+  .purpose-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .purpose-eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 2px;
+    border-radius: 2px;
+    background: #4ea1ff;
+  }
+
+  .purpose-hero h1 {
+    margin: 0 0 10px;
+    font-size: 26px;
+  }
+
+  .purpose-lead {
+    display: block;
+    max-width: 320px;
+    margin: 0 0 20px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .purpose-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 4px;
+    border-radius: var(--radius-l);
+  }
+
+  .purpose-tab {
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 6px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .purpose-tab .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .purpose-tab[aria-current="page"] {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .purpose-bar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 12px;
+    border-radius: var(--radius-l);
+  }
+
+  .purpose-keyword {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    color: var(--app-muted);
+  }
+
+  .purpose-keyword:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .purpose-keyword .icon {
+    flex: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  .purpose-keyword input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    color: var(--app-text);
+  }
+
+  .purpose-field {
+    height: 44px;
+    padding-left: 8px;
+  }
+
+  .purpose-field-icon .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .purpose-field .ant-select {
+    font-size: 12px;
+  }
+
+  .purpose-submit {
+    grid-column: 1 / -1;
+    position: relative;
+    justify-content: center;
+    height: 46px;
+    border-radius: var(--radius-l);
+    font-size: 14px;
+  }
+
+  .purpose-submit-arrow {
+    display: block;
+    position: absolute;
+    right: 16px;
+  }
+
+  /* Results head: no breadcrumbs, a compact heading and count */
+  .purpose-section {
+    padding-block: 18px 40px;
+  }
+
+  .purpose-head {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .purpose-head .breadcrumbs {
+    display: none;
+  }
+
+  .purpose-head h2 {
+    font-size: 17px;
+  }
+
+  .purpose-head p {
+    margin-top: 2px;
+    font-size: 11px;
+  }
+
+  /* Listing cards (compact layout shared with the agency page): keep the type, Featured badge and location, Save beside the buttons */
+  .purpose-layout .listing-row-list {
+    gap: 10px;
+  }
+
+  .purpose-layout .listing-row-body {
+    padding: 0;
+  }
+
+  .purpose-layout .listing-row-top {
+    display: flex;
+    margin-bottom: 4px;
+  }
+
+  .purpose-layout .listing-row-type {
+    font-size: 10px;
+  }
+
+  .purpose-layout .listing-row-top .badge-featured {
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+
+  .purpose-layout .listing-row-location {
+    display: flex;
+    margin: 0 0 4px;
+    overflow: hidden;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .purpose-layout .listing-row-location .icon {
+    flex: none;
+    width: 12px;
+    height: 12px;
+  }
+
+  .purpose-layout .listing-row-actions {
+    display: flex;
+  }
+
+  .purpose-layout .listing-row-actions .btn {
+    flex: 1;
+  }
+
+  .purpose-layout .listing-row-actions .fav-square {
+    flex: none;
+    position: static;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--app-border);
+  }
 }
 
 /* Listing descriptions are HTML from the rich text editor. */
@@ -12822,6 +14166,10 @@ main:has(> .section-seo:last-child) + .site-footer {
   text-decoration: none;
 }
 
+.author-card-badge {
+  display: none;
+}
+
 .author-card-body {
   display: flex;
   flex: 1;
@@ -13011,6 +14359,11 @@ main:has(> .section-seo:last-child) + .site-footer {
   align-items: center;
   gap: 32px;
   margin-top: 8px;
+}
+
+.author-hero-media {
+  position: relative;
+  min-width: 0;
 }
 
 .author-hero-photo {
@@ -13393,20 +14746,14 @@ main:has(> .section-seo:last-child) + .site-footer {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .author-hero-photo {
+  .author-hero-media {
     max-width: 480px;
   }
 }
 
 @media (max-width: 640px) {
-  .authors-hero-features,
   .author-post-grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .authors-hero-count {
-    padding-left: 0;
-    border-left: 0;
   }
 
   .author-stats {
@@ -13415,6 +14762,465 @@ main:has(> .section-seo:last-child) + .site-footer {
 
   .author-stats li + li {
     border-top: 1px solid var(--app-border);
+  }
+}
+
+@media (max-width: 640px) {
+  /* Directory hero (design: authors listing page - responsive.png): light wash over the DHA gate photo */
+  .authors-hero {
+    padding-block: 16px 24px;
+    background:
+      linear-gradient(90deg, var(--app-bg) 30%, color-mix(in srgb, var(--app-bg) 55%, transparent) 70%, color-mix(in srgb, var(--app-bg) 15%, transparent)) 0 0 / 100% 280px no-repeat,
+      linear-gradient(180deg, transparent 200px, var(--accent-tint) 280px, var(--app-bg)),
+      url("/home/hero-dha-gujranwala-960.webp") 70% top / auto 280px no-repeat,
+      var(--app-bg);
+  }
+
+  .authors-hero-inner {
+    gap: 20px;
+  }
+
+  .authors-hero .breadcrumbs {
+    margin-bottom: 10px;
+  }
+
+  .authors-hero .breadcrumbs a {
+    color: var(--accent) !important;
+  }
+
+  .authors-hero h1 {
+    margin: 0 0 12px;
+    font-size: 44px;
+  }
+
+  .authors-hero h1 span {
+    display: block;
+  }
+
+  .authors-hero-text > p {
+    max-width: 290px;
+    font-size: 14px;
+  }
+
+  .authors-hero-stats {
+    flex-wrap: nowrap;
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  .authors-hero-face {
+    width: 40px;
+    height: 40px;
+    margin-left: -8px;
+  }
+
+  .authors-hero-count {
+    padding-left: 16px;
+    border-left: 1px solid var(--app-border-strong);
+  }
+
+  .authors-hero-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .authors-hero-features li {
+    gap: 10px;
+    padding: 12px 10px;
+  }
+
+  .authors-hero-features strong {
+    font-size: 12.5px;
+  }
+
+  .authors-hero-features small {
+    font-size: 11px;
+  }
+
+  .authors-hero-feature-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .authors-hero-feature-icon .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .authors-head .home-eyebrow::after {
+    content: "";
+    width: 40px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .authors-head .home-eyebrow {
+    gap: 10px;
+  }
+
+  .authors-head .home-eyebrow-rule {
+    height: 1px;
+    background: currentColor;
+  }
+
+  .authors-head .home-head-sub {
+    font-size: 13px;
+  }
+
+  /* Directory card: photo on the left with the role badge, details on the right */
+  .author-grid {
+    gap: 16px;
+  }
+
+  .author-card {
+    flex-direction: row;
+    gap: 14px;
+    padding: 10px;
+  }
+
+  .author-card-photo {
+    flex: 0 0 44%;
+    align-self: stretch;
+    aspect-ratio: auto;
+    min-height: 210px;
+    border-radius: var(--radius-l);
+  }
+
+  .author-card-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: calc(100% - 16px);
+    padding: 5px 9px;
+    border-radius: 8px;
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--app-heading);
+  }
+
+  .author-card-badge .icon {
+    flex: none;
+    width: 13px;
+    height: 13px;
+    color: var(--accent);
+  }
+
+  /* The badge carries the role visually; keep it in the text for screen readers. */
+  .author-card:has(.author-card-badge) .author-card-role {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .author-card-body {
+    min-width: 0;
+    gap: 6px;
+    padding: 6px 2px 2px 0;
+  }
+
+  .author-card h3 {
+    font-size: 17px;
+  }
+
+  .author-card-bio {
+    font-size: 12.5px;
+  }
+
+  .author-chips {
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .author-chips li {
+    padding: 3px 9px;
+    font-size: 10.5px;
+  }
+
+  .author-card-foot {
+    align-items: stretch;
+    gap: 12px;
+    padding-top: 10px;
+  }
+
+  .author-socials {
+    gap: 8px;
+  }
+
+  .author-social {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+
+  .author-card-foot .btn {
+    min-height: 40px;
+  }
+
+  .load-more-row {
+    margin-top: 28px;
+  }
+
+  /* Profile (design: single author dettail page - responive.png): one centred column in a soft panel */
+  .author-hero {
+    padding-block: 12px 24px;
+  }
+
+  .author-hero > .container {
+    padding-block: 14px 20px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-xxl);
+    background: linear-gradient(180deg, var(--accent-tint), color-mix(in srgb, var(--app-surface) 92%, transparent) 260px);
+    box-shadow: var(--app-shadow);
+  }
+
+  .author-hero .breadcrumbs {
+    margin-bottom: 12px;
+    font-size: 12.5px;
+  }
+
+  .author-hero .breadcrumbs [aria-current="page"] {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .author-hero-grid {
+    gap: 18px;
+    margin-top: 0;
+  }
+
+  /* The quote leaves the photo and becomes its own card after the socials. */
+  .author-hero-media {
+    display: contents;
+  }
+
+  .author-hero-photo {
+    order: 0;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-xl) var(--radius-xl) 50% 50% / var(--radius-xl) var(--radius-xl) 14% 14%;
+    box-shadow: 0 6px 0 -2px color-mix(in srgb, var(--accent) 35%, transparent), var(--app-shadow-hover);
+  }
+
+  .author-hero-text {
+    order: 1;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .author-hero-quote {
+    order: 2;
+    position: static;
+    gap: 16px;
+    padding: 14px 16px;
+    border: 1px solid color-mix(in srgb, var(--accent) 16%, transparent);
+    background: var(--accent-soft);
+    backdrop-filter: none;
+    color: var(--app-heading);
+  }
+
+  .author-hero-quote p {
+    padding-left: 16px;
+    border-left: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    font-size: 13.5px;
+    color: var(--app-text);
+  }
+
+  .author-hero-quote-mark {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: #fff;
+  }
+
+  .author-hero-quote-mark .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .author-stats {
+    order: 3;
+  }
+
+  .author-badge {
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+
+  .author-badge::before,
+  .author-badge::after {
+    width: 34px;
+    height: 1px;
+  }
+
+  .author-hero h1 {
+    font-size: 34px;
+  }
+
+  .author-hero-role {
+    margin: 6px 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .author-hero-bio {
+    margin-bottom: 16px;
+    font-size: 14px;
+    text-align: left;
+  }
+
+  .author-hero-text .author-socials {
+    justify-content: center;
+  }
+
+  .author-hero-text .author-socials.is-lg .author-social {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  /* Stats: three columns, icon over value over label */
+  .author-stats {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    padding: 14px 4px;
+    border-radius: var(--radius-l);
+  }
+
+  .author-stats li {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 6px;
+    text-align: center;
+  }
+
+  .author-stats li + li {
+    border-top: 0;
+    border-left: 1px solid var(--app-border);
+  }
+
+  .author-stats-icon {
+    width: auto;
+    height: auto;
+    background: none;
+  }
+
+  .author-stats-icon .icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .author-stats strong {
+    font-size: 13px;
+  }
+
+  .author-stats small {
+    font-size: 11.5px;
+    line-height: 1.3;
+  }
+
+  .author-expertise {
+    margin-top: 24px;
+  }
+
+  .author-expertise h2 {
+    font-size: 20px;
+  }
+
+  .author-expertise ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .author-expertise li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .author-expertise li {
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--app-heading);
+  }
+
+  .author-expertise .icon {
+    width: 22px;
+    height: 22px;
+    color: var(--accent);
+  }
+
+  /* Articles: "— Articles by —" eyebrow, one card per row */
+  .author-articles {
+    padding-top: 24px;
+  }
+
+  .author-articles .home-eyebrow {
+    gap: 10px;
+    font-size: 10px;
+  }
+
+  .author-articles .home-eyebrow::before,
+  .author-articles .home-eyebrow-rule {
+    content: "";
+    width: 24px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .author-articles .home-head h2 {
+    font-size: 26px;
+  }
+
+  .author-articles .home-head-sub {
+    font-size: 12.5px;
+  }
+
+  .author-post-grid {
+    gap: 16px;
+  }
+
+  .author-post-cover {
+    aspect-ratio: 16 / 9;
+  }
+
+  .author-post-body {
+    gap: 6px;
+    padding: 12px 14px 14px;
+  }
+
+  .author-post-body h3 {
+    font-size: 15.5px;
+  }
+
+  .author-post-excerpt {
+    font-size: 12.5px;
+  }
+
+  .author-post-meta {
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 360px) {
+  .author-card {
+    flex-direction: column;
+  }
+
+  .author-card-photo {
+    flex-basis: auto;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
   }
 }
 
@@ -19328,6 +21134,922 @@ figure.dv-gallery-item {
   .dv-actions .btn {
     flex: 1 1 140px;
     justify-content: center;
+  }
+}
+
+/* Phone-only pieces: the experience photo, the portfolio card facts and the rail dots. */
+.dv-experience-photo,
+.pf-card-details,
+.rail-dots {
+  display: none;
+}
+
+@media (max-width: 820px) {
+  .rail-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .rail-dots button {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    cursor: pointer;
+  }
+
+  .rail-dots button.is-active {
+    background: var(--accent);
+  }
+
+  .rail-dots button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+/* Developer page on phones, following developer-detail-page-responsive.png */
+@media (max-width: 640px) {
+  .dv-page > .breadcrumbs {
+    display: none;
+  }
+
+  .dv-section {
+    margin-top: 16px;
+  }
+
+  .dv-page .dv-icon-chip {
+    border-radius: 50%;
+  }
+
+  .dv-head {
+    margin-bottom: 16px;
+  }
+
+  .dv-head h2 {
+    font-size: 26px;
+  }
+
+  .dv-head p {
+    font-size: 14px;
+  }
+
+  .dv-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dv-eyebrow::after,
+  .dv-head-center .dv-eyebrow::before {
+    content: "";
+    flex: none;
+    width: 28px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  /* Header: full-width photo with the logo overlapping its bottom edge */
+  .dv-hero {
+    background: var(--app-surface);
+  }
+
+  .dv-hero-image {
+    height: 230px;
+  }
+
+  .dv-hero-cover .dv-hero-image::after {
+    background: none;
+  }
+
+  .dv-hero-body {
+    gap: 10px;
+    padding: 0 14px 14px;
+  }
+
+  .dv-hero-logo {
+    width: 120px;
+    height: 120px;
+    margin-top: -64px;
+    border-radius: var(--radius-l);
+  }
+
+  .dv-hero:not(.dv-hero-cover) .dv-hero-logo {
+    margin-top: 16px;
+  }
+
+  .dv-hero-text h1 {
+    margin-bottom: 8px;
+    font-size: 24px;
+  }
+
+  .dv-badges {
+    margin-bottom: 8px;
+  }
+
+  .dv-badge {
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .dv-badge-verified {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .dv-badge-featured {
+    background: color-mix(in srgb, var(--dv-gold) 24%, var(--app-surface));
+    color: var(--app-heading);
+  }
+
+  .dv-badge-featured .icon {
+    color: var(--dv-gold);
+  }
+
+  .dv-tagline {
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-style: normal;
+    color: var(--app-muted);
+  }
+
+  .dv-hero-meta {
+    gap: 8px 12px;
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+
+  .dv-hero-meta .dv-chip {
+    padding: 0;
+    background: none;
+    font-weight: 500;
+  }
+
+  .dv-hero-meta > span + span {
+    padding-left: 12px;
+    border-left: 1px solid var(--app-border);
+  }
+
+  .dv-hero-stats {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 0;
+    margin-bottom: 14px;
+    padding: 10px 0;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface-2);
+  }
+
+  .dv-hero-stats .dv-stat {
+    gap: 6px;
+    padding: 0 8px;
+  }
+
+  .dv-hero-stats .dv-stat + .dv-stat {
+    border-left: 1px solid var(--app-border);
+  }
+
+  .dv-hero-stats .dv-stat-icon {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    background: none;
+  }
+
+  .dv-hero-stats .dv-stat strong {
+    font-size: 18px;
+  }
+
+  .dv-hero-stats .dv-stat small {
+    display: block;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .dv-actions .btn {
+    flex: 1 1 calc(50% - 5px);
+    min-height: 44px;
+  }
+
+  .dv-actions .btn-outline {
+    flex-basis: 100%;
+  }
+
+  .dv-trust {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    margin: 0 14px 14px;
+    padding: 4px 12px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface-2);
+  }
+
+  .dv-trust li {
+    padding: 10px 0;
+    font-size: 12.5px;
+  }
+
+  .dv-trust li:nth-child(n + 3) {
+    border-top: 1px solid var(--app-border);
+  }
+
+  .dv-trust .icon {
+    flex: none;
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Overview: text, then the photo, the four figures as cards and a full-width button */
+  .dv-overview {
+    gap: 16px;
+  }
+
+  .dv-overview > div:first-child {
+    display: contents;
+  }
+
+  .dv-overview .dv-head {
+    margin-bottom: -6px;
+  }
+
+  .dv-overview .prose {
+    margin-bottom: 0;
+    font-size: 15px;
+  }
+
+  .dv-overview-image {
+    order: 1;
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 16 / 10;
+  }
+
+  .dv-overview-stats {
+    order: 2;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+  }
+
+  .dv-overview .btn {
+    order: 3;
+    justify-content: center;
+    min-height: 46px;
+  }
+
+  .dv-overview-stats .dv-stat {
+    padding: 12px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface);
+  }
+
+  .dv-overview-stats .dv-stat-icon {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+  }
+
+  .dv-overview-stats .dv-stat small {
+    display: block;
+    font-size: 12.5px;
+    line-height: 1.3;
+  }
+
+  .dv-float-badge {
+    top: 12px;
+    left: 12px;
+    padding: 8px 12px;
+  }
+
+  /* History / mission / vision */
+  .dv-story {
+    gap: 14px;
+  }
+
+  .dv-story-card .dv-icon-chip {
+    width: 56px;
+    height: 56px;
+  }
+
+  .dv-story-card .dv-icon-chip .icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .dv-story-number {
+    font-size: 50px;
+  }
+
+  .dv-story-card h3 {
+    margin: 12px 0 14px;
+    font-size: 22px;
+  }
+
+  .dv-story-card h3::after {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 3px;
+    margin-top: 8px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .dv-story-card p {
+    font-size: 14.5px;
+  }
+
+  /* Values, expertise, experience */
+  .dv-pillars {
+    gap: 14px;
+  }
+
+  .dv-values {
+    display: grid;
+    gap: 8px;
+  }
+
+  .dv-values li {
+    padding: 8px 12px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface);
+  }
+
+  .dv-expertise-card,
+  .dv-experience-card {
+    padding-bottom: 24px;
+  }
+
+  .dv-pillars .dv-skyline {
+    display: none;
+  }
+
+  .dv-expertise-card {
+    background: color-mix(in srgb, var(--dv-gold) 7%, var(--app-surface));
+  }
+
+  .dv-expertise {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dv-expertise li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: start;
+    gap: 4px 8px;
+    padding: 12px 10px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface);
+  }
+
+  .dv-expertise .dv-icon-chip {
+    grid-row: span 2;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+  }
+
+  .dv-expertise .dv-icon-chip .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dv-expertise strong {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  .dv-expertise small {
+    font-size: 11.5px;
+  }
+
+  .dv-experience-card {
+    border-color: var(--app-border);
+    background: linear-gradient(180deg, var(--app-surface), var(--accent-tint));
+    color: var(--app-heading);
+  }
+
+  .dv-experience-card .dv-eyebrow {
+    color: var(--accent);
+  }
+
+  .dv-experience-figure {
+    font-size: 56px;
+    color: var(--accent);
+  }
+
+  .dv-experience-card h3 {
+    margin: 4px 0 8px;
+    font-size: 22px;
+    color: var(--app-heading);
+  }
+
+  .dv-experience-card p {
+    color: var(--app-muted);
+  }
+
+  .dv-experience-stats li {
+    background: var(--accent-soft);
+  }
+
+  .dv-experience-stats small {
+    color: var(--app-muted);
+    opacity: 1;
+  }
+
+  .dv-experience-photo {
+    display: block;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    margin-top: 16px;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+  }
+
+  /* Portfolio: full project cards with their key facts */
+  .dv-projects {
+    padding-inline: 12px;
+  }
+
+  .dv-projects .rail-track {
+    grid-auto-columns: 90%;
+  }
+
+  .dv-projects .pf-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-xl);
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+  }
+
+  .dv-projects .pf-card-button {
+    border-radius: 0;
+  }
+
+  .dv-projects .pf-card-cover {
+    aspect-ratio: 16 / 10;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .dv-projects .pf-card-button:hover .pf-card-cover,
+  .dv-projects .pf-card-button:focus-visible .pf-card-cover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .dv-projects .pf-card-shade,
+  .dv-projects .pf-card-caption,
+  .dv-projects .pf-card-cover .photo-count {
+    display: none;
+  }
+
+  .dv-projects .pf-card-cover .badge {
+    right: 12px;
+    left: auto;
+  }
+
+  .pf-card-details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 14px 16px 16px;
+  }
+
+  .pf-card-details h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--app-heading);
+  }
+
+  .pf-card-type {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: var(--app-muted);
+  }
+
+  .pf-card-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--app-muted);
+  }
+
+  .pf-card-location span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .pf-card-location .icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--accent);
+  }
+
+  .pf-card-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 12px 0 14px;
+    border-top: 1px solid var(--app-border);
+  }
+
+  .pf-card-facts > div {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0 6px;
+    padding: 9px 6px 9px 0;
+    border-bottom: 1px solid var(--app-border);
+  }
+
+  .pf-card-facts > div:nth-child(even) {
+    padding-left: 8px;
+    border-left: 1px solid var(--app-border);
+  }
+
+  .pf-card-facts .icon {
+    grid-row: span 2;
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+  }
+
+  .pf-card-facts dt {
+    font-size: 11.5px;
+    color: var(--app-muted);
+  }
+
+  .pf-card-facts dd {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--app-heading);
+    overflow-wrap: anywhere;
+  }
+
+  .pf-card-facts .pf-pill {
+    padding: 2px 8px;
+    font-size: 11.5px;
+    white-space: normal;
+  }
+
+  .pf-card-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    margin-top: auto;
+  }
+
+  /* Gallery: tabs scroll sideways in one row */
+  .dv-gallery-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .dv-gallery-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dv-gallery-tabs button {
+    flex: none;
+  }
+
+  .dv-gallery-3,
+  .dv-gallery-4 {
+    grid-template-rows: 220px 100px;
+    gap: 8px;
+  }
+
+  /* Leadership: no inner card, a landscape photo, facts as rows */
+  .dv-leader {
+    gap: 16px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .dv-leader-photo .dv-member-photo {
+    aspect-ratio: 16 / 11;
+  }
+
+  .dv-leader-body h3 {
+    font-size: 26px;
+  }
+
+  .dv-leader-body h3::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 3px;
+    margin-bottom: 10px;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .dv-leader .dv-member-role {
+    font-weight: 500;
+    color: var(--app-muted);
+  }
+
+  .dv-leader-facts {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .dv-leader-facts li {
+    gap: 14px;
+    padding: 10px 14px;
+    background: var(--accent-tint);
+  }
+
+  .dv-leader-facts .icon {
+    box-sizing: content-box;
+    padding: 9px;
+    border-radius: 50%;
+    background: var(--app-surface);
+  }
+
+  .dv-leader-facts strong {
+    font-size: 15px;
+  }
+
+  .dv-leader-facts small {
+    font-size: 13px;
+  }
+
+  .dv-quote {
+    padding: 4px 0 4px 16px;
+    border-radius: 0;
+    background: none;
+  }
+
+  .dv-quote > .icon {
+    display: none;
+  }
+
+  /* Team: two cards per row, photo on top */
+  .dv-team {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dv-member {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .dv-member .dv-member-photo {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .dv-member-body {
+    padding: 10px;
+  }
+
+  .dv-member-tag {
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+
+  .dv-member-body h3 {
+    margin: 6px 0 4px;
+    font-size: 15px;
+  }
+
+  .dv-member-body p {
+    margin-bottom: 8px;
+    font-size: 11.5px;
+  }
+
+  .dv-member-spec {
+    font-size: 11px;
+  }
+
+  .dv-member-foot {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .dv-member-exp {
+    font-size: 11px;
+  }
+
+  .dv-member .dv-member-links {
+    gap: 4px;
+  }
+
+  .dv-member .dv-member-links a {
+    width: 26px;
+    height: 26px;
+  }
+
+  .dv-member .dv-member-links .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Registration */
+  .dv-registration .dv-head h2 {
+    font-size: 28px;
+  }
+
+  .dv-registration-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 14px;
+  }
+
+  .dv-verified-box {
+    background: color-mix(in srgb, var(--dv-green) 10%, var(--app-surface));
+  }
+
+  .dv-reg-grid {
+    gap: 10px;
+  }
+
+  .dv-reg-grid li {
+    align-items: center;
+    padding: 12px 14px;
+  }
+
+  .dv-reg-grid .dv-icon-chip {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Contact: the photo sits behind the heading, details as cards */
+  .dv-contact-backdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 40%;
+    height: 240px;
+    margin: 0;
+  }
+
+  .dv-contact-backdrop::after {
+    background:
+      linear-gradient(90deg, var(--accent-tint) 0%, color-mix(in srgb, var(--accent-tint) 40%, transparent) 40%, transparent 75%),
+      linear-gradient(0deg, var(--accent-tint) 0%, transparent 40%);
+  }
+
+  .dv-contact-image .dv-head {
+    max-width: 66%;
+  }
+
+  .dv-contact .dv-head h2 {
+    font-size: 32px;
+  }
+
+  .dv-contact .dv-head p {
+    font-size: 13px;
+  }
+
+  .dv-contact-list {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .dv-contact-list li {
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface);
+    font-size: 14px;
+  }
+
+  .dv-contact-list .dv-icon-chip {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dv-contact-list small {
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  .dv-contact-list a:not(.dv-map-link) {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--app-heading);
+  }
+
+  .dv-contact-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dv-contact-btn:not(.dv-contact-call):not(.dv-contact-whatsapp) {
+    grid-column: 1 / -1;
+  }
+
+  .dv-contact-btn {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .dv-contact-btn strong {
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .dv-contact-call > .icon:last-child,
+  .dv-contact-whatsapp > .icon:last-child {
+    display: none;
+  }
+
+  .dv-contact-list .dv-map-link {
+    display: flex;
+    width: fit-content;
+  }
+
+  .dv-contact-btn small {
+    overflow: hidden;
+    font-size: 11px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .dv-contact-btn > .icon:last-child {
+    flex: none;
+    width: 16px;
+    height: 16px;
+  }
+
+  .dv-contact-call > .icon:first-child,
+  .dv-contact-whatsapp > .icon:first-child {
+    box-sizing: content-box;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    padding: 8px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--btn-bg);
+  }
+
+  .dv-contact-whatsapp > .icon:first-child {
+    color: var(--whatsapp);
+  }
+
+  /* A grid, not a column flexbox: the social grid inside would otherwise keep its one-column height. */
+  .dv-follow {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--accent-tint);
+    box-shadow: none;
+  }
+
+  .dv-follow ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+    gap: 10px 4px;
+  }
+
+  .dv-social {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .dv-social .anticon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
   }
 }
 

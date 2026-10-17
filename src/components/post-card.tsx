@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarIcon, HomeIcon } from "@/components/icons";
+import { ArrowRightIcon, CalendarIcon, ClockIcon, HomeIcon } from "@/components/icons";
 import { postHref } from "@/lib/blog";
 import { sizedImage } from "@/lib/image";
 import { formatDate } from "@/lib/labels";
@@ -10,6 +10,11 @@ import type { BlogPostSummary } from "@/types/api";
 /** "September 25, 2026" — the long date used on the blog index. */
 export function longDate(value: string): string {
   return dayjs(value).format("MMMM D, YYYY");
+}
+
+/** "Sep 18, 2026" — the compact date on mobile blog cards. */
+export function shortDate(value: string): string {
+  return dayjs(value).format("MMM D, YYYY");
 }
 
 /**
@@ -36,6 +41,7 @@ export function PostCard({
             ) : (
               <HomeIcon className="placeholder-icon" />
             )}
+            {post.category && <span className="post-card-badge">{post.category.name}</span>}
           </div>
           <div className="post-card-body">
             {post.published_at && (
@@ -45,6 +51,22 @@ export function PostCard({
             )}
             <Heading className="post-card-title">{post.title}</Heading>
             {post.excerpt && <p className="post-card-excerpt">{post.excerpt}</p>}
+            {/* Mobile only: short date, read time and an arrow, per the responsive design. */}
+            <div className="post-card-meta" aria-hidden="true">
+              {post.published_at && (
+                <span>
+                  <CalendarIcon /> {shortDate(post.published_at)}
+                </span>
+              )}
+              {post.read_time_minutes ? (
+                <span>
+                  <ClockIcon /> {post.read_time_minutes} min read
+                </span>
+              ) : null}
+              <span className="blog-arrow">
+                <ArrowRightIcon />
+              </span>
+            </div>
           </div>
         </Link>
       </article>

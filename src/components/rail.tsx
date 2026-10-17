@@ -1,12 +1,17 @@
 "use client";
 
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Children, useEffect, useRef, useState, type ReactNode } from "react";
 
-/** A horizontally scrolling row of cards with previous/next buttons on devices that hover. */
-export function Rail({ label, children }: { label: string; children: ReactNode }) {
+/**
+ * A horizontally scrolling row of cards with previous/next buttons on devices that hover.
+ * With `dots`, small screens get a dot per card instead, marking the one in view.
+ */
+export function Rail({ label, children, dots = false }: { label: string; children: ReactNode; dots?: boolean }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ atStart: true, atEnd: false });
+  const [active, setActive] = useState(0);
+  const count = Children.count(children);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -15,11 +20,20 @@ export function Rail({ label, children }: { label: string; children: ReactNode }
       return;
     }
 
-    const update = () =>
+    const update = () => {
       setEdges({
         atStart: track.scrollLeft <= 4,
         atEnd: track.scrollLeft + track.clientWidth >= track.scrollWidth - 4,
       });
+
+      const first = track.firstElementChild as HTMLElement | null;
+      const second = first?.nextElementSibling as HTMLElement | null;
+      const step = first && second ? second.offsetLeft - first.offsetLeft : 0;
+
+      if (step > 0) {
+        setActive(track.scrollLeft + track.clientWidth >= track.scrollWidth - 4 ? count - 1 : Math.round(track.scrollLeft / step));
+      }
+    };
 
     const observer = new ResizeObserver(update);
     observer.observe(track);
@@ -29,7 +43,11 @@ export function Rail({ label, children }: { label: string; children: ReactNode }
       observer.disconnect();
       track.removeEventListener("scroll", update);
     };
-  }, []);
+  }, [count]);
+
+  function reduceMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
 
   function scroll(direction: 1 | -1) {
     const track = trackRef.current;
@@ -38,8 +56,16 @@ export function Rail({ label, children }: { label: string; children: ReactNode }
       return;
     }
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    track.scrollBy({ left: direction * track.clientWidth * 0.9, behavior: reduceMotion ? "auto" : "smooth" });
+    track.scrollBy({ left: direction * track.clientWidth * 0.9, behavior: reduceMotion() ? "auto" : "smooth" });
+  }
+
+  function scrollTo(index: number) {
+    const track = trackRef.current;
+    const card = track?.children[index] as HTMLElement | undefined;
+
+    if (track && card) {
+      track.scrollTo({ left: card.offsetLeft - (track.firstElementChild as HTMLElement).offsetLeft, behavior: reduceMotion() ? "auto" : "smooth" });
+    }
   }
 
   return (
@@ -53,6 +79,13 @@ export function Rail({ label, children }: { label: string; children: ReactNode }
       <button type="button" className="rail-arrow next" aria-label={`Scroll ${label} forward`} disabled={edges.atEnd} onClick={() => scroll(1)}>
         <RightOutlined />
       </button>
+      {dots && count > 1 && (
+        <div className="rail-dots">
+          {Array.from({ length: count }, (_, index) => (
+            <button key={index} type="button" className={index === active ? "is-active" : undefined} aria-label={`Show item ${index + 1} of ${count}`} aria-current={index === active} onClick={() => scrollTo(index)} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

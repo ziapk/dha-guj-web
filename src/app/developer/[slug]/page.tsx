@@ -226,6 +226,8 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
   const heroImage = developer.cover_url ?? gallery[0]?.url ?? null;
   const overviewImage = sections.overview?.image_url ?? gallery.find((photo) => photo.url !== heroImage)?.url ?? heroImage;
   const contactImage = gallery.find((photo) => photo.url !== heroImage && photo.url !== overviewImage)?.url ?? heroImage;
+  // Phones swap the experience card's skyline for a photo, preferably one not shown elsewhere.
+  const experienceImage = gallery.find((photo) => ![heroImage, overviewImage, contactImage].includes(photo.url))?.url ?? contactImage;
   const overviewButton = {
     label: sections.overview?.button_label?.trim() || "View Our Projects",
     href: sections.overview?.button_url?.trim() || (total > 0 ? "#projects" : null),
@@ -498,7 +500,13 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
               )}
               {expertise.length > 0 && (
                 <div className="dv-card dv-expertise-card">
-                  <SectionHead {...head("expertise", { eyebrow: "What we do", title: "Areas of Expertise" })} />
+                  <SectionHead
+                    {...head("expertise", {
+                      eyebrow: "What we do",
+                      title: "Areas of Expertise",
+                      text: `We specialize in delivering high-quality residential and commercial real estate developments${cityName ? ` in ${cityName}` : ""}.`,
+                    })}
+                  />
                   <ul className="dv-expertise">
                     {expertise.map((item) => (
                       <li key={item.title}>
@@ -528,6 +536,11 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
                         </li>
                       ))}
                     </ul>
+                  )}
+                  {experienceImage && (
+                    <div className="dv-experience-photo" aria-hidden="true">
+                      <Image src={sizedImage(experienceImage, "medium")} alt="" fill sizes="(max-width: 640px) 100vw, 1px" style={{ objectFit: "cover" }} />
+                    </div>
                   )}
                   <SkylineArt />
                 </div>
