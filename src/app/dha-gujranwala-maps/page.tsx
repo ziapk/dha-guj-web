@@ -125,7 +125,8 @@ export default async function SocietyMapsPage({ searchParams }: PageProps<"/dha-
       )}
 
       <section className={`smaps-hero${hero.image_url ? " has-image" : ""}`}>
-        {hero.image_url && <Image src={sizedImage(hero.image_url, "medium")} alt="" fill priority sizes="100vw" className="smaps-hero-image" />}
+        {/* Not `fill`: the image keeps its own proportions, so the hero is as tall as the uploaded picture. */}
+        {hero.image_url && <Image src={sizedImage(hero.image_url, "medium")} alt="" width={1920} height={700} priority sizes="100vw" className="smaps-hero-image" />}
         <div className="container smaps-hero-inner">
           <nav className="breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
