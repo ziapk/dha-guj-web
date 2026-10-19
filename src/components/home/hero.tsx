@@ -101,8 +101,10 @@ export function HomeHero({
             const Icon = TRUST_ICONS[item.icon];
 
             return (
-              <li key={item.title}>
-                <Icon className="icon-lg" />
+              <li key={item.title} className={`trust-${item.icon}`}>
+                <span className="hero-trust-icon">
+                  <Icon className="icon-lg" />
+                </span>
                 <div>
                   <strong>{item.title}</strong>
                   <small>{item.text}</small>

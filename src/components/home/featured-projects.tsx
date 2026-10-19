@@ -42,6 +42,11 @@ function FrontCard({ project, state }: { project: PublicProject; state: DeckCard
         <BuildingIcon className="placeholder-icon" />
       )}
       <span className="project-hero-badge">{CONSTRUCTION_STATUS_LABELS[project.construction_status]}</span>
+      {/* Only the phone layout shows the place as a pill in the corner (home-page-responsive.png). */}
+      <span className="project-hero-place">
+        <PinIcon className="icon" />
+        <span>{projectLocationOf(project) || "DHA Gujranwala"}</span>
+      </span>
       <div className="project-hero-body">
         <h3>{project.name}</h3>
         <p>By {project.developer_name}</p>

@@ -19,6 +19,7 @@ export function Carousel({
   highlight,
   subtitle,
   action,
+  toolbar,
   label,
   arrows = "side",
   dots = false,
@@ -31,6 +32,8 @@ export function Carousel({
   subtitle?: string;
   /** The "View all …" pill, rendered beside the heading. */
   action?: ReactNode;
+  /** Sits between the heading and the row, e.g. filter chips. */
+  toolbar?: ReactNode;
   /** Names the scrollable region for screen readers, e.g. "Our agents". */
   label: string;
   arrows?: ArrowPlacement;
@@ -132,6 +135,8 @@ export function Carousel({
           </>
         )}
       </SectionHeading>
+
+      {toolbar}
 
       <div className={`carousel${arrows === "side" ? " has-side-arrows" : ""}`}>
         <div ref={trackRef} className={`carousel-track${paged ? " is-paged" : ""}`} role="region" aria-label={label} tabIndex={0}>

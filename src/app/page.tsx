@@ -4,11 +4,11 @@ import { AgencyLogoCard } from "@/components/home/agency-logo-card";
 import { AgentCard } from "@/components/home/agent-card";
 import { Carousel } from "@/components/home/carousel";
 import { FeaturedProjects } from "@/components/home/featured-projects";
+import { FeaturedProperties } from "@/components/home/featured-properties";
 import { HomeHero } from "@/components/home/hero";
 import { MapCard, sectorMapCard, societyMapCard } from "@/components/home/map-card";
 import { PillLink, SectionHeading } from "@/components/home/section-heading";
 import { SeoLinks } from "@/components/home/seo-links";
-import { PropertyCard } from "@/components/property-card";
 import { publicApi } from "@/lib/api";
 import { getAgents } from "@/lib/agents";
 import { SECTOR_MAPS } from "@/lib/home-content";
@@ -84,7 +84,6 @@ export default async function HomePage() {
   const promoted = [...(home.hot ?? []), ...(sections.show_featured ? home.featured : [])];
   const pool = promoted.length > 0 ? [...promoted, ...home.latest] : home.latest;
   const properties = [...new Map(pool.map((property) => [property.id, property])).values()].slice(0, PROPERTIES_PER_PAGE * 4);
-  const propertyPages = chunk(properties, PROPERTIES_PER_PAGE);
   const titanium = sections.show_agencies ? rankAgencies(agencies) : [];
   const agents = agentPage?.data ?? [];
 
@@ -138,22 +137,7 @@ export default async function HomePage() {
       {properties.length > 0 && (
         <section className="section">
           <div className="container">
-            <Carousel
-              label="Featured properties"
-              title="Featured"
-              highlight="Properties"
-              subtitle="Discover the best residential and commercial properties in DHA Gujranwala."
-              arrows="head"
-              paged
-            >
-              {propertyPages.map((page, pageIndex) => (
-                <div key={page[0].id} className="property-grid carousel-page">
-                  {page.map((property, index) => (
-                    <PropertyCard key={property.id} property={property} priority={pageIndex === 0 && index < 3} />
-                  ))}
-                </div>
-              ))}
-            </Carousel>
+            <FeaturedProperties properties={properties} perPage={PROPERTIES_PER_PAGE} />
           </div>
         </section>
       )}

@@ -30,10 +30,12 @@ import {
 import { InquiryForm } from "@/components/inquiry-form";
 import { JsonLd } from "@/components/json-ld";
 import { ProjectCard } from "@/components/project-card";
+import { ListingMobileGallery } from "@/components/listing-mobile-gallery";
 import { ProjectContactCard } from "@/components/project-contact-card";
 import { Expandable } from "@/components/property-detail/expandable";
 import { ConstructionUpdates, type ConstructionUpdateCard } from "@/components/project-detail/construction-updates";
 import { MasterPlanViewer } from "@/components/project-detail/master-plan-viewer";
+import { ProjectMobileBar } from "@/components/project-detail/mobile-contact-bar";
 import { PropertyGallery } from "@/components/property-gallery";
 import { Rail } from "@/components/rail";
 import { SectionIcon } from "@/components/section-icon";
@@ -421,7 +423,14 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             )}
           </div>
           <div className="pj-title">
-            <h1>{project.name}</h1>
+            <div className="pj-title-row">
+              <h1>{project.name}</h1>
+              {project.is_verified && (
+                <span className="badge badge-verified pj-phone-only" title="Reviewed by our team">
+                  <ShieldCheckIcon /> Verified
+                </span>
+              )}
+            </div>
             {location && (
               <p>
                 <PinIcon /> {location}
@@ -455,7 +464,10 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
         </header>
       </div>
 
-      <PropertyGallery photos={photos} title={project.name} layout="stack" />
+      <div className="pd-gallery-desktop">
+        <PropertyGallery photos={photos} title={project.name} layout="stack" />
+      </div>
+      {photos.length > 0 && <ListingMobileGallery photos={photos} title={project.name} />}
 
       <div className="detail-layout pd-layout pj-layout">
         <div className="pj-main">
@@ -475,8 +487,9 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             <h2 className="pj-plain-title">Overview</h2>
             {project.short_description && <p className="pj-lead">{project.short_description}</p>}
             <h3 className="pj-sub-title">
+              <span className="pj-phone-only">About </span>
               {project.name}
-              {location ? ` – ${location}` : ""}
+              {location && <span className="pj-wide-only"> – {location}</span>}
             </h3>
             <Expandable collapsedHeight={230}>
               {project.description && <div className="prose pj-html" dangerouslySetInnerHTML={{ __html: project.description }} />}
@@ -610,6 +623,75 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
                   </tbody>
                 </table>
               </div>
+              <ul className="pj-unit-cards">
+                {units.map((unit) => {
+                  const image = sizedImage(unit.image_url ?? unit.floor_plan_url, "thumbnail") ?? coverThumb;
+
+                  return (
+                    <li key={unit.id}>
+                      <div className="pj-unit-card-top">
+                        <span className="pj-unit-thumb">{image ? <Image src={image} alt="" fill sizes="120px" style={{ objectFit: "cover" }} /> : <HomeIcon />}</span>
+                        <div className="pj-unit-card-info">
+                          <strong>{unit.name}</strong>
+                          {unit.property_type?.name && <small>{unit.property_type.name}</small>}
+                          <div className="pj-unit-card-prices">
+                            <span className="is-accent">
+                              <small>Starting From</small>
+                              {unit.price_from ? (
+                                <b>{formatCompactPrice(unit.price_from).replace(/^Rs/, "PKR")}</b>
+                              ) : project.hide_price ? (
+                                <a href="#enquire">On request</a>
+                              ) : (
+                                <b>—</b>
+                              )}
+                            </span>
+                            {unit.price_to && (
+                              <span>
+                                <small>Maximum Price</small>
+                                <b>{formatCompactPrice(unit.price_to).replace(/^Rs/, "PKR")}</b>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <ul className="pj-unit-card-specs">
+                        {unit.area_size && unit.area_unit && (
+                          <li>
+                            <HomeIcon />
+                            <span>
+                              <b>{formatArea(unit.area_size, unit.area_unit)}</b>
+                              {unit.price_per_sq_ft && <small>{formatPrice(unit.price_per_sq_ft)}/sq. ft.</small>}
+                            </span>
+                          </li>
+                        )}
+                        {unit.bedrooms !== null && (
+                          <li>
+                            <BedIcon />
+                            <span>
+                              <b>{unit.bedrooms}</b>
+                              <small>Beds</small>
+                            </span>
+                          </li>
+                        )}
+                        {unit.bathrooms !== null && (
+                          <li>
+                            <BathIcon />
+                            <span>
+                              <b>{unit.bathrooms}</b>
+                              <small>Baths</small>
+                            </span>
+                          </li>
+                        )}
+                        {unit.availability && (
+                          <li className="pj-unit-card-status">
+                            <span className={`pj-availability is-${unit.availability}`}>{UNIT_AVAILABILITY_LABELS[unit.availability] ?? unit.availability}</span>
+                          </li>
+                        )}
+                      </ul>
+                    </li>
+                  );
+                })}
+              </ul>
               {units.some((unit) => unit.monthly_installment || unit.down_payment) && (
                 <ul className="pj-unit-plans">
                   {units
@@ -674,6 +756,34 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
                   </li>
                 ))}
               </ul>
+              <ul className="pj-nearby-tiles">
+                {nearbyGroups.flatMap((group) =>
+                  group.places.map((place) => {
+                    const distance = nearbyDistanceOf(place);
+                    const body = (
+                      <>
+                        <span className="pj-nearby-icon">
+                          <AmenityGlyph name={group.icon} />
+                        </span>
+                        <strong>{place.name}</strong>
+                        {distance && <b>{distance}</b>}
+                      </>
+                    );
+
+                    return (
+                      <li key={place.id}>
+                        {place.maps_url ? (
+                          <a href={place.maps_url} target="_blank" rel="noopener noreferrer">
+                            {body}
+                          </a>
+                        ) : (
+                          <div>{body}</div>
+                        )}
+                      </li>
+                    );
+                  }),
+                )}
+              </ul>
             </section>
           )}
 
@@ -733,7 +843,9 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
                   <h3>
                     About the <span>Master Plan</span>
                   </h3>
-                  <div className="prose pj-html" dangerouslySetInnerHTML={{ __html: project.master_plan_html }} />
+                  <Expandable collapsedHeight={150}>
+                    <div className="prose pj-html" dangerouslySetInnerHTML={{ __html: project.master_plan_html }} />
+                  </Expandable>
                 </div>
               )}
             </section>
@@ -742,7 +854,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           {(paymentPlans.length > 0 || planImages.length > 0) && (
             <section className="pj-section pj-band" aria-labelledby="pj-payment-plans">
               <SectionHead id="pj-payment-plans" eyebrow="Payment Plans" title="Payment" accent="Plans" sub="View or download the official payment plans for this project." />
-              <Rail label="Payment plans">
+              <Rail label="Payment plans" dots>
                 {paymentPlans.map((plan) => {
                   const rows = PLAN_ROWS.map((row) => ({ label: row.label, value: plan[row.key] as string | null })).filter((row) => row.value !== null && row.value !== "");
 
@@ -794,7 +906,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           {floorPlans.length > 0 && (
             <section className="pj-section" aria-labelledby="pj-floor-plans">
               <SectionHead id="pj-floor-plans" eyebrow="Floor Plans" title="Floor" accent="Plans" sub="Layouts for each unit type." align="start" />
-              <Rail label="Floor plans">
+              <Rail label="Floor plans" dots>
                 {floorPlans.map((plan) => (
                   <DocCard
                     key={plan.id}
@@ -826,7 +938,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
                 sub="Download the official brochures to explore project details, payment plans, amenities and more."
                 align="start"
               />
-              <Rail label="Brochures">
+              <Rail label="Brochures" dots>
                 {brochures.map((brochure) => (
                   <DocCard
                     key={brochure.id}
@@ -1035,6 +1147,10 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             )}
           </section>
 
+          <div className="pj-section pj-phone-only">
+            <ProjectContactCard project={project} />
+          </div>
+
           {faqs.length > 0 && (
             <section className="pj-section pj-band" aria-labelledby="pj-faqs">
               <SectionHead
@@ -1067,7 +1183,9 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
         </div>
 
         <aside className="pj-sidebar" id="enquire">
-          <ProjectContactCard project={project} />
+          <div className="pj-wide-only">
+            <ProjectContactCard project={project} />
+          </div>
 
           {spotlight && (
             <Link href={propertyHref(spotlight)} className="pd-spotlight">
@@ -1174,6 +1292,8 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           </Rail>
         </section>
       )}
+
+      <ProjectMobileBar project={project} />
     </div>
   );
 }

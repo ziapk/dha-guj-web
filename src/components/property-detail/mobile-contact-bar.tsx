@@ -18,7 +18,7 @@ function track(slug: string, event: "phone" | "whatsapp") {
 }
 
 /** Shown once the hero (photo slider, or the title block without photos) has scrolled away, hidden again as the footer comes in. */
-function useBarVisible() {
+export function useBarVisible() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {

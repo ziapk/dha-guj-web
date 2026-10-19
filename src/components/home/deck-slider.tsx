@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode, type TouchEvent } from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/icons";
 
 /** How many items wait behind the front card. Slots past this are not drawn. */
@@ -9,6 +9,9 @@ const PEEK_SLOTS = 3;
 
 /** Must outlast the crossfade in globals.css, or the outgoing card is cut off mid-fade. */
 const CROSSFADE_MS = 460;
+
+/** How far a finger has to travel sideways before it counts as a swipe. */
+const SWIPE_PX = 40;
 
 export type DeckCardState = "entering" | "leaving";
 
@@ -39,6 +42,7 @@ export function DeckSlider<T extends { id: number }>({
 }) {
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState<T | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const active = items[index];
 
   // Retire the outgoing card once its fade has finished.
@@ -69,6 +73,28 @@ export function DeckSlider<T extends { id: number }>({
   }
 
   const step = (direction: 1 | -1) => show((index + direction + items.length) % items.length);
+
+  // Phones hide the arrows, so a sideways swipe on the deck steps through it instead.
+  function onTouchStart(event: TouchEvent) {
+    const touch = event.touches[0];
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function onTouchEnd(event: TouchEvent) {
+    const start = touchStart.current;
+    const touch = event.changedTouches[0];
+    touchStart.current = null;
+
+    if (!start || items.length < 2) {
+      return;
+    }
+
+    const dx = touch.clientX - start.x;
+
+    if (Math.abs(dx) > SWIPE_PX && Math.abs(dx) > Math.abs(touch.clientY - start.y)) {
+      step(dx < 0 ? 1 : -1);
+    }
+  }
   /** The items queued behind the front card, nearest first. */
   const behind = Array.from({ length: Math.min(PEEK_SLOTS, items.length - 1) }, (_, offset) => ({
     item: items[(index + offset + 1) % items.length],
@@ -78,7 +104,7 @@ export function DeckSlider<T extends { id: number }>({
   return (
     <div className="project-showcase">
       {/* The deck only reserves room to its right for the cards it actually has. */}
-      <div className="project-stack" style={{ "--peeks": behind.length } as CSSProperties}>
+      <div className="project-stack" style={{ "--peeks": behind.length } as CSSProperties} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div className="project-front">
           {/* Keyed by item so the two cards are distinct elements and can animate past each other. */}
           <Fragment key={active.id}>{renderFront(active, "entering")}</Fragment>

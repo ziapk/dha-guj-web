@@ -3,7 +3,7 @@
 import { Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { SearchIcon } from "@/components/icons";
+import { AreaIcon, ArrowRightIcon, BedIcon, BuildingIcon, HomeIcon, KeyIcon, LayersIcon, PinIcon, SearchIcon, TagIcon } from "@/components/icons";
 import { SearchSuggest, suggestionHref } from "@/components/search-suggest";
 import { PROPERTY_CATEGORY_LABELS } from "@/lib/labels";
 import { PURPOSE_PAGES } from "@/lib/purpose-search";
@@ -12,11 +12,14 @@ import type { PropertyCategory, PropertyType, Society } from "@/types/api";
 
 type Tab = "sale" | "rent" | "commercial";
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: "sale", label: "Buy" },
-  { key: "rent", label: "Rent" },
-  { key: "commercial", label: "Commercial" },
+const TABS: { key: Tab; label: string; icon: typeof HomeIcon }[] = [
+  { key: "sale", label: "Buy", icon: HomeIcon },
+  { key: "rent", label: "Rent", icon: KeyIcon },
+  { key: "commercial", label: "Commercial", icon: BuildingIcon },
 ];
+
+/** The small leading icon in each filter; only the phone layout shows it (home-page-responsive.png). */
+const pillIcon = (Icon: typeof HomeIcon) => <Icon className="icon pill-select-icon" />;
 
 const CATEGORY_OPTIONS = (Object.keys(PROPERTY_CATEGORY_LABELS) as PropertyCategory[]).map((value) => ({
   value,
@@ -125,9 +128,10 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
   return (
     <form className="hero-search" onSubmit={submit} role="search">
       <div className="hero-tabs" role="group" aria-label="What are you looking for?">
-        {TABS.map((item) => (
-          <button key={item.key} type="button" className="hero-tab" aria-pressed={tab === item.key} onClick={() => selectTab(item.key)}>
-            {item.label}
+        {TABS.map(({ key, label, icon: Icon }) => (
+          <button key={key} type="button" className="hero-tab" aria-pressed={tab === key} onClick={() => selectTab(key)}>
+            <Icon className="icon hero-tab-icon" />
+            {label}
           </button>
         ))}
       </div>
@@ -145,7 +149,9 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
             hrefFor={(suggestion) => suggestionHref(suggestion, searchParams())}
           />
           <button type="submit" className="hero-submit">
-            Search
+            <SearchIcon className="icon hero-submit-extra" />
+            Search<span className="hero-submit-extra"> Properties</span>
+            <ArrowRightIcon className="icon hero-submit-extra" />
           </button>
         </div>
 
@@ -153,6 +159,7 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
           <Select
             className="pill-select"
             aria-label="Property type"
+            prefix={pillIcon(HomeIcon)}
             placeholder="Property type"
             allowClear
             showSearch={{ optionFilterProp: "label" }}
@@ -164,6 +171,7 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
           <Select
             className="pill-select"
             aria-label="Society"
+            prefix={pillIcon(PinIcon)}
             placeholder="Society"
             allowClear
             showSearch={{ optionFilterProp: "label" }}
@@ -175,6 +183,7 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
           <Select
             className="pill-select"
             aria-label="Price"
+            prefix={pillIcon(TagIcon)}
             placeholder="Price"
             allowClear
             popupMatchSelectWidth={false}
@@ -185,6 +194,7 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
           <Select
             className="pill-select"
             aria-label="Bedrooms"
+            prefix={pillIcon(BedIcon)}
             placeholder="Beds"
             allowClear
             disabled={!showBeds}
@@ -196,6 +206,7 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
           <Select
             className="pill-select"
             aria-label="Area"
+            prefix={pillIcon(AreaIcon)}
             placeholder="Area"
             allowClear
             popupMatchSelectWidth={false}
@@ -203,7 +214,15 @@ export function HeroSearch({ societies, propertyTypes }: { societies: Society[];
             onChange={setAreaKey}
             options={AREA_RANGES.map((range) => ({ value: range.key, label: range.label }))}
           />
-          <Select className="pill-select pill-select-accent" aria-label="Category" popupMatchSelectWidth={false} value={category} onChange={selectCategory} options={CATEGORY_OPTIONS} />
+          <Select
+            className="pill-select pill-select-accent"
+            aria-label="Category"
+            prefix={pillIcon(LayersIcon)}
+            popupMatchSelectWidth={false}
+            value={category}
+            onChange={selectCategory}
+            options={CATEGORY_OPTIONS}
+          />
         </div>
       </div>
     </form>
