@@ -12,8 +12,16 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Account, sign-in and internal API routes have nothing to index.
-      disallow: ["/api/", "/account", "/login", "/register", "/forgot-password"],
+      disallow: [
+        // URLs with query parameters (filters, search, pagination).
+        "/*?",
+        // Account, sign-in and internal API routes have nothing to index.
+        "/api/",
+        "/account",
+        "/login",
+        "/register",
+        "/forgot-password",
+      ],
     },
     sitemap: `${siteUrl()}/sitemap.xml`,
   };
