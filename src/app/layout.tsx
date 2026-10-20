@@ -2,6 +2,7 @@ import "@fontsource-variable/plus-jakarta-sans";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata } from "next";
 import { CompareTray } from "@/components/compare-tray";
+import { GOOGLE_SITE_VERIFICATION, GoogleTagManagerNoscript, GoogleTags } from "@/components/google-tags";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { robots } from "@/lib/seo";
@@ -21,6 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     applicationName: siteName,
     robots: robots(),
+    verification: { google: GOOGLE_SITE_VERIFICATION },
     openGraph: { siteName, type: "website", locale: "en_PK", description },
     twitter: { card: "summary" },
   };
@@ -39,6 +41,8 @@ export default async function RootLayout({ children, modal }: LayoutProps<"/">) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        <GoogleTagManagerNoscript />
+        <GoogleTags />
         <AntdRegistry>
           <Providers>
             <SiteHeader settings={settings} />
