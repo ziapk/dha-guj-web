@@ -4663,12 +4663,173 @@ a.feature-card {
   margin: 0;
 }
 
+.rate-table-wrap {
+  margin-top: 16px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-xl);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow);
+  overflow: hidden;
+}
+
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.rate-table th,
+.rate-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--app-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.rate-table thead th {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--app-heading);
+  background: var(--accent-tint);
+  white-space: nowrap;
+}
+
+.rate-table tbody tr:last-child th,
+.rate-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rate-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--accent-tint) 60%, transparent);
+}
+
+.rate-table .rate-type {
+  font-weight: 600;
+  color: var(--app-heading);
+}
+
 /* The rate itself is the reason people open this page, so it carries the most weight. */
 .rate-table .rate-value {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--app-heading);
   white-space: nowrap;
+}
+
+.rate-table .rate-updated {
+  color: var(--app-muted);
+  white-space: nowrap;
+}
+
+.rate-table .rate-actions {
+  white-space: nowrap;
+}
+
+.rate-actions .btn {
+  height: 42px;
+  padding: 0 16px;
+}
+
+.rate-actions .btn + .btn {
+  margin-left: 8px;
+}
+
+/* Phones: each row becomes a card — type + trend, price + updated, then the two buttons. */
+@media (max-width: 720px) {
+  .rate-table-wrap {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .rate-table,
+  .rate-table tbody {
+    display: block;
+  }
+
+  .rate-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .rate-table tbody tr,
+  .rate-table tbody tr:nth-child(even) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "type trend"
+      "price updated"
+      "actions actions";
+    gap: 6px 12px;
+    margin-bottom: 12px;
+    padding: 14px;
+    border: 1px solid var(--app-border);
+    border-radius: var(--radius-l);
+    background: var(--app-surface);
+    box-shadow: var(--app-shadow);
+  }
+
+  .rate-table tbody th,
+  .rate-table tbody td,
+  .rate-table tbody tr:last-child th,
+  .rate-table tbody tr:last-child td {
+    padding: 0;
+    border: none;
+  }
+
+  .rate-table .rate-type {
+    grid-area: type;
+    align-self: center;
+    font-size: 16px;
+  }
+
+  .rate-table .rate-trend {
+    grid-area: trend;
+    justify-self: end;
+  }
+
+  .rate-table .rate-value {
+    grid-area: price;
+    font-size: 20px;
+  }
+
+  .rate-table .rate-updated {
+    grid-area: updated;
+    justify-self: end;
+    text-align: right;
+    font-size: 13px;
+  }
+
+  .rate-table .rate-value::before,
+  .rate-table .rate-updated::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--app-muted);
+  }
+
+  .rate-table .rate-actions {
+    grid-area: actions;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .rate-actions .btn {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+
+  .rate-actions .btn + .btn {
+    margin-left: 0;
+  }
 }
 
 .rate-note {

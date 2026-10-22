@@ -118,40 +118,60 @@ export default async function FileRatesPage() {
             </div>
             {table.subtitle && <p className="detail-description">{table.subtitle}</p>}
 
-            <div className="compare-table-wrap">
-              <table className="compare-table rate-table">
+            <div className="rate-table-wrap">
+              <table className="rate-table">
                 <thead>
                   <tr>
                     <th scope="col">File type</th>
-                    <th scope="col">Current rate</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Last updated</th>
+                    <th scope="col">Market status</th>
                     <th scope="col">Contact</th>
-                    <th scope="col">Market trend</th>
-                    <th scope="col">Updated</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {(table.rows ?? []).map((row) => (
-                    <tr key={row.id}>
-                      <th scope="row">
-                        {row.file_type}
-                        {row.note && <small className="rate-note">{row.note}</small>}
-                      </th>
-                      <td className="rate-value">{row.current_rate}</td>
-                      <td>
-                        {row.contact_number ? (
-                          <a href={`tel:${row.contact_number.replace(/[^\d+]/g, "")}`}>{row.contact_number}</a>
-                        ) : phone ? (
-                          <a href={`tel:${phone.replace(/[^\d+]/g, "")}`}>{phone}</a>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                      <td>
-                        <span className={`trend trend-${row.trend}`}>{TREND_LABELS[row.trend]}</span>
-                      </td>
-                      <td>{row.updated_label ?? "—"}</td>
-                    </tr>
-                  ))}
+                  {(table.rows ?? []).map((row) => {
+                    const callNumber = row.contact_number ?? phone;
+                    const rowWhatsapp = whatsappNumber(row.contact_number) ?? whatsapp;
+                    const message = encodeURIComponent(`Hi, I'm interested in ${row.file_type} at ${row.current_rate}.`);
+
+                    return (
+                      <tr key={row.id}>
+                        <th scope="row" className="rate-type">
+                          {row.file_type}
+                          {row.note && <small className="rate-note">{row.note}</small>}
+                        </th>
+                        <td className="rate-value" data-label="Price">
+                          {row.current_rate}
+                        </td>
+                        <td className="rate-updated" data-label="Updated">
+                          {row.updated_label ?? "—"}
+                        </td>
+                        <td className="rate-trend">
+                          <span className={`trend trend-${row.trend}`}>{TREND_LABELS[row.trend]}</span>
+                        </td>
+                        <td className="rate-actions">
+                          {callNumber && (
+                            <a className="btn btn-primary" href={`tel:${callNumber.replace(/[^\d+]/g, "")}`} aria-label={`Call about ${row.file_type}`}>
+                              <PhoneIcon className="icon" /> Call now
+                            </a>
+                          )}
+                          {rowWhatsapp && (
+                            <a
+                              className="btn btn-whatsapp"
+                              href={`https://wa.me/${rowWhatsapp}?text=${message}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`WhatsApp about ${row.file_type}`}
+                            >
+                              <WhatsAppIcon className="icon" /> WhatsApp
+                            </a>
+                          )}
+                          {!callNumber && !rowWhatsapp && "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
