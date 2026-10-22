@@ -51,11 +51,24 @@ const nextConfig: NextConfig = {
       { source: "/developer", destination: "/developers", statusCode: 301 },
     ];
   },
-  // A page's own `robots` metadata can override the layout's, and images, PDFs and the sitemap carry
-  // no meta tag at all, so staging blocks crawlers with a header on every response as well.
-  headers: noindex
-    ? async () => [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]
-    : undefined,
+  async headers() {
+    // Files in public/ and the app icons have no hash in their name, so Next sends max-age=0 and Cloudflare
+    // turns that into 4 hours. Cache them for 30 days instead; give a changed file a new name to bust it.
+    const longCache = [
+      { key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" },
+    ];
+    return [
+      { source: "/home/:file*", headers: longCache },
+      { source: "/footer/:file*", headers: longCache },
+      { source: "/brand/:file*", headers: longCache },
+      { source: "/:icon(icon.png|apple-icon.png|favicon.ico)", headers: longCache },
+      // A page's own `robots` metadata can override the layout's, and images, PDFs and the sitemap carry
+      // no meta tag at all, so staging blocks crawlers with a header on every response as well.
+      ...(noindex
+        ? [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }]
+        : []),
+    ];
+  },
 };
 
 export default nextConfig;
