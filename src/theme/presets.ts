@@ -1,9 +1,10 @@
 import { theme, type ThemeConfig } from "antd";
 
-export type ThemeMode = "light" | "dark" | "system";
+export type ThemeMode = "light" | "dark";
 export type ThemeSettings = { mode: ThemeMode };
 
-export const DEFAULT_SETTINGS: ThemeSettings = { mode: "system" };
+/** Light unless the visitor picks dark with the toggle; the device/browser preference is ignored. */
+export const DEFAULT_SETTINGS: ThemeSettings = { mode: "light" };
 
 export const FONT_BODY = "'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 

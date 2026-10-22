@@ -7,7 +7,7 @@ import { DEFAULT_SETTINGS, buildTheme, type ThemeMode, type ThemeSettings } from
 /** Also read by the pre-paint script in app/layout.tsx. */
 export const THEME_STORAGE_KEY = "dha-web-theme";
 
-const MODES: ThemeMode[] = ["light", "dark", "system"];
+const MODES: ThemeMode[] = ["light", "dark"];
 const listeners = new Set<() => void>();
 let currentSettings: ThemeSettings | null = null;
 
@@ -42,15 +42,6 @@ function subscribeSettings(listener: () => void): () => void {
   return () => listeners.delete(listener);
 }
 
-function subscribeSystemDark(listener: () => void): () => void {
-  const query = window.matchMedia("(prefers-color-scheme: dark)");
-  query.addEventListener("change", listener);
-
-  return () => query.removeEventListener("change", listener);
-}
-
-const getSystemDark = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
-
 type ThemeContextValue = {
   settings: ThemeSettings;
   resolvedMode: "light" | "dark";
@@ -61,8 +52,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const settings = useSyncExternalStore(subscribeSettings, readSettings, () => DEFAULT_SETTINGS);
-  const systemDark = useSyncExternalStore(subscribeSystemDark, getSystemDark, () => false);
-  const resolvedMode = settings.mode === "system" ? (systemDark ? "dark" : "light") : settings.mode;
+  const resolvedMode = settings.mode;
 
   useEffect(() => {
     document.documentElement.dataset.theme = resolvedMode;

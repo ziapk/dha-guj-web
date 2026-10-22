@@ -28,8 +28,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-/** Applies the saved light/dark mode before first paint to avoid a white flash in dark mode. */
-const themeScript = `(function(){try{var s=JSON.parse(localStorage.getItem('dha-web-theme')||'{}');var m=s.mode||'system';var d=m==='dark'||(m==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';}catch(e){}})();`;
+/** Applies dark mode before first paint only when the visitor chose it with the toggle; otherwise light. */
+const themeScript = `(function(){var d=false;try{d=JSON.parse(localStorage.getItem('dha-web-theme')||'{}').mode==='dark';}catch(e){}document.documentElement.dataset.theme=d?'dark':'light';})();`;
 
 export default async function RootLayout({ children, modal }: LayoutProps<"/">) {
   // Both fall back to empty values, so the site still renders when the API is unavailable.
