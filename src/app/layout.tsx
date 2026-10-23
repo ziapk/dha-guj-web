@@ -5,6 +5,7 @@ import { CompareTray } from "@/components/compare-tray";
 import { GOOGLE_SITE_VERIFICATION, GoogleTagManagerNoscript, GoogleTags } from "@/components/google-tags";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getCmsPages, getSiteSettings, siteNameOf } from "@/lib/site-data";
@@ -45,6 +46,7 @@ export default async function RootLayout({ children, modal }: LayoutProps<"/">) 
         <GoogleTags />
         <AntdRegistry>
           <Providers>
+            <ScrollToTop />
             <SiteHeader settings={settings} />
             <main>{children}</main>
             <SiteFooter settings={settings} pages={pages.filter((page) => page.show_in_footer)} />
