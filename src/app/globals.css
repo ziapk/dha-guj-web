@@ -12000,7 +12000,7 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
-/* All-photos view: opened from the main photo, a 3-column grid that scrolls down; each tile opens the whole photo in the lightbox. */
+/* All-photos view: opened from the main photo, a 3-column grid that scrolls down; each tile shows the whole photo and opens it in the lightbox. */
 .lgallery-grid {
   position: fixed;
   inset: 0;
@@ -12084,7 +12084,6 @@ main:has(> .section-seo:last-child) + .site-footer {
 
 .lgallery-grid-item {
   display: block;
-  aspect-ratio: 4 / 3;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -12094,11 +12093,13 @@ main:has(> .section-seo:last-child) + .site-footer {
   cursor: zoom-in;
 }
 
+/* The image, not the button, carries the tile shape: a grid row then always grows to fit it, so tiles never overlap */
 .lgallery-grid-item img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
   transition: transform 0.3s ease;
 }
 
