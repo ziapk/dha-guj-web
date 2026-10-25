@@ -10,7 +10,8 @@ import type { PublicAgent } from "@/types/api";
 /**
  * The agents directory card: the agency's cover photo across the top, the agent's round photo
  * overlapping it with their name and agency beside it, then sale / rent / closed-deal counts and
- * the contact buttons. Superstars get a gold badge on the cover.
+ * the contact buttons. Superstars get a gold badge on the cover. An agent without a public profile
+ * (an empty slug, from an agency's page) is shown without the profile link or the verified tick.
  */
 export function AgentProfileCard({
   agent,
@@ -21,12 +22,18 @@ export function AgentProfileCard({
   fallbackPhone: string | null;
   fallbackWhatsapp: string | null;
 }) {
-  const href = agentHref(agent.slug);
+  const href = agent.slug ? agentHref(agent.slug) : null;
   // An agent without their own number falls back to the site's, so the buttons are never dead.
   const phone = agent.phone ?? fallbackPhone;
   const whatsapp = whatsappNumber(agent.whatsapp ?? fallbackWhatsapp);
   const cover = agent.agency?.cover_url;
   const dealsIn = agent.specialisation || agent.areas_of_expertise?.slice(0, 3).join(", ");
+
+  const photo = agent.photo_url ? (
+    <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill sizes="92px" style={{ objectFit: "cover" }} />
+  ) : (
+    <span aria-hidden="true">{initials(agent.name)}</span>
+  );
 
   const stats = [
     { icon: <TagIcon className="icon" />, value: agent.for_sale_count ?? agent.listings_count ?? 0, label: "For Sale" },
@@ -46,17 +53,17 @@ export function AgentProfileCard({
       </div>
 
       <div className="agent-pro-head">
-        <Link href={href} className="agent-pro-photo" aria-label={`${agent.name}'s profile`}>
-          {agent.photo_url ? (
-            <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill sizes="92px" style={{ objectFit: "cover" }} />
-          ) : (
-            <span aria-hidden="true">{initials(agent.name)}</span>
-          )}
-        </Link>
+        {href ? (
+          <Link href={href} className="agent-pro-photo" aria-label={`${agent.name}'s profile`}>
+            {photo}
+          </Link>
+        ) : (
+          <div className="agent-pro-photo">{photo}</div>
+        )}
         <div className="agent-pro-name">
           <h3>
-            <Link href={href}>{agent.name}</Link>
-            <ShieldCheckIcon className="icon agent-pro-verified" aria-label="Verified agent" />
+            {href ? <Link href={href}>{agent.name}</Link> : agent.name}
+            {href && <ShieldCheckIcon className="icon agent-pro-verified" aria-label="Verified agent" />}
           </h3>
           {agent.agency ? (
             <p className="agent-agency">

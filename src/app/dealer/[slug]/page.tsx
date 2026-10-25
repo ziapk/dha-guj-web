@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import Image from "next/image";
 import { AgencyLogo } from "@/components/agency-card";
-import { AgencyAgentRow } from "@/components/agency/agency-agent-row";
+import { AgentProfileCard } from "@/components/agent-profile-card";
 import {
   BadgeIcon,
   BuildingIcon,
@@ -26,6 +26,7 @@ import {
   YouTubeIcon,
 } from "@/components/icons";
 import { ListingRowCard } from "@/components/listing-row-card";
+import { agencyAgentAsPublic } from "@/lib/agents";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
@@ -315,9 +316,9 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
             <p>Contact the dealer directly for help with buying, selling or renting.</p>
           </div>
         ) : (
-          <div className="agency-list">
+          <div className="agent-pro-grid">
             {agents.map((agent) => (
-              <AgencyAgentRow key={agent.id} agent={agent} agency={agency} />
+              <AgentProfileCard key={agent.id} agent={agencyAgentAsPublic(agent, agency)} fallbackPhone={agency.phone} fallbackWhatsapp={agency.whatsapp ?? agency.phone} />
             ))}
           </div>
         )}
