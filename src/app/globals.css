@@ -12005,8 +12005,8 @@ main:has(> .section-seo:last-child) + .site-footer {
   position: fixed;
   inset: 0;
   z-index: 1050;
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--app-bg);
   animation: lgallery-grid-in 0.2s ease;
 }
@@ -12018,7 +12018,12 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
+/* The whole overlay scrolls like a normal page; the header stays pinned at the top */
 .lgallery-grid-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--app-bg);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -12073,8 +12078,6 @@ main:has(> .section-seo:last-child) + .site-footer {
 }
 
 .lgallery-grid-body {
-  flex: 1;
-  overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
