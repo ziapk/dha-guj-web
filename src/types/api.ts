@@ -277,6 +277,19 @@ export type SiteSettings = {
   social: { facebook: string | null; instagram: string | null; youtube: string | null; x: string | null; linkedin: string | null; tiktok: string | null };
 };
 
+/** GET /public/settings → listing_page: which steps the listing page breadcrumb shows. */
+export type ListingPageSettings = {
+  breadcrumb_enabled: boolean;
+  breadcrumb_home_label: string;
+  breadcrumb_show_purpose: boolean;
+  breadcrumb_sale_label: string;
+  breadcrumb_rent_label: string;
+  breadcrumb_show_property_type: boolean;
+  breadcrumb_show_city: boolean;
+  breadcrumb_show_society: boolean;
+  breadcrumb_show_title: boolean;
+};
+
 export type SocialNetwork = keyof SiteSettings["social"];
 
 /** GET /public/pages — published CMS pages without their content. */

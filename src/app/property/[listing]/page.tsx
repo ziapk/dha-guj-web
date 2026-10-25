@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
+import { Fragment, cache } from "react";
 import { BannerSlot } from "@/components/banner-slot";
 import { ContactCard } from "@/components/contact-card";
 import {
@@ -23,7 +23,6 @@ import {
   SofaIcon,
   TagIcon,
 } from "@/components/icons";
-import { InquiryForm } from "@/components/inquiry-form";
 import { PropertyCard } from "@/components/property-card";
 import { Expandable } from "@/components/property-detail/expandable";
 import { ListingActions } from "@/components/property-detail/listing-actions";
@@ -38,6 +37,7 @@ import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPri
 import { JsonLd } from "@/components/json-ld";
 import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref, purposeTagOf, thumbnailUrl, videoEmbedUrl } from "@/lib/property";
 import { openGraph, robots } from "@/lib/seo";
+import { getListingPageSettings } from "@/lib/site-data";
 import { siteUrl } from "@/lib/site";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
 
@@ -140,9 +140,12 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
 
   const seo = seoOf(property);
   const notice = seo.notice ? NOTICES[seo.notice] : null;
-  const similar = await publicApi<Collection<PublicProperty>>(`properties/${property.id}/similar`, { revalidate: 300 })
-    .then((response) => response.data)
-    .catch(() => []);
+  const [similar, pageSettings] = await Promise.all([
+    publicApi<Collection<PublicProperty>>(`properties/${property.id}/similar`, { revalidate: 300 })
+      .then((response) => response.data)
+      .catch(() => []),
+    getListingPageSettings(),
+  ]);
 
   const photos = photosOf(property);
   const videos = (property.media ?? []).filter((media) => media.type === "video");
@@ -199,17 +202,29 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
   const browseHref = `/properties?purpose=${property.purpose}${property.city ? `&city_id=${property.city.id}` : ""}`;
 
   const listingUrl = seo.canonical_url;
-  const buyOrRent = property.purpose === "rent" ? "Rent" : "Buy";
-  const breadcrumbs = [
-    { name: "Home", path: "/" },
-    { name: buyOrRent, path: `/properties?purpose=${property.purpose}` },
-    ...(property.city ? [{ name: property.city.name, path: `/properties?purpose=${property.purpose}&city_id=${property.city.id}` }] : []),
-    { name: property.title, path: seo.path },
-  ];
+  /** Breadcrumb steps chosen in Site Settings → Listing page; each one narrows the search of the step before it. */
+  const crumbFilters = new URLSearchParams({ purpose: property.purpose });
+  const searchCrumb = (name: string, key: string, value: number) => {
+    crumbFilters.set(key, String(value));
+
+    return { name, path: `/properties?${crumbFilters.toString()}` };
+  };
+  const trail = [
+    pageSettings.breadcrumb_show_purpose && {
+      name: property.purpose === "rent" ? pageSettings.breadcrumb_rent_label : pageSettings.breadcrumb_sale_label,
+      path: `/properties?purpose=${property.purpose}`,
+    },
+    pageSettings.breadcrumb_show_property_type && property.property_type && searchCrumb(property.property_type.name, "property_type_id", property.property_type.id),
+    pageSettings.breadcrumb_show_city && property.city && searchCrumb(property.city.name, "city_id", property.city.id),
+    pageSettings.breadcrumb_show_society && property.society && searchCrumb(property.society.name, "society_id", property.society.id),
+  ].filter((crumb) => !!crumb);
+  const breadcrumbs = [{ name: pageSettings.breadcrumb_home_label, path: "/" }, ...trail];
+  const currentCrumb = { name: property.title, path: seo.path };
+  /** Search engines always get the listing as the last step, even when the visible trail leaves the title out. */
   const breadcrumbData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: breadcrumbs.map((crumb, index) => ({ "@type": "ListItem", position: index + 1, name: crumb.name, item: `${siteUrl()}${crumb.path}` })),
+    itemListElement: [...breadcrumbs, currentCrumb].map((crumb, index) => ({ "@type": "ListItem", position: index + 1, name: crumb.name, item: `${siteUrl()}${crumb.path}` })),
   };
   const structuredData = {
     "@context": "https://schema.org",
@@ -241,23 +256,26 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
 
   return (
     <div className="container page-section pd-page">
-      <JsonLd data={[structuredData, breadcrumbData]} />
+      <JsonLd data={pageSettings.breadcrumb_enabled ? [structuredData, breadcrumbData] : [structuredData]} />
       <ViewTracker slug={String(property.id)} />
       <RecordRecentlyViewed propertyId={property.id} />
 
-      <nav className="breadcrumbs pd-breadcrumbs" aria-label="Breadcrumb">
-        <Link href="/">Home</Link>
-        <ChevronRightIcon />
-        <Link href={`/properties?purpose=${property.purpose}`}>{buyOrRent === "Rent" ? "Rent" : "Properties"}</Link>
-        {property.city && (
-          <>
-            <ChevronRightIcon />
-            <Link href={`/properties?purpose=${property.purpose}&city_id=${property.city.id}`}>{property.city.name}</Link>
-          </>
-        )}
-        <ChevronRightIcon />
-        <span aria-current="page">{property.title}</span>
-      </nav>
+      {pageSettings.breadcrumb_enabled && (
+        <nav className="breadcrumbs pd-breadcrumbs" aria-label="Breadcrumb">
+          {breadcrumbs.map((crumb, index) => (
+            <Fragment key={crumb.path}>
+              {index > 0 && <ChevronRightIcon />}
+              <Link href={crumb.path}>{crumb.name}</Link>
+            </Fragment>
+          ))}
+          {pageSettings.breadcrumb_show_title && (
+            <>
+              <ChevronRightIcon />
+              <span aria-current="page">{property.title}</span>
+            </>
+          )}
+        </nav>
+      )}
 
       {notice && (
         <div className={`listing-notice listing-notice-${seo.notice}`} role="status">
@@ -423,12 +441,7 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
               </Link>
             </div>
           ) : (
-            <>
-              <ContactCard property={property} />
-              <div className="contact-card">
-                <InquiryForm slug={String(property.id)} title={property.title} />
-              </div>
-            </>
+            <ContactCard property={property} />
           )}
 
           {spotlight && (

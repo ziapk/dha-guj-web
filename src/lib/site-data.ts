@@ -2,7 +2,7 @@
 
 import { cache } from "react";
 import { NotFoundError, publicApi } from "@/lib/api";
-import type { CmsPage, CmsPageSummary, Collection, Resource, SiteSettings } from "@/types/api";
+import type { CmsPage, CmsPageSummary, Collection, ListingPageSettings, Resource, SiteSettings } from "@/types/api";
 
 export const DEFAULT_SITE_NAME = "DHA GUJ Properties";
 export const DEFAULT_TAGLINE = "Homes, plots and commercial property for sale and rent across DHA Gujranwala, Lahore, Islamabad and Karachi.";
@@ -89,6 +89,37 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
     return { general: pick("general"), contact: pick("contact"), social: pick("social") };
   } catch {
     return EMPTY_SETTINGS;
+  }
+});
+
+/** Matches the API defaults; used for fields the API leaves out or when it is unavailable. */
+export const DEFAULT_LISTING_PAGE_SETTINGS: ListingPageSettings = {
+  breadcrumb_enabled: true,
+  breadcrumb_home_label: "Home",
+  breadcrumb_show_purpose: true,
+  breadcrumb_sale_label: "Buy",
+  breadcrumb_rent_label: "Rent",
+  breadcrumb_show_property_type: false,
+  breadcrumb_show_city: false,
+  breadcrumb_show_society: false,
+  breadcrumb_show_title: true,
+};
+
+/** Listing page settings (breadcrumb steps), each field checked against its default's type. */
+export const getListingPageSettings = cache(async (): Promise<ListingPageSettings> => {
+  try {
+    const { data } = await publicApi<Resource<{ listing_page?: Partial<ListingPageSettings> }>>("settings", { revalidate: SETTINGS_REVALIDATE });
+    const source = (data?.listing_page ?? {}) as Record<string, unknown>;
+    const values = { ...DEFAULT_LISTING_PAGE_SETTINGS } as Record<string, string | boolean>;
+
+    for (const [key, fallback] of Object.entries(DEFAULT_LISTING_PAGE_SETTINGS)) {
+      const value = source[key];
+      values[key] = typeof fallback === "boolean" ? (typeof value === "boolean" ? value : fallback) : (clean(value) ?? fallback);
+    }
+
+    return values as ListingPageSettings;
+  } catch {
+    return DEFAULT_LISTING_PAGE_SETTINGS;
   }
 });
 
