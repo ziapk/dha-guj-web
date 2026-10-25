@@ -25,11 +25,10 @@ import {
 } from "@/components/icons";
 import { InquiryForm } from "@/components/inquiry-form";
 import { PropertyCard } from "@/components/property-card";
-import { PropertyGallery } from "@/components/property-gallery";
 import { Expandable } from "@/components/property-detail/expandable";
 import { ListingActions } from "@/components/property-detail/listing-actions";
 import { MobileContactBar } from "@/components/property-detail/mobile-contact-bar";
-import { ListingMobileGallery } from "@/components/listing-mobile-gallery";
+import { ListingGallery } from "@/components/listing-gallery";
 import { Rail } from "@/components/rail";
 import { RecordRecentlyViewed } from "@/components/recently-viewed";
 import { ViewTracker } from "@/components/view-tracker";
@@ -275,10 +274,7 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
         </div>
       )}
 
-      <div className="pd-gallery-desktop">
-        <PropertyGallery photos={photos} title={property.title} layout="stack" />
-      </div>
-      {photos.length > 0 && <ListingMobileGallery photos={photos} title={property.title} />}
+      <ListingGallery photos={photos} title={property.title} />
 
       <div className="detail-layout pd-layout">
         <div className="pd-main">

@@ -22,7 +22,7 @@ export function useBarVisible() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const hero = document.querySelector(".mgallery") ?? document.querySelector(".pd-head");
+    const hero = document.querySelector(".lgallery") ?? document.querySelector(".pd-head");
     const footer = document.querySelector(".site-footer");
     let frame = 0;
 
