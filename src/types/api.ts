@@ -40,6 +40,8 @@ export type PropertyMedia = {
   url: string;
   thumbnail_url?: string | null;
   medium_url?: string | null;
+  /** Saved alt text; null until someone writes it. */
+  alt_text?: string | null;
   sort_order: number;
   is_cover: boolean;
 };
@@ -95,10 +97,10 @@ export type PublicProperty = {
   furnished: FurnishedStatus | null;
   amenities?: Amenity[];
   media?: PropertyMedia[];
-  /** photo_url: the agent's photo, else the agency logo. */
-  contact?: { name: string; photo_url?: string | null; phone: string | null; whatsapp: string | null; account_type: AccountType; agency?: AgencyLink | null };
+  /** photo_url: the agent's photo, else the agency logo; photo_alt is that image's saved alt text. */
+  contact?: { name: string; photo_url?: string | null; photo_alt?: string | null; phone: string | null; whatsapp: string | null; account_type: AccountType; agency?: AgencyLink | null };
   /** The agent who posted it; only on agency searches (?agency=), null when they have no public profile. */
-  agent?: { name: string; slug: string; photo_url: string | null; phone: string | null; whatsapp: string | null } | null;
+  agent?: { name: string; slug: string; photo_url: string | null; photo_alt?: string | null; phone: string | null; whatsapp: string | null } | null;
   is_featured: boolean;
   /** Hot (premium) promotion; older API responses may leave it out. */
   is_hot?: boolean;
@@ -180,7 +182,7 @@ export type SavedSearch = {
   created_at: string;
 };
 
-export type AgencyLink = { name: string; slug: string; logo_url: string | null; is_verified: boolean };
+export type AgencyLink = { name: string; slug: string; logo_url: string | null; logo_alt?: string | null; is_verified: boolean };
 
 export type AgencyProfile = {
   id: number;
@@ -190,7 +192,9 @@ export type AgencyProfile = {
   established_year: number | null;
   service_areas: string | null;
   logo_url: string | null;
+  logo_alt?: string | null;
   cover_url: string | null;
+  cover_alt?: string | null;
   phone: string | null;
   whatsapp: string | null;
   email: string | null;
@@ -226,6 +230,7 @@ export type AgencyAgent = {
   slug: string | null;
   designation: string | null;
   photo_url: string | null;
+  photo_alt?: string | null;
   experience_years: number | null;
   city: string | null;
   phone: string | null;
@@ -245,6 +250,7 @@ export type PublicAgent = {
   /** Sanitised by the API and safe to render. Only on GET /public/agents/{slug}. */
   bio_html?: string;
   photo_url: string | null;
+  photo_alt?: string | null;
   experience_years: number | null;
   specialisation: string | null;
   areas_of_expertise: string[];
@@ -262,7 +268,7 @@ export type PublicAgent = {
   /** Tagged by an admin; superstars get their own section at the top of /agents. */
   is_superstar: boolean;
   city?: City | null;
-  agency?: { name: string; slug: string; logo_url?: string | null; cover_url?: string | null; is_verified?: boolean } | null;
+  agency?: { name: string; slug: string; logo_url?: string | null; logo_alt?: string | null; cover_url?: string | null; cover_alt?: string | null; is_verified?: boolean } | null;
   listings_count?: number;
   for_sale_count?: number;
   for_rent_count?: number;
@@ -413,6 +419,7 @@ export type DeveloperSummary = {
   name: string;
   company_type: DeveloperType;
   logo_url: string | null;
+  logo_alt?: string | null;
   public_url: string;
 };
 
@@ -443,7 +450,9 @@ export type PublicDeveloper = {
   /** Published ones only; answers are sanitised HTML. */
   faqs?: { question: string; answer: string }[];
   logo_url: string | null;
+  logo_alt?: string | null;
   cover_url: string | null;
+  cover_alt?: string | null;
   established_year: number | null;
   registration_number: string | null;
   legal_name: string | null;
@@ -471,6 +480,7 @@ export type PublicDeveloper = {
   meta_description: string | null;
   /** Cover, else the overview image, else the first gallery photo. */
   card_image_url: string | null;
+  card_image_alt?: string | null;
   /** Live projects (or the admin's figure). */
   projects_count?: number;
   /** Units in finished projects (or the admin's figure); directory only. */
@@ -656,6 +666,8 @@ export type ProjectMedia = {
   thumbnail_url: string | null;
   medium_url: string | null;
   original_name: string | null;
+  /** Saved alt text; null until someone writes it. */
+  alt_text?: string | null;
   sort_order: number;
   is_cover: boolean;
 };
@@ -836,12 +848,14 @@ export type PublicProject = {
   description: string;
   /** Project logo; older projects may still have a "logo" media item instead. */
   logo_url?: string | null;
+  logo_alt?: string | null;
   /** Display location, e.g. "DHA Gujranwala, Phase 1". */
   location?: string | null;
   unit_type?: string | null;
   unit_size?: string | null;
   possession_status?: string | null;
   master_plan_image_url?: string | null;
+  master_plan_image_alt?: string | null;
   /** Sanitised HTML. */
   master_plan_html?: string | null;
   video_url: string | null;
@@ -910,6 +924,7 @@ export type PublicProject = {
   floor_plans?: ProjectFloorPlan[];
   media?: ProjectMedia[];
   cover_url?: string | null;
+  cover_alt?: string | null;
   /** The rest are only on GET /public/projects/{slug}. */
   project_features?: ProjectFeatureCard[];
   brochures?: ProjectBrochure[];
@@ -1030,6 +1045,7 @@ export type PublicSocietyMap = {
   phase: { id: number; name: string; slug: string } | null;
   sector: { id: number; name: string; slug: string } | null;
   image_url: string;
+  image_alt?: string | null;
   image_width: number;
   image_height: number;
   /** The PDF (or original) to download, or the image when no separate file was uploaded. */

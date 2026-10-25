@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { ComponentType } from "react";
 import { BuildingIcon, DocumentIcon, HomeIcon, KeyIcon, MapIcon, SearchIcon, UserIcon } from "@/components/icons";
 
-export const metadata: Metadata = { title: "Page not found", robots: { index: false } };
+export const metadata: Metadata = { title: "Page not found" };
 
 const QUICK_LINKS: { href: string; label: string; icon: ComponentType<{ className?: string }> }[] = [
   { href: "/properties-for-sale", label: "Properties for sale", icon: HomeIcon },
