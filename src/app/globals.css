@@ -12000,6 +12000,11 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
+/* Photo lightbox (antd Image preview, site-wide): a near-black backdrop instead of antd's 45% grey, so the photo stands out */
+body .ant-image-preview .ant-image-preview-mask {
+  background: rgba(0, 0, 0, 0.9);
+}
+
 /* All-photos view: opened from the main photo, a 3-column grid that scrolls down; each tile shows the whole photo and opens it in the lightbox. */
 .lgallery-grid {
   position: fixed;
@@ -26132,125 +26137,99 @@ figure.dv-gallery-item {
     display: none;
   }
 
-  /* Agents and maps: two cards to a view */
+  /* Agents and maps: one full card to a view, with a slice of the next one showing so it's clear the row swipes.
+     The row runs out to the screen edges (the cards still line up with the page gutter), so the slice reaches the edge. */
+  .carousel-track:has(> .agent-card-row),
+  .carousel-track:has(> .map-card) {
+    margin-inline: -20px;
+    padding-inline: 20px;
+    scroll-padding-inline: 20px;
+  }
+
   .carousel-track > .agent-card-row,
   .carousel-track > .map-card {
-    width: calc((100% - var(--carousel-gap)) / 2);
+    box-sizing: border-box;
+    width: calc(100% - 36px);
     min-width: 0;
   }
 
   .agent-card-row {
-    padding: 34px 10px 10px;
+    padding: 42px 16px 16px;
   }
 
   .agent-verified {
-    padding: 4px 8px;
-    font-size: 9.5px;
+    padding: 5px 10px;
+    font-size: 10.5px;
   }
 
   .agent-card-row .agent-card-top {
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
+    gap: 14px;
   }
 
   .agent-card-row .agent-photo {
-    width: 64px;
-    height: 64px;
-    font-size: 20px;
-  }
-
-  .agent-card-row .agent-card-info {
-    width: 100%;
+    width: 76px;
+    height: 76px;
+    font-size: 24px;
   }
 
   .agent-card-row h3 {
-    font-size: 14px;
+    font-size: 16.5px;
   }
 
   .agent-card-row .agent-agency {
     overflow: hidden;
-    font-size: 11.5px;
+    font-size: 13px;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
   .agent-card-row .agent-card-meta {
-    justify-content: center;
-    gap: 2px 8px;
-    margin-top: 4px;
-    font-size: 10.5px;
+    gap: 4px 10px;
+    margin-top: 6px;
+    font-size: 12px;
   }
 
   .agent-card-row .agent-stats {
-    gap: 2px;
-    margin: 10px 0;
-    padding-top: 10px;
-  }
-
-  .agent-card-row .agent-stats .icon {
-    width: 14px;
-    height: 14px;
+    gap: 6px;
+    margin: 14px 0;
+    padding-top: 14px;
   }
 
   .agent-card-row .agent-stats strong {
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .agent-card-row .agent-stats small {
-    font-size: 9.5px;
-    line-height: 1.25;
+    font-size: 11px;
+    line-height: 1.3;
   }
 
   .agent-card-row .agent-actions {
-    gap: 6px;
+    gap: 8px;
   }
 
   .agent-card-row .agent-actions .btn {
-    gap: 4px;
-    height: 34px;
-    padding-inline: 4px;
-    font-size: 11.5px;
-  }
-
-  .agent-card-row .agent-actions .icon {
-    width: 14px;
-    height: 14px;
+    height: 40px;
+    padding-inline: 8px;
+    font-size: 13.5px;
   }
 
   .map-card {
-    gap: 8px;
-    padding: 8px;
-  }
-
-  .map-badge {
-    top: 6px;
-    left: 6px;
-    padding: 3px 8px;
-    font-size: 10px;
-  }
-
-  .map-card-body {
-    gap: 8px;
-    padding-inline: 2px;
-  }
-
-  .map-card-icon {
-    width: 30px;
-    height: 30px;
+    gap: 12px;
+    padding: 12px;
   }
 
   .map-card-body strong {
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .map-card-body p {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .map-card .btn {
-    height: 34px;
-    font-size: 12px;
+    height: 40px;
+    font-size: 14px;
   }
 
   /* Keyword links: two narrow columns */
