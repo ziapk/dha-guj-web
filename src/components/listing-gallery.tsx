@@ -191,7 +191,7 @@ export function ListingGallery({ photos, title }: { photos: Photo[]; title: stri
                   onClick={() => openPreview(photoIndex)}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={mediumUrl(photo)} alt={`${title} — photo ${photoIndex + 1}`} loading="lazy" />
+                  <img src={thumbnailUrl(photo)} alt={`${title} — photo ${photoIndex + 1}`} loading="lazy" />
                 </button>
               ))}
             </div>

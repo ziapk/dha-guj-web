@@ -12000,7 +12000,7 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
-/* All-photos view: opened from the main photo, every photo stacked in one vertical column; each opens the lightbox. Whole photos, never cropped. */
+/* All-photos view: opened from the main photo, a 3-column grid that scrolls down; each tile opens the whole photo in the lightbox. */
 .lgallery-grid {
   position: fixed;
   inset: 0;
@@ -12022,7 +12022,7 @@ main:has(> .section-seo:last-child) + .site-footer {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px max(16px, calc((100% - 960px) / 2));
+  padding: 12px max(16px, calc((100% - 1100px) / 2));
   border-bottom: 1px solid var(--app-border);
 }
 
@@ -12075,18 +12075,16 @@ main:has(> .section-seo:last-child) + .site-footer {
 .lgallery-grid-body {
   flex: 1;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 20px 16px 32px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start;
+  gap: 10px;
+  padding: 20px max(16px, calc((100% - 1100px) / 2)) 32px;
 }
 
 .lgallery-grid-item {
   display: block;
-  flex: none;
-  width: 100%;
-  max-width: 960px;
+  aspect-ratio: 4 / 3;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -12099,7 +12097,8 @@ main:has(> .section-seo:last-child) + .site-footer {
 .lgallery-grid-item img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   transition: transform 0.3s ease;
 }
 
@@ -12118,7 +12117,8 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 
   .lgallery-grid-body {
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
     padding: 12px 12px 24px;
   }
 }
