@@ -12000,6 +12000,130 @@ main:has(> .section-seo:last-child) + .site-footer {
   }
 }
 
+/* All-photos grid: opened from the main photo; each photo opens the lightbox. Whole photos, never cropped. */
+.lgallery-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  background: var(--app-bg);
+  animation: lgallery-grid-in 0.2s ease;
+}
+
+@keyframes lgallery-grid-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.lgallery-grid-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px max(16px, calc((100% - 1200px) / 2));
+  border-bottom: 1px solid var(--app-border);
+}
+
+.lgallery-grid-title {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.lgallery-grid-title strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 16px;
+}
+
+.lgallery-grid-title span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--app-muted);
+  font-size: 13px;
+}
+
+.lgallery-grid-title .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.lgallery-grid-close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-surface-2);
+  color: inherit;
+  cursor: pointer;
+}
+
+.lgallery-grid-close .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.lgallery-grid-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px max(16px, calc((100% - 1200px) / 2)) 32px;
+  columns: 3 280px;
+  column-gap: 12px;
+}
+
+.lgallery-grid-item {
+  display: block;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-m);
+  background: var(--app-surface-2);
+  break-inside: avoid;
+  cursor: zoom-in;
+}
+
+.lgallery-grid-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.lgallery-grid-item:hover img {
+  transform: scale(1.02);
+}
+
+.lgallery-grid-item:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .lgallery-grid-head {
+    padding: 10px 12px;
+  }
+
+  .lgallery-grid-body {
+    padding: 12px 12px 24px;
+    columns: 1;
+  }
+
+  .lgallery-grid-item {
+    margin-bottom: 8px;
+  }
+}
+
 .pd-layout {
   gap: 28px;
 }
