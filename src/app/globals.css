@@ -2899,8 +2899,85 @@ main h3 {
 }
 
 .not-found p {
-  margin: 0 0 24px;
+  margin: 0 auto 24px;
+  max-width: 520px;
   color: var(--app-muted);
+}
+
+.not-found-code {
+  font-size: clamp(88px, 18vw, 160px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2-strong));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.not-found-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.not-found-links {
+  max-width: 720px;
+  margin: 56px auto 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--app-border);
+}
+
+.not-found-links h2 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: var(--app-muted);
+}
+
+.not-found-links ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.not-found-links a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-l);
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.not-found-links a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.not-found-links a .icon {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+@media (max-width: 575px) {
+  .not-found {
+    padding-block: 56px;
+  }
+
+  .not-found-actions .btn {
+    flex: 1 1 100%;
+  }
 }
 
 /* Accounts */
@@ -2921,6 +2998,7 @@ main h3 {
   align-items: center;
   justify-content: center;
   min-height: calc(100vh - 180px);
+  min-height: calc(100dvh - 180px);
   padding: 40px 16px;
   background:
     radial-gradient(circle at 20% 0%, var(--accent-soft), transparent 55%),
@@ -3156,6 +3234,55 @@ button.auth-close {
 
   .auth-logo img {
     height: 52px;
+  }
+
+  .auth-intro {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .auth-form .ant-input-affix-wrapper,
+  .auth-form .ant-btn-primary {
+    min-height: 50px;
+    height: auto;
+  }
+
+  .auth-close {
+    top: 12px;
+    right: 12px;
+  }
+
+  .auth-note {
+    margin-inline: 0;
+    text-align: left;
+  }
+}
+
+/* Small phones: the card fills the screen edge to edge so fields keep their width. */
+@media (max-width: 380px) {
+  .auth-page {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .auth-page .auth-card {
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 28px 16px 24px;
+  }
+
+  .auth-modal .auth-card {
+    padding: 28px 16px 24px;
+  }
+
+  .auth-title {
+    font-size: 26px;
+  }
+
+  .auth-logo img {
+    height: 44px;
   }
 }
 

@@ -86,9 +86,9 @@ export function LoginForm() {
       </Form>
 
       <AuthDivider>New here?</AuthDivider>
-      <Link href={`/register?next=${encodeURIComponent(next)}`} className="auth-cta-link">
+      <a href={portalUrl("/register")} className="auth-cta-link">
         Create a free account
-      </Link>
+      </a>
 
       <div className="auth-note">
         <HomeIcon className="icon" />
