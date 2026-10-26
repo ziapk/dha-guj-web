@@ -2391,6 +2391,78 @@ main h3 {
   text-decoration: underline;
 }
 
+.gallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  height: clamp(260px, 42vw, 480px);
+  margin-bottom: 28px;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+}
+
+.gallery.gallery-small {
+  grid-template-columns: repeat(var(--gallery-columns), 1fr);
+  grid-template-rows: 1fr;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  background: var(--app-surface-2);
+  cursor: zoom-in;
+}
+
+.gallery-item .ant-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.03);
+}
+
+.gallery:not(.gallery-small) .gallery-main {
+  grid-row: span 2;
+}
+
+.gallery-more {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .gallery,
+  .gallery.gallery-small {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .gallery-item:not(.gallery-main) {
+    display: none;
+  }
+
+  .gallery .gallery-main {
+    grid-row: auto !important;
+  }
+}
+
 .gallery-empty {
   height: 280px;
   display: grid;
@@ -4088,20 +4160,25 @@ button.auth-close {
 
 .banner {
   position: relative;
+  width: 100%;
+  margin-inline: auto;
   overflow: hidden;
   border-radius: var(--radius-l);
   border: 1px solid var(--app-border);
   background: var(--app-surface-2);
 }
 
+/* The slot's width and shape come from the admin-set banner size; other image shapes are cropped to fill it. */
 .banner img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
 }
 
 .banner a {
   display: block;
+  height: 100%;
 }
 
 .banner a:focus-visible {
@@ -11740,6 +11817,74 @@ main:has(> .section-seo:last-child) + .site-footer {
   font-weight: 500;
 }
 
+/* Gallery: one big photo, three stacked tiles on the right */
+.gallery.gallery-stack:not(.gallery-small) {
+  grid-template-columns: minmax(0, 2.55fr) minmax(0, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  height: clamp(280px, 44vw, 540px);
+  gap: 10px;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.gallery.gallery-stack .gallery-item {
+  border-radius: var(--radius-l);
+}
+
+.gallery.gallery-stack:not(.gallery-small) .gallery-main {
+  grid-row: span 3;
+}
+
+/* Main photo: full height at its natural width, centred on a blue backdrop instead of being cropped */
+.gallery.gallery-stack .gallery-main {
+  background: #0b2a55;
+}
+
+.gallery.gallery-stack .gallery-main .ant-image {
+  display: flex;
+  justify-content: center;
+}
+
+.gallery.gallery-stack .gallery-main img {
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gallery-count {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(8, 17, 33, 0.62);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.gallery-count .icon {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 640px) {
+  .gallery.gallery-stack:not(.gallery-small) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .gallery.gallery-stack:not(.gallery-small) .gallery-main {
+    grid-row: auto;
+  }
+}
+
 /* Listing photos (OLX-style): one stage showing the whole photo, arrows, counter and a thumbnail strip */
 .lgallery {
   margin-bottom: 28px;
@@ -12724,13 +12869,15 @@ body .ant-image-preview .ant-image-preview-mask {
   border: 0;
 }
 
-/* Phone-only piece: the bottom contact bar */
+/* Phone-only pieces: the project photo slider and the bottom contact bar */
+.mgallery,
 .pd-mobile-bar {
   display: none;
 }
 
 @media (max-width: 640px) {
   .pd-breadcrumbs,
+  .pd-gallery-desktop,
   .pd-stats:not(.pd-stats-plain) {
     display: none;
   }
@@ -12738,6 +12885,178 @@ body .ant-image-preview .ant-image-preview-mask {
   .pd-page {
     padding-top: 12px;
   }
+
+  /* Slider */
+  .mgallery {
+    display: block;
+    margin-bottom: 18px;
+  }
+
+  .mgallery-stage {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    background: var(--app-surface-2);
+  }
+
+  .mgallery-track {
+    display: flex;
+    aspect-ratio: 4 / 3;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .mgallery-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mgallery-slide {
+    flex: 0 0 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    scroll-snap-align: start;
+    cursor: zoom-in;
+  }
+
+  .mgallery-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mgallery-counter {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(8, 17, 33, 0.62);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  .mgallery-counter .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .mgallery-arrow,
+  .mgallery-expand {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #111827;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+  }
+
+  .mgallery-arrow {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .mgallery-arrow.is-prev {
+    left: 10px;
+  }
+
+  .mgallery-arrow.is-next {
+    right: 10px;
+  }
+
+  .mgallery-expand {
+    right: 10px;
+    bottom: 10px;
+    background: rgba(8, 17, 33, 0.62);
+    color: #fff;
+  }
+
+  .mgallery-arrow .icon,
+  .mgallery-expand .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mgallery-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    display: flex;
+    gap: 5px;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .mgallery-dots i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.45);
+    transition:
+      width 0.2s,
+      background 0.2s;
+  }
+
+  .mgallery-dots i.is-active {
+    width: 16px;
+    border-radius: 3px;
+    background: #fff;
+  }
+
+  .mgallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .mgallery-thumb {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: var(--radius-m);
+    background: var(--app-surface-2);
+    cursor: pointer;
+  }
+
+  .mgallery-thumb.is-active {
+    border-color: var(--accent);
+  }
+
+  .mgallery-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mgallery-thumb span {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(8, 17, 33, 0.6);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
 
   /* Title block: price, title, then location with the Save / Compare / Share circles beside it */
   .pd-head {
@@ -19355,7 +19674,7 @@ a.pj-unit-request strong {
     font-size: inherit;
   }
 
-  .lgallery {
+  .mgallery {
     margin-bottom: 14px;
   }
 

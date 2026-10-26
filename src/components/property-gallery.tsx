@@ -1,0 +1,64 @@
+"use client";
+
+import { Image } from "antd";
+import type { CSSProperties } from "react";
+import { CameraIcon, HomeIcon } from "@/components/icons";
+import { galleryPhotoAlt } from "@/lib/alt-text";
+import { mediumUrl, thumbnailUrl, type Photo } from "@/lib/property";
+
+/** "mosaic": main photo + a 2×2 grid (projects). "stack": main photo + three stacked tiles, the last one showing the photo count (listings). */
+type GalleryLayout = "mosaic" | "stack";
+
+/**
+ * Photo mosaic; every photo (including hidden ones) opens in the lightbox.
+ * The main photo and the lightbox use the medium (≈1280px) copy, which carries the site watermark; the original is never shown.
+ * The side tiles use the thumbnail size, unless there are only a few wide tiles.
+ */
+export function PropertyGallery({ photos, title, layout = "mosaic" }: { photos: Photo[]; title: string; layout?: GalleryLayout }) {
+  const VISIBLE = layout === "stack" ? 4 : 5;
+
+  if (photos.length === 0) {
+    return (
+      <div className="gallery-empty">
+        <HomeIcon className="placeholder-icon" />
+      </div>
+    );
+  }
+
+  const visible = photos.slice(0, VISIBLE);
+  const hidden = photos.slice(VISIBLE);
+  const small = photos.length < VISIBLE;
+
+  return (
+    <Image.PreviewGroup>
+      <div
+        className={`gallery${layout === "stack" ? " gallery-stack" : ""}${small ? " gallery-small" : ""}`}
+        style={small ? ({ "--gallery-columns": visible.length } as CSSProperties) : undefined}
+      >
+        {visible.map((photo, index) => (
+          <div key={photo.id} className={`gallery-item${index === 0 ? " gallery-main" : ""}`}>
+            <Image
+              src={index === 0 || small ? mediumUrl(photo) : thumbnailUrl(photo)}
+              alt={galleryPhotoAlt(photo.alt_text, title, index, photos.length)}
+              preview={{ src: mediumUrl(photo) }}
+            />
+            {index === VISIBLE - 1 &&
+              hidden.length > 0 &&
+              (layout === "stack" ? (
+                <span className="gallery-count">
+                  <CameraIcon /> {photos.length}
+                </span>
+              ) : (
+                <span className="gallery-more">+{hidden.length}</span>
+              ))}
+          </div>
+        ))}
+        {hidden.map((photo, index) => (
+          <div key={photo.id} hidden>
+            <Image src={thumbnailUrl(photo)} alt={galleryPhotoAlt(photo.alt_text, title, VISIBLE + index, photos.length)} preview={{ src: mediumUrl(photo) }} loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </Image.PreviewGroup>
+  );
+}

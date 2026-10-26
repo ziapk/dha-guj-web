@@ -48,8 +48,12 @@ export async function GET(request: NextRequest): Promise<Response> {
     });
 
     const payload = response.ok ? await response.json() : { data: [] };
+    const size = payload?.meta?.size;
 
-    return Response.json({ data: Array.isArray(payload?.data) ? payload.data : [] }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json(
+      { data: Array.isArray(payload?.data) ? payload.data : [], size: Number(size?.width) > 0 && Number(size?.height) > 0 ? { width: Number(size.width), height: Number(size.height) } : null },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   } catch {
     return Response.json({ data: [] }, { headers: { "Cache-Control": "no-store" } });
   }

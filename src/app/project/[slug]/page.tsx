@@ -30,12 +30,13 @@ import {
 import { InquiryForm } from "@/components/inquiry-form";
 import { JsonLd } from "@/components/json-ld";
 import { ProjectCard } from "@/components/project-card";
-import { ListingGallery } from "@/components/listing-gallery";
+import { ListingMobileGallery } from "@/components/listing-mobile-gallery";
 import { ProjectContactCard } from "@/components/project-contact-card";
 import { Expandable } from "@/components/property-detail/expandable";
 import { ConstructionUpdates, type ConstructionUpdateCard } from "@/components/project-detail/construction-updates";
 import { MasterPlanViewer } from "@/components/project-detail/master-plan-viewer";
 import { ProjectMobileBar } from "@/components/project-detail/mobile-contact-bar";
+import { PropertyGallery } from "@/components/property-gallery";
 import { Rail } from "@/components/rail";
 import { SectionIcon } from "@/components/section-icon";
 import { ViewTracker } from "@/components/view-tracker";
@@ -464,7 +465,10 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
         </header>
       </div>
 
-      <ListingGallery photos={photos} title={project.name} />
+      <div className="pd-gallery-desktop">
+        <PropertyGallery photos={photos} title={project.name} layout="stack" />
+      </div>
+      {photos.length > 0 && <ListingMobileGallery photos={photos} title={project.name} />}
 
       <div className="detail-layout pd-layout pj-layout">
         <div className="pj-main">

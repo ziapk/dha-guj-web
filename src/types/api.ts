@@ -631,6 +631,9 @@ export type BannerPlacement =
 /** GET /public/banners?placement= — every banner returned counts as an impression. */
 export type Banner = { id: number; title: string; image_url: string; link_url: string | null; placement: BannerPlacement };
 
+/** The slot's display size in pixels, set by admins (meta.size of the banners response). */
+export type BannerSize = { width: number; height: number };
+
 export type Phase = { id: number; society_id: number; name: string; slug: string };
 
 export type Sector = { id: number; phase_id: number; name: string; slug: string };
