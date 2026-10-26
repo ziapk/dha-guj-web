@@ -7,7 +7,7 @@ import { SectionIcon } from "@/components/section-icon";
 import { ABOUT_SLUG, getAboutPage } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
-import { metaText, openGraph } from "@/lib/seo";
+import { metaText, openGraph, shareImages } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
@@ -34,6 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = page.meta_title ?? page.title;
   const description = metaText(page.meta_description ?? sections.hero.subtitle ?? page.title);
   const url = `/${ABOUT_SLUG}`;
+  const images = shareImages(page, title, sections.hero.image_url ? { url: sections.hero.image_url } : null);
 
   return {
     title,
@@ -43,9 +44,9 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       url,
-      images: sections.hero.image_url ? [{ url: sections.hero.image_url }] : undefined,
+      images,
     }),
-    twitter: { card: sections.hero.image_url ? "summary_large_image" : "summary", title, description },
+    twitter: { card: images ? "summary_large_image" : "summary", title, description },
   };
 }
 

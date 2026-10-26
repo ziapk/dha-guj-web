@@ -37,7 +37,7 @@ import { NotFoundError, publicApi } from "@/lib/api";
 import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import { JsonLd } from "@/components/json-ld";
 import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref, purposeTagOf, thumbnailUrl, videoEmbedUrl } from "@/lib/property";
-import { openGraph, robots } from "@/lib/seo";
+import { openGraph, robots, shareImages } from "@/lib/seo";
 import { getListingPageSettings } from "@/lib/site-data";
 import { siteUrl } from "@/lib/site";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
@@ -112,6 +112,7 @@ export async function generateMetadata({ params }: PageProps<"/property/[listing
   }
 
   const cover = coverOf(property);
+  const images = shareImages(property.seo ?? {}, property.title, cover ? { url: mediumUrl(cover), alt: altText(cover.alt_text, property.title) } : null);
   const seo = seoOf(property);
   const { description } = seo;
   const url = seo.path;
@@ -125,9 +126,9 @@ export async function generateMetadata({ params }: PageProps<"/property/[listing
       title: seo.title,
       description,
       url,
-      images: cover ? [{ url: mediumUrl(cover), alt: altText(cover.alt_text, property.title) }] : undefined,
+      images,
     }),
-    twitter: { card: cover ? "summary_large_image" : "summary", title: seo.title, description, images: cover ? [mediumUrl(cover)] : undefined },
+    twitter: { card: images ? "summary_large_image" : "summary", title: seo.title, description, images: images?.map((image) => image.url) },
   };
 }
 

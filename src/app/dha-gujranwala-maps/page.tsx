@@ -10,7 +10,7 @@ import { getMapsPage, MAPS_SLUG } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { PAGE_META } from "@/lib/page-meta";
-import { metaText, openGraph } from "@/lib/seo";
+import { metaText, openGraph, shareImages } from "@/lib/seo";
 import { getSocietyMaps, isSocietyMapCategory } from "@/lib/society-maps";
 import type { SectionHeading } from "@/types/api";
 
@@ -92,7 +92,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/dha-gujranw
     title: category ? title : { absolute: title },
     description,
     alternates: { canonical: filters.category ? `/dha-gujranwala-maps?category=${filters.category}` : "/dha-gujranwala-maps" },
-    openGraph: await openGraph({ title, description, url: "/dha-gujranwala-maps", images: image ? [{ url: image }] : undefined }),
+    openGraph: await openGraph({ title, description, url: "/dha-gujranwala-maps", images: shareImages(page ?? {}, title, image ? { url: image } : null) }),
     // Searches and society filters are thin copies of the list.
     robots: filtered ? { index: false, follow: true } : undefined,
   };

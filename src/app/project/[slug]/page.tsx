@@ -62,7 +62,7 @@ import {
   projectTimelineOf,
 } from "@/lib/project";
 import { coverOf, descriptionText, locationOf, mediumUrl, propertyHref, thumbnailUrl } from "@/lib/property";
-import { metaText, openGraph } from "@/lib/seo";
+import { metaText, openGraph, shareImages } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import type { AgencyProfile, PageIcon, Paginated, ProjectPaymentPlan, PublicProject, PublicProperty, Resource } from "@/types/api";
 
@@ -124,8 +124,8 @@ export async function generateMetadata({ params }: PageProps<"/project/[slug]">)
     title,
     description,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: cover ? [{ url: mediumUrl(cover), alt: altText(cover.alt_text, project.name) }] : undefined }),
-    twitter: { card: cover ? "summary_large_image" : "summary", title, description },
+    openGraph: await openGraph({ title, description, url, images: shareImages(project, project.name, cover ? { url: mediumUrl(cover), alt: altText(cover.alt_text, project.name) } : null) }),
+    twitter: { card: cover || project.og_image_url ? "summary_large_image" : "summary", title, description },
   };
 }
 

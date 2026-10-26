@@ -8,7 +8,7 @@ import { FILE_RATES_SLUG, getFileRates } from "@/lib/file-rates";
 import { formatDate } from "@/lib/labels";
 import { whatsappNumber } from "@/lib/property";
 import { cmsPageSchemas } from "@/lib/page-schema";
-import { metaText, openGraph } from "@/lib/seo";
+import { metaText, openGraph, shareImages } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { RateTrend } from "@/types/api";
 
@@ -27,13 +27,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = page.meta_title ?? page.title;
   const description = metaText(page.meta_description ?? sections.hero.subtitle ?? `Latest DHA Gujranwala file rates from ${page.title}.`);
   const url = `/${FILE_RATES_SLUG}`;
+  const images = shareImages(page, title);
 
   return {
     title,
     description,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url }),
-    twitter: { card: "summary", title, description },
+    openGraph: await openGraph({ title, description, url, images }),
+    twitter: { card: images ? "summary_large_image" : "summary", title, description },
   };
 }
 

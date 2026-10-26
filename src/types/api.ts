@@ -53,6 +53,8 @@ export type PropertyAvailability = "available" | "under_offer" | "sold" | "rente
 export type PropertySeo = {
   title: string;
   description: string;
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   /** Permanent path: /property/{slug}-{ref}. */
   path: string;
   canonical_url: string;
@@ -309,6 +311,8 @@ export type CmsPageSummary = {
   template?: string;
   meta_title: string | null;
   meta_description: string | null;
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   /** Schema.org page type the admin picked; null = the layout's default, "none" = no automatic page block. */
   schema_type?: string | null;
   is_published: boolean;
@@ -480,6 +484,8 @@ export type PublicDeveloper = {
   social_links: { platform: "facebook" | "instagram" | "youtube" | "tiktok" | "linkedin" | "x"; url: string }[];
   meta_title: string | null;
   meta_description: string | null;
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   /** Cover, else the overview image, else the first gallery photo. */
   card_image_url: string | null;
   card_image_alt?: string | null;
@@ -608,6 +614,8 @@ export type BlogPostSummary = {
   read_time_minutes: number | null;
   meta_title: string | null;
   meta_description: string | null;
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   updated_at: string | null;
 };
 
@@ -954,6 +962,8 @@ export type PublicProject = {
 
   meta_title: string | null;
   meta_description: string | null;
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   published_at: string | null;
   views_count: number;
   is_featured: boolean;
@@ -1075,6 +1085,8 @@ export type PublicSocietyMap = {
   has_file: boolean;
   meta_title: string | null;
   meta_description: string | null;
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   is_featured: boolean;
   published_at: string | null;
   updated_at: string | null;
@@ -1111,6 +1123,8 @@ export type SearchPage = {
   intro_html: string | null;
   meta_title: string | null;
   meta_description: string | null;
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   meta_keywords: string | null;
   updated_at: string | null;
 };

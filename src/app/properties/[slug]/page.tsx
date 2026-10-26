@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PurposeListingPage } from "@/components/purpose/purpose-page";
 import { getSearchPage, searchPageHref } from "@/lib/search-pages";
-import { metaText, openGraph, robots } from "@/lib/seo";
+import { metaText, openGraph, robots, shareImages } from "@/lib/seo";
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/properties/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -30,7 +30,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/pro
     description,
     keywords: keywords?.length ? keywords : undefined,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url }),
+    openGraph: await openGraph({ title, description, url, images: shareImages(landing, title) }),
     // Later pages and other sort orders repeat the same search.
     robots: robots(query.page || query.sort ? { index: false, follow: true } : undefined),
   };

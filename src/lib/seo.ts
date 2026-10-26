@@ -14,6 +14,24 @@ export function defaultOgImages(settings: SiteSettings): OpenGraph["images"] {
   return url ? [{ url: sizedImage(url, "medium"), alt: settings.seo.og_image_alt ?? siteNameOf(settings) }] : undefined;
 }
 
+type ShareImage = { url: string; alt?: string };
+
+/**
+ * A page's share images: the record's own share image when an admin set one (its 1280px copy), else `fallback` (the
+ * cover, photo or hero the page would otherwise share). Undefined lets openGraph() use the default share image.
+ */
+export function shareImages(
+  record: { og_image_url?: string | null; og_image_alt?: string | null },
+  alt: string,
+  fallback?: ShareImage | null,
+): ShareImage[] | undefined {
+  if (record.og_image_url) {
+    return [{ url: sizedImage(record.og_image_url, "medium"), alt: record.og_image_alt ?? alt }];
+  }
+
+  return fallback ? [fallback] : undefined;
+}
+
 /**
  * A page's openGraph replaces the layout's instead of merging with it, so every page builds it here
  * to keep the site name, locale and type, and the default share image when the page has none.

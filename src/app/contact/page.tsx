@@ -11,7 +11,7 @@ import { publicApi } from "@/lib/api";
 import { CONTACT_SLUG, getContactPage } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
-import { metaText, openGraph } from "@/lib/seo";
+import { metaText, openGraph, shareImages } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, hasContactDetails, siteNameOf } from "@/lib/site-data";
 import type { AgencyProfile, Paginated } from "@/types/api";
@@ -29,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = page.meta_title ?? page.title;
   const description = metaText(page.meta_description ?? sections.hero.subtitle ?? page.title);
   const url = `/${CONTACT_SLUG}`;
+  const images = shareImages(page, title, sections.hero.image_url ? { url: sections.hero.image_url } : null);
 
   return {
     title,
@@ -38,9 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       url,
-      images: sections.hero.image_url ? [{ url: sections.hero.image_url }] : undefined,
+      images,
     }),
-    twitter: { card: sections.hero.image_url ? "summary_large_image" : "summary", title, description },
+    twitter: { card: images ? "summary_large_image" : "summary", title, description },
   };
 }
 

@@ -17,7 +17,7 @@ import { getPost, getPosts, postHref, readingMinutes, splitArticle, stripHtml } 
 import { authorHref, authorSocials, getAuthor } from "@/lib/authors";
 import { sizedImage } from "@/lib/image";
 import { formatDate } from "@/lib/labels";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { jsonLd, metaText, openGraph, shareImages } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { AgencyProfile, BlogPostSummary, HomeData, Paginated, PublicAuthor, PublicProject, PublicProperty, Resource } from "@/types/api";
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
   const title = post.meta_title ?? post.title;
   const description = metaText(post.meta_description ?? post.excerpt ?? stripHtml(post.content_html)) || post.title;
   const url = postHref(post.slug);
-  const images = post.cover_image_url ? [{ url: post.cover_image_url, alt: post.title }] : undefined;
+  const images = shareImages(post, post.title, post.cover_image_url ? { url: post.cover_image_url, alt: post.title } : null);
 
   return {
     title,
@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
       authors: post.author ? [post.author.name] : undefined,
       images,
     }),
-    twitter: { card: images ? "summary_large_image" : "summary", title, description, images: post.cover_image_url ? [post.cover_image_url] : undefined },
+    twitter: { card: images ? "summary_large_image" : "summary", title, description, images: images?.map((image) => image.url) },
   };
 }
 

@@ -39,7 +39,7 @@ import { altText, logoAlt } from "@/lib/alt-text";
 import { DEVELOPER_TYPE_LABELS, developerHref, developerSocials, getDeveloper, sectionHeading, yearsInBusiness } from "@/lib/developers";
 import { sizedImage, type ImageSize } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { jsonLd, metaText, openGraph, shareImages } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import { siteUrl } from "@/lib/site";
 import type { DeveloperLeader, DeveloperStat, DeveloperTeamMember, PublicDeveloper } from "@/types/api";
@@ -85,8 +85,8 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/dev
     title,
     description,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: image ? [{ url: image, alt: developer.cover_url ? altText(developer.cover_alt, developer.name) : logoAlt(developer.name, developer.logo_alt) }] : undefined }),
-    twitter: { card: developer.cover_url ? "summary_large_image" : "summary", title, description },
+    openGraph: await openGraph({ title, description, url, images: shareImages(developer, developer.name, image ? { url: image, alt: developer.cover_url ? altText(developer.cover_alt, developer.name) : logoAlt(developer.name, developer.logo_alt) } : null) }),
+    twitter: { card: developer.cover_url || developer.og_image_url ? "summary_large_image" : "summary", title, description },
     // Later project pages repeat the company profile.
     robots: page > 1 ? { index: false, follow: true } : undefined,
   };

@@ -11,7 +11,7 @@ import { altText } from "@/lib/alt-text";
 import { getMapAreas } from "@/lib/plot-finder";
 import { mapsHref, resolveArea } from "@/lib/plot-finder-shared";
 import { fileSizeLabel, getSocietyMap, societyMapHref, societyMapLocation } from "@/lib/society-maps";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { jsonLd, metaText, openGraph, shareImages } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 
 export const revalidate = 300;
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps<"/map/[slug]">): Pr
     title,
     description,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: [{ url: map.image_url, alt: altText(map.image_alt, map.title) }] }),
+    openGraph: await openGraph({ title, description, url, images: shareImages(map, map.title, { url: map.image_url, alt: altText(map.image_alt, map.title) }) }),
     twitter: { card: "summary_large_image", title, description },
   };
 }
