@@ -20,7 +20,7 @@ export function coverOf(property: PublicProperty): PropertyMedia | undefined {
 }
 
 /** The photo fields shared by property and project media. */
-export type Photo = Pick<PropertyMedia, "id" | "url" | "thumbnail_url" | "medium_url">;
+export type Photo = Pick<PropertyMedia, "id" | "url" | "thumbnail_url" | "medium_url" | "alt_text">;
 
 /** Small (≈480px) photo for cards and thumbnails. */
 export function thumbnailUrl(photo: Photo): string {

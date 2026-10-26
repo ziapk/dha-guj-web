@@ -25,7 +25,7 @@ export function FeaturedDealerCard({ agency }: { agency: AgencyProfile }) {
           <Image src={sizedImage(agency.cover_url, "thumbnail")} alt="" fill sizes="(max-width: 1023px) 100vw, 300px" style={{ objectFit: "cover" }} />
         ) : (
           <span className="dealer-spotlight-logo">
-            <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={72} />
+            <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={72} decorative />
           </span>
         )}
         <span className="dealer-spotlight-badge">Featured</span>

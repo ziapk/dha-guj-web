@@ -19,13 +19,14 @@ import {
   TagIcon,
 } from "@/components/icons";
 import { Rail } from "@/components/rail";
+import { galleryPhotoAlt } from "@/lib/alt-text";
 import { sizedImage } from "@/lib/image";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
 import { projectHref, projectLocationOf, projectPhotosOf, projectPriceOf } from "@/lib/project";
 import { mediumUrl, thumbnailUrl } from "@/lib/property";
 import type { PublicProject } from "@/types/api";
 
-type Slide = { key: string; kind: "image"; src: string; thumb: string } | { key: string; kind: "video"; embed: string; thumb: string | null };
+type Slide = { key: string; kind: "image"; src: string; thumb: string; alt: string } | { key: string; kind: "video"; embed: string; thumb: string | null };
 
 /** The YouTube video id in a watch, share, shorts or embed link, or null for anything else. */
 function youtubeIdOf(url: string): string | null {
@@ -35,7 +36,14 @@ function youtubeIdOf(url: string): string | null {
 }
 
 function slidesOf(project: PublicProject): Slide[] {
-  const slides: Slide[] = projectPhotosOf(project).map((photo) => ({ key: `p${photo.id}`, kind: "image", src: mediumUrl(photo), thumb: thumbnailUrl(photo) }));
+  const photos = projectPhotosOf(project);
+  const slides: Slide[] = photos.map((photo, index) => ({
+    key: `p${photo.id}`,
+    kind: "image",
+    src: mediumUrl(photo),
+    thumb: thumbnailUrl(photo),
+    alt: galleryPhotoAlt(photo.alt_text, project.name, index, photos.length),
+  }));
   const videoId = project.video_url ? youtubeIdOf(project.video_url) : null;
 
   if (videoId) {
@@ -104,7 +112,7 @@ function PortfolioCard({ project, onOpen }: { project: PublicProject; onOpen: ()
       <button type="button" className="pf-card-button" onClick={onOpen} aria-label={`View ${project.name}`}>
         <div className="pf-card-cover">
           {cover ? (
-            <Image src={cover} alt={project.name} width={0} height={0} sizes="(max-width: 900px) 86vw, (max-width: 1100px) 50vw, 33vw" className="pf-fit" />
+            <Image src={cover} alt="" width={0} height={0} sizes="(max-width: 900px) 86vw, (max-width: 1100px) 50vw, 33vw" className="pf-fit" />
           ) : (
             <BuildingIcon className="placeholder-icon" />
           )}
@@ -244,7 +252,7 @@ function ProjectShowcase({ project, onClose }: { project: PublicProject; onClose
             <BuildingIcon className="placeholder-icon" />
           </div>
         ) : current.kind === "image" ? (
-          <Image key={current.key} src={current.src} alt={`${project.name} photo ${index + 1}`} width={0} height={0} sizes="(max-width: 1200px) 100vw, 1180px" className="pf-fit" priority />
+          <Image key={current.key} src={current.src} alt={current.alt} width={0} height={0} sizes="(max-width: 1200px) 100vw, 1180px" className="pf-fit" priority />
         ) : (
           <iframe key={current.key} src={current.embed} title={`${project.name} video`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
         )}

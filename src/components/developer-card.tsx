@@ -65,7 +65,7 @@ export function DeveloperCard({ developer }: { developer: PublicDeveloper }) {
       </Link>
       <div className="dl-card-body">
         <div className="dl-card-logo">
-          <AgencyLogo name={developer.name} logoUrl={developer.logo_url} size={72} />
+          <AgencyLogo name={developer.name} logoUrl={developer.logo_url} alt={developer.logo_alt} size={72} />
         </div>
         <div className="dl-card-title">
           <div style={{ minWidth: 0 }}>

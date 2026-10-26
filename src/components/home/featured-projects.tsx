@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DeckSlider, type DeckCardState } from "@/components/home/deck-slider";
 import { BuildingIcon, ChartIcon, HomeIcon, PinIcon } from "@/components/icons";
+import { projectCoverAlt } from "@/lib/alt-text";
 import { sizedImage } from "@/lib/image";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
 import { projectHref, projectLocationOf, projectPhotosOf, projectPriceOf } from "@/lib/project";
@@ -37,7 +38,7 @@ function FrontCard({ project, state }: { project: PublicProject; state: DeckCard
   return (
     <article className={`project-hero-card is-${state}`} aria-hidden={leaving} inert={leaving}>
       {cover ? (
-        <Image src={cover} alt="" fill priority sizes="(max-width: 1040px) 100vw, 620px" style={{ objectFit: "cover" }} />
+        <Image src={cover} alt={projectCoverAlt(project)} fill priority sizes="(max-width: 1040px) 100vw, 620px" style={{ objectFit: "cover" }} />
       ) : (
         <BuildingIcon className="placeholder-icon" />
       )}

@@ -25,8 +25,10 @@ import {
   WhatsAppIcon,
   YouTubeIcon,
 } from "@/components/icons";
+import { BannerSlot } from "@/components/banner-slot";
 import { ListingRowCard } from "@/components/listing-row-card";
 import { agencyAgentAsPublic } from "@/lib/agents";
+import { altText, logoAlt } from "@/lib/alt-text";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
@@ -93,7 +95,7 @@ export async function generateMetadata({ params }: PageProps<"/dealer/[slug]">):
     title,
     description,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: agency.logo_url ? [{ url: agency.logo_url, alt: `${agency.name} logo` }] : undefined }),
+    openGraph: await openGraph({ title, description, url, images: agency.logo_url ? [{ url: agency.logo_url, alt: logoAlt(agency.name, agency.logo_alt) }] : undefined }),
     twitter: { card: "summary", title, description },
   };
 }
@@ -165,12 +167,12 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
         <section className={`agency-banner${agency.cover_url ? " has-cover" : ""}`}>
           {agency.cover_url && (
             <div className="agency-banner-cover">
-              <Image src={sizedImage(agency.cover_url, "medium")} alt="" fill priority sizes="(max-width: 900px) 100vw, 1200px" style={{ objectFit: "cover" }} />
+              <Image src={sizedImage(agency.cover_url, "medium")} alt={altText(agency.cover_alt, "")} fill priority sizes="(max-width: 900px) 100vw, 1200px" style={{ objectFit: "cover" }} />
             </div>
           )}
           <div className="agency-banner-content">
             <div className="agency-banner-logo">
-              <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={132} />
+              <AgencyLogo name={agency.name} logoUrl={agency.logo_url} alt={agency.logo_alt} size={132} />
             </div>
             <div className="agency-banner-body">
               {agency.is_verified && (
@@ -233,48 +235,51 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
             </ul>
           </div>
 
-          <aside className="agency-contact">
-            <h2>
-              <MailIcon className="icon agency-section-icon" /> Contact Information
-            </h2>
-            <ul>
-              {agency.phone && (
-                <li>
-                  <PhoneIcon /> <a href={`tel:${agency.phone.replace(/[^\d+]/g, "")}`}>{agency.phone}</a>
-                </li>
-              )}
-              {agency.email && (
-                <li>
-                  <MailIcon /> <a href={`mailto:${agency.email}`}>{agency.email}</a>
-                </li>
-              )}
-              {agency.website && (
-                <li>
-                  <GlobeIcon />{" "}
-                  <a href={agency.website} target="_blank" rel="noopener noreferrer nofollow">
-                    {agency.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
-                  </a>
-                </li>
-              )}
-              {location && (
-                <li>
-                  <PinIcon /> <span>{location}</span>
-                </li>
-              )}
-            </ul>
-            {socials.length > 0 && (
-              <div className="agency-follow">
-                <h3>Follow Us</h3>
-                <div className="agency-socials">
-                  {socials.map((social) => (
-                    <a key={social.key} href={social.href ?? undefined} className={`social-${social.key}`} target="_blank" rel="noopener noreferrer nofollow" aria-label={`${agency.name} on ${social.label}`}>
-                      {social.icon}
+          <div className="agency-side">
+            <aside className="agency-contact">
+              <h2>
+                <MailIcon className="icon agency-section-icon" /> Contact Information
+              </h2>
+              <ul>
+                {agency.phone && (
+                  <li>
+                    <PhoneIcon /> <a href={`tel:${agency.phone.replace(/[^\d+]/g, "")}`}>{agency.phone}</a>
+                  </li>
+                )}
+                {agency.email && (
+                  <li>
+                    <MailIcon /> <a href={`mailto:${agency.email}`}>{agency.email}</a>
+                  </li>
+                )}
+                {agency.website && (
+                  <li>
+                    <GlobeIcon />{" "}
+                    <a href={agency.website} target="_blank" rel="noopener noreferrer nofollow">
+                      {agency.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
                     </a>
-                  ))}
+                  </li>
+                )}
+                {location && (
+                  <li>
+                    <PinIcon /> <span>{location}</span>
+                  </li>
+                )}
+              </ul>
+              {socials.length > 0 && (
+                <div className="agency-follow">
+                  <h3>Follow Us</h3>
+                  <div className="agency-socials">
+                    {socials.map((social) => (
+                      <a key={social.key} href={social.href ?? undefined} className={`social-${social.key}`} target="_blank" rel="noopener noreferrer nofollow" aria-label={`${agency.name} on ${social.label}`}>
+                        {social.icon}
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </aside>
+              )}
+            </aside>
+            <BannerSlot key={agency.slug} placement="agent_sidebar" limit={2} />
+          </div>
         </section>
 
         <nav className="agency-tabs" aria-label="Agency sections">

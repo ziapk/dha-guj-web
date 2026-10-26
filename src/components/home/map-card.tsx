@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, MapIcon } from "@/components/icons";
+import { altText } from "@/lib/alt-text";
 import type { SectorMap } from "@/lib/home-content";
 import { sizedImage } from "@/lib/image";
 import { societyMapHref, societyMapLocation } from "@/lib/society-maps";
@@ -13,6 +14,8 @@ export type MapCardData = {
   title: string;
   description: string;
   image: string | null;
+  /** The saved alt text, else the map's title. */
+  alt: string;
   /** The map's page (or file); null shows "Coming soon". */
   href: string | null;
   external: boolean;
@@ -29,6 +32,7 @@ export function societyMapCard(map: PublicSocietyMap, index = 0): MapCardData {
     title: map.title,
     description: map.description_text || societyMapLocation(map) || "View and download the full-size map.",
     image: map.image_url,
+    alt: altText(map.image_alt, map.title),
     href: societyMapHref(map.slug),
     external: false,
   };
@@ -38,7 +42,7 @@ export function societyMapCard(map: PublicSocietyMap, index = 0): MapCardData {
 export function sectorMapCard(map: SectorMap): MapCardData {
   const isImage = map.file !== null && !map.file.toLowerCase().endsWith(".pdf");
 
-  return { key: map.slug, badge: map.badge, tone: map.tone, title: map.title, description: map.description, image: isImage ? map.file : null, href: map.file, external: true };
+  return { key: map.slug, badge: map.badge, tone: map.tone, title: map.title, description: map.description, image: isImage ? map.file : null, alt: map.title, href: map.file, external: true };
 }
 
 /** A map: badged thumbnail, title and description, then the link to its page. */
@@ -46,7 +50,7 @@ export function MapCard({ map }: { map: MapCardData }) {
   return (
     <article className={`map-card tone-${map.tone}`}>
       <div className="map-card-thumb">
-        {map.image ? <Image src={sizedImage(map.image, "thumbnail")} alt={map.title} fill sizes="(max-width: 720px) 100vw, 280px" style={{ objectFit: "cover" }} /> : <MapIcon className="placeholder-icon" />}
+        {map.image ? <Image src={sizedImage(map.image, "thumbnail")} alt={map.alt} fill sizes="(max-width: 720px) 100vw, 280px" style={{ objectFit: "cover" }} /> : <MapIcon className="placeholder-icon" />}
         <span className="map-badge">
           <MapIcon className="icon" />
           {map.badge}

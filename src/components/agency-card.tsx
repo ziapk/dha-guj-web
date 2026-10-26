@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { logoAlt } from "@/lib/alt-text";
 import { sizedImage } from "@/lib/image";
 import type { AgencyProfile } from "@/types/api";
 
@@ -13,9 +14,13 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-export function AgencyLogo({ name, logoUrl, size }: { name: string; logoUrl: string | null; size: number }) {
+/**
+ * A company logo, else its initials. `alt` is the saved alt text ("{name} logo" until one is written); `decorative`
+ * blanks it where the name sits right beside the logo in the same link.
+ */
+export function AgencyLogo({ name, logoUrl, size, alt, decorative = false }: { name: string; logoUrl: string | null; size: number; alt?: string | null; decorative?: boolean }) {
   if (logoUrl) {
-    return <Image src={sizedImage(logoUrl, "thumbnail")} alt={`${name} logo`} width={size} height={size} className="agency-logo" />;
+    return <Image src={sizedImage(logoUrl, "thumbnail")} alt={decorative ? "" : logoAlt(name, alt)} width={size} height={size} className="agency-logo" />;
   }
 
   return (
@@ -39,7 +44,7 @@ export function AgencyCard({ agency }: { agency: AgencyProfile }) {
   return (
     <Link href={`/dealer/${agency.slug}`} className="agency-card">
       <div className="agency-card-head">
-        <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={56} />
+        <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={56} decorative />
         <div style={{ minWidth: 0 }}>
           <h3>{agency.name}</h3>
           {agency.city && <p>{agency.city.name}</p>}

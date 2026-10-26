@@ -16,6 +16,7 @@ import type { PublicProperty } from "@/types/api";
 export type ListingOwner = {
   name: string;
   logo_url: string | null;
+  logo_alt?: string | null;
   phone: string | null;
   whatsapp: string | null;
   is_verified: boolean;
@@ -33,6 +34,7 @@ export function ownerOf(property: PublicProperty): ListingOwner {
   return {
     name: agency?.name ?? contact?.name ?? "Property Owner",
     logo_url: agency?.logo_url ?? null,
+    logo_alt: agency?.logo_alt,
     phone: contact?.phone ?? null,
     whatsapp: contact?.whatsapp ?? null,
     is_verified: agency?.is_verified ?? false,
@@ -97,7 +99,7 @@ export function ListingRowCard({ property, owner, priority = false }: { property
   return (
     <article className="listing-row">
       <div className="listing-row-main">
-        <ListingPhotoSlider photos={photos} href={href} title={property.title} priority={priority}>
+        <ListingPhotoSlider photos={photos} href={href} priority={priority}>
           <div className="listing-slider-badges">
             <span className={`badge badge-purpose badge-${purpose.tone}`}>{purpose.label}</span>
             {owner.is_verified && (
@@ -195,7 +197,7 @@ export function ListingRowCard({ property, owner, priority = false }: { property
               {agent.photo_url ? <Image src={sizedImage(agent.photo_url, "thumbnail")} alt="" width={52} height={52} /> : <span>{initials(agent.name)}</span>}
             </Link>
           ) : (
-            <AgencyLogo name={owner.name} logoUrl={owner.logo_url} size={52} />
+            <AgencyLogo name={owner.name} logoUrl={owner.logo_url} alt={owner.logo_alt} size={52} />
           )}
           <div>
             <strong>

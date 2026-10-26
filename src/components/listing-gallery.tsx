@@ -4,6 +4,7 @@ import { Image } from "antd";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeftIcon, CameraIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon, ExpandIcon, HomeIcon } from "@/components/icons";
+import { galleryPhotoAlt } from "@/lib/alt-text";
 import { mediumUrl, thumbnailUrl, type Photo } from "@/lib/property";
 
 /**
@@ -13,6 +14,8 @@ import { mediumUrl, thumbnailUrl, type Photo } from "@/lib/property";
  * in the grid opens the lightbox; the expand button goes straight to the lightbox.
  * A single photo gets the stage alone, without arrows, counter or thumbnails.
  * The stage and lightbox use the medium (≈1280px) copy, which carries the site watermark; the original is never shown.
+ * Every photo (stage, thumbnails, grid, lightbox) carries its saved alt text; thumbnail buttons are still named
+ * "Show photo N" by aria-label.
  */
 export function ListingGallery({ photos, title }: { photos: Photo[]; title: string }) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -21,6 +24,7 @@ export function ListingGallery({ photos, title }: { photos: Photo[]; title: stri
   const [preview, setPreview] = useState<{ open: boolean; current: number }>({ open: false, current: 0 });
   const [gridOpen, setGridOpen] = useState(false);
   const many = photos.length > 1;
+  const altOf = (photo: Photo, photoIndex: number) => galleryPhotoAlt(photo.alt_text, title, photoIndex, photos.length);
 
   /** While the grid is open: no page scrolling behind it, and the photo it was opened on in view. */
   useEffect(() => {
@@ -111,14 +115,14 @@ export function ListingGallery({ photos, title }: { photos: Photo[]; title: stri
       <div className="lgallery-stage" onKeyDown={many ? onKeyDown : undefined}>
         <div className="lgallery-track" ref={trackRef} onScroll={onScroll}>
           {photos.map((photo, photoIndex) => (
-            <button key={photo.id} type="button" className="lgallery-slide" aria-label={`View all ${photos.length} photos`} onClick={() => setGridOpen(true)}>
+            <button key={photo.id} type="button" className="lgallery-slide" aria-label={`${altOf(photo, photoIndex)} — view all ${photos.length} photos`} onClick={() => setGridOpen(true)}>
               {/* eslint-disable-next-line @next/next/no-img-element -- the blurred fill behind a photo that doesn't match the stage's shape */}
               <img className="lgallery-backdrop" src={thumbnailUrl(photo)} alt="" aria-hidden="true" loading={photoIndex === 0 ? "eager" : "lazy"} />
               {/* eslint-disable-next-line @next/next/no-img-element -- watermarked copies straight from the API */}
               <img
                 className="lgallery-photo"
                 src={mediumUrl(photo)}
-                alt={`${title} — photo ${photoIndex + 1}`}
+                alt={altOf(photo, photoIndex)}
                 loading={photoIndex === 0 ? "eager" : "lazy"}
                 fetchPriority={photoIndex === 0 ? "high" : undefined}
               />
@@ -157,7 +161,7 @@ export function ListingGallery({ photos, title }: { photos: Photo[]; title: stri
               onClick={() => goTo(photoIndex)}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={thumbnailUrl(photo)} alt="" loading="lazy" />
+              <img src={thumbnailUrl(photo)} alt={altOf(photo, photoIndex)} loading="lazy" />
             </button>
           ))}
         </div>
@@ -191,7 +195,7 @@ export function ListingGallery({ photos, title }: { photos: Photo[]; title: stri
                   onClick={() => openPreview(photoIndex)}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={thumbnailUrl(photo)} alt={`${title} — photo ${photoIndex + 1}`} loading="lazy" />
+                  <img src={thumbnailUrl(photo)} alt={altOf(photo, photoIndex)} loading="lazy" />
                 </button>
               ))}
             </div>
@@ -200,7 +204,7 @@ export function ListingGallery({ photos, title }: { photos: Photo[]; title: stri
         )}
 
       <Image.PreviewGroup
-        items={photos.map((photo) => mediumUrl(photo))}
+        items={photos.map((photo, photoIndex) => ({ src: mediumUrl(photo), alt: altOf(photo, photoIndex) }))}
         preview={{
           open: preview.open,
           current: preview.current,

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowRightIcon, BuildingIcon, CheckCircleIcon, ClockIcon, HomeIcon, LayersIcon, PinIcon, RocketIcon } from "@/components/icons";
+import { logoAlt } from "@/lib/alt-text";
 import { sizedImage } from "@/lib/image";
 import { formatArea, formatAreaRange, formatCompactPrice } from "@/lib/labels";
 import { PRICE_ON_REQUEST, projectHref, projectLocationOf, projectPhotosOf, projectPriceOf, projectSingleMediaOf } from "@/lib/project";
@@ -19,6 +20,17 @@ export function projectLogoOf(project: PublicProject): string | null {
   const logo = projectSingleMediaOf(project, "logo");
 
   return sizedImage(project.logo_url, "thumbnail") ?? (logo ? thumbnailUrl(logo) : null) ?? sizedImage(project.developer?.logo_url, "thumbnail") ?? null;
+}
+
+/** Alt text for projectLogoOf's picture: the project logo's saved alt, or the developer's when it is their logo. */
+export function projectLogoAltOf(project: PublicProject): string {
+  const logo = projectSingleMediaOf(project, "logo");
+
+  if (!project.logo_url && !logo && project.developer?.logo_url) {
+    return logoAlt(project.developer.name, project.developer.logo_alt);
+  }
+
+  return logoAlt(project.name, project.logo_alt || logo?.alt_text);
 }
 
 export function projectCoverOf(project: PublicProject, size: "thumb" | "medium" = "thumb"): string | null {

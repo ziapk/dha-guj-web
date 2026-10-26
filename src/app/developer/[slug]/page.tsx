@@ -35,6 +35,7 @@ import {
 import { PortfolioProjects } from "@/components/developer/portfolio-projects";
 import { SectionIcon } from "@/components/section-icon";
 import { SocialIcon } from "@/components/social-icon";
+import { altText, logoAlt } from "@/lib/alt-text";
 import { DEVELOPER_TYPE_LABELS, developerHref, developerSocials, getDeveloper, sectionHeading, yearsInBusiness } from "@/lib/developers";
 import { sizedImage, type ImageSize } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
@@ -84,7 +85,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/dev
     title,
     description,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: image ? [{ url: image, alt: developer.name }] : undefined }),
+    openGraph: await openGraph({ title, description, url, images: image ? [{ url: image, alt: developer.cover_url ? altText(developer.cover_alt, developer.name) : logoAlt(developer.name, developer.logo_alt) }] : undefined }),
     twitter: { card: developer.cover_url ? "summary_large_image" : "summary", title, description },
     // Later project pages repeat the company profile.
     robots: page > 1 ? { index: false, follow: true } : undefined,
@@ -228,6 +229,8 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
   const contactImage = gallery.find((photo) => photo.url !== heroImage && photo.url !== overviewImage)?.url ?? heroImage;
   // Phones swap the experience card's skyline for a photo, preferably one not shown elsewhere.
   const experienceImage = gallery.find((photo) => ![heroImage, overviewImage, contactImage].includes(photo.url))?.url ?? contactImage;
+  /** The saved alt of a picture reused from the cover or the work gallery (section images have none). */
+  const savedAltOf = (url: string) => (url === developer.cover_url ? developer.cover_alt : gallery.find((photo) => photo.url === url)?.alt);
   const overviewButton = {
     label: sections.overview?.button_label?.trim() || "View Our Projects",
     href: sections.overview?.button_url?.trim() || (total > 0 ? "#projects" : null),
@@ -342,7 +345,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
         )}
         <div className="dv-hero-body">
           <div className="dv-hero-logo">
-            <AgencyLogo name={developer.name} logoUrl={developer.logo_url} size={150} />
+            <AgencyLogo name={developer.name} logoUrl={developer.logo_url} alt={developer.logo_alt} size={150} />
           </div>
           <div className="dv-hero-text">
             <h1>{developer.name}</h1>
@@ -435,7 +438,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
               </div>
               {overviewImage && (
                 <div className="dv-overview-image">
-                  <Image src={sizedImage(overviewImage, "medium")} alt={`${developer.name} project`} fill sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: "cover" }} />
+                  <Image src={sizedImage(overviewImage, "medium")} alt={altText(savedAltOf(overviewImage), `${developer.name} project`)} fill sizes="(max-width: 900px) 100vw, 45vw" style={{ objectFit: "cover" }} />
                   {isVerified && (
                     <span className="dv-float-badge">
                       <ShieldCheckIcon className="icon" />

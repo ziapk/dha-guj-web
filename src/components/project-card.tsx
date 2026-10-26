@@ -19,7 +19,7 @@ export function ProjectCard({ project, priority = false }: { project: PublicProj
       <Link href={projectHref(project.slug)} className="property-card-link">
         <div className="property-card-cover">
           {cover ? (
-            <Image src={cover} alt={project.name} fill priority={priority} sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw" style={{ objectFit: "cover" }} />
+            <Image src={cover} alt={photos[0]?.alt_text?.trim() ?? ""} fill priority={priority} sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw" style={{ objectFit: "cover" }} />
           ) : (
             <BuildingIcon className="placeholder-icon" />
           )}

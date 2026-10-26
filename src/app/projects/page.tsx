@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BannerSlot } from "@/components/banner-slot";
 import { ArrowRightIcon, BuildingIcon, CalendarIcon, CameraIcon, ExpandIcon, HomeIcon, LayersIcon, PinIcon, StarIcon, UsersIcon } from "@/components/icons";
-import { LISTING_STATUS, ProjectListingCard, projectCoverOf, projectLogoOf, projectSizesOf, projectSummaryOf, projectTypeOf } from "@/components/project-listing-card";
+import { LISTING_STATUS, ProjectListingCard, projectCoverOf, projectLogoAltOf, projectLogoOf, projectSizesOf, projectSummaryOf, projectTypeOf } from "@/components/project-listing-card";
 import { SearchSuggest } from "@/components/search-suggest";
 import { publicApi } from "@/lib/api";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
@@ -93,7 +94,7 @@ function FeaturedProject({ project }: { project: PublicProject }) {
         </Link>
         <div className="pl-featured-info">
           <div className="pl-featured-kicker">
-            {logo && <Image src={logo} alt="" width={36} height={36} className="pl-featured-logo" />}
+            {logo && <Image src={logo} alt={projectLogoAltOf(project)} width={36} height={36} className="pl-featured-logo" />}
             {type && <span className="pl-type">{type}</span>}
           </div>
           <h3>
@@ -239,6 +240,10 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
       </section>
 
       {featured && <FeaturedProject project={featured} />}
+
+      <div className="container">
+        <BannerSlot placement="projects_top" className="banner-page-top" />
+      </div>
 
       <section className="container pl-list" id="all-projects">
         <div className="pl-list-panel">

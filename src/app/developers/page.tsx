@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BannerSlot } from "@/components/banner-slot";
 import { DeveloperCard } from "@/components/developer-card";
 import { FeaturedDevelopers } from "@/components/developer/featured-developers";
 import { ArrowRightIcon, BuildingIcon, HandshakeIcon, LayersIcon, PinIcon } from "@/components/icons";
@@ -140,6 +141,8 @@ export default async function DevelopersPage({ searchParams }: PageProps<"/devel
           </div>
         </section>
       )}
+
+      <BannerSlot placement="developers_top" className="banner-page-top" />
 
       <section className="dl-section dl-list-section" id="all-developers">
         <div className="dl-list-head">

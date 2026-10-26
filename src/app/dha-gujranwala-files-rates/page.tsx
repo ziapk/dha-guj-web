@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BannerSlot } from "@/components/banner-slot";
 import { PhoneIcon, WhatsAppIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { FILE_RATES_SLUG, getFileRates } from "@/lib/file-rates";
@@ -99,6 +100,8 @@ export default async function FileRatesPage() {
         // Sanitised by the API before it is stored.
         <div className="prose" dangerouslySetInnerHTML={{ __html: sections.intro_html }} />
       )}
+
+      <BannerSlot placement="rates_top" className="banner-page-top" />
 
       {tables.length === 0 ? (
         <div className="empty-results">

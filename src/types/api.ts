@@ -612,7 +612,21 @@ export type BlogPostSummary = {
 /** GET /public/posts/{slug} — content_html is sanitised by the API and safe to render. */
 export type BlogPost = BlogPostSummary & { content: string; content_html: string };
 
-export type BannerPlacement = "home_top" | "search_top" | "search_sidebar" | "listing_sidebar";
+export type BannerPlacement =
+  | "home_top"
+  | "search_top"
+  | "search_sidebar"
+  | "listing_sidebar"
+  | "projects_top"
+  | "project_sidebar"
+  | "agents_top"
+  | "agent_sidebar"
+  | "developers_top"
+  | "blog_top"
+  | "blog_sidebar"
+  | "maps_top"
+  | "rates_top"
+  | "wanted_sidebar";
 
 /** GET /public/banners?placement= — every banner returned counts as an impression. */
 export type Banner = { id: number; title: string; image_url: string; link_url: string | null; placement: BannerPlacement };

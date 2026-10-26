@@ -1,7 +1,22 @@
 import type { NextRequest } from "next/server";
 import type { BannerPlacement } from "@/types/api";
 
-const PLACEMENTS = new Set<BannerPlacement>(["home_top", "search_top", "search_sidebar", "listing_sidebar"]);
+const PLACEMENTS = new Set<BannerPlacement>([
+  "home_top",
+  "search_top",
+  "search_sidebar",
+  "listing_sidebar",
+  "projects_top",
+  "project_sidebar",
+  "agents_top",
+  "agent_sidebar",
+  "developers_top",
+  "blog_top",
+  "blog_sidebar",
+  "maps_top",
+  "rates_top",
+  "wanted_sidebar",
+]);
 
 /**
  * Banners for one placement: GET /api/banners?placement=home_top&limit=1.

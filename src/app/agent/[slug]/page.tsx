@@ -7,6 +7,7 @@ import { BannerSlot } from "@/components/banner-slot";
 import { ArrowRightIcon, BriefcaseIcon, HandshakeIcon, HomeIcon, KeyIcon, MailIcon, PhoneIcon, PinIcon, ShieldCheckIcon, WhatsAppIcon } from "@/components/icons";
 import { ListingRowCard, type ListingOwner } from "@/components/listing-row-card";
 import { agentSocials, getAgent, getAgents } from "@/lib/agents";
+import { altText } from "@/lib/alt-text";
 import { publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
@@ -57,7 +58,7 @@ export async function generateMetadata({ params }: PageProps<"/agent/[slug]">): 
       description,
       url,
       type: "profile",
-      images: agent.photo_url ? [{ url: agent.photo_url }] : undefined,
+      images: agent.photo_url ? [{ url: agent.photo_url, alt: altText(agent.photo_alt, agent.name) }] : undefined,
     }),
     twitter: { card: agent.photo_url ? "summary" : "summary", title, description },
   };
@@ -88,6 +89,7 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
   const owner: ListingOwner = {
     name: agent.agency?.name ?? siteName,
     logo_url: agent.agency?.logo_url ?? null,
+    logo_alt: agent.agency?.logo_alt,
     phone,
     whatsapp: agent.whatsapp ?? agent.phone ?? settings.contact.whatsapp,
     is_verified: true,
@@ -131,7 +133,7 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
 
       <section className={`agent-hero${cover ? " has-cover" : ""}`}>
-        {cover && <Image src={sizedImage(cover, "medium")} alt="" fill priority sizes="100vw" className="agent-hero-cover" />}
+        {cover && <Image src={sizedImage(cover, "medium")} alt={altText(agent.agency?.cover_alt, "")} fill priority sizes="100vw" className="agent-hero-cover" />}
         <div className="container agent-hero-inner">
           <nav className="breadcrumbs" aria-label="Breadcrumb">
             <Link href="/">Home</Link>
@@ -144,7 +146,7 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
           <div className="agent-hero-row">
             <div className="agent-hero-photo">
               {agent.photo_url ? (
-                <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill priority sizes="180px" style={{ objectFit: "cover" }} />
+                <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={altText(agent.photo_alt, agent.name)} fill priority sizes="180px" style={{ objectFit: "cover" }} />
               ) : (
                 <span aria-hidden="true">{initials(agent.name)}</span>
               )}
@@ -257,7 +259,7 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
               <>
                 <h2>Dealer</h2>
                 <div className="agent-agency">
-                  <AgencyLogo name={agent.agency.name} logoUrl={agent.agency.logo_url ?? null} size={84} />
+                  <AgencyLogo name={agent.agency.name} logoUrl={agent.agency.logo_url ?? null} alt={agent.agency.logo_alt} size={84} />
                   <div>
                     <strong>{agent.agency.name}</strong>
                     <span>Property Dealer</span>
@@ -321,7 +323,7 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
             )}
           </div>
           <div className="agent-listings-aside">
-            <BannerSlot key={agent.slug} placement="listing_sidebar" limit={2} />
+            <BannerSlot key={agent.slug} placement="agent_sidebar" limit={2} />
           </div>
         </div>
       </div>

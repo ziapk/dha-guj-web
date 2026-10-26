@@ -2,10 +2,12 @@ import dayjs from "dayjs";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
+import { BannerSlot } from "@/components/banner-slot";
 import { DownloadIcon, MapIcon, PinIcon } from "@/components/icons";
 import { ShareLinks } from "@/components/share-links";
 import { MapViewer } from "@/components/society-maps/map-viewer";
 import { SocietyMapCard } from "@/components/society-maps/society-map-card";
+import { altText } from "@/lib/alt-text";
 import { getMapAreas } from "@/lib/plot-finder";
 import { mapsHref, resolveArea } from "@/lib/plot-finder-shared";
 import { fileSizeLabel, getSocietyMap, societyMapHref, societyMapLocation } from "@/lib/society-maps";
@@ -31,7 +33,7 @@ export async function generateMetadata({ params }: PageProps<"/map/[slug]">): Pr
     title,
     description,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: [{ url: map.image_url }] }),
+    openGraph: await openGraph({ title, description, url, images: [{ url: map.image_url, alt: altText(map.image_alt, map.title) }] }),
     twitter: { card: "summary_large_image", title, description },
   };
 }
@@ -125,7 +127,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/map/[slug]"
           </div>
         </header>
 
-        <MapViewer src={map.image_url} alt={map.title} />
+        <MapViewer src={map.image_url} alt={altText(map.image_alt, map.title)} />
 
         <div className="smap-info">
           <section>
@@ -145,6 +147,8 @@ export default async function SocietyMapPage({ params }: PageProps<"/map/[slug]"
             </dl>
           </aside>
         </div>
+
+        <BannerSlot key={map.slug} placement="maps_top" className="banner-page-top" />
 
         {result.related.length > 0 && (
           <section className="section smap-related" aria-labelledby="related-maps">

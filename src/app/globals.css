@@ -4077,6 +4077,15 @@ button.auth-close {
   margin-top: 28px;
 }
 
+/* A wide banner between sections of a list page; collapses when no banner runs. */
+.banner-page-top {
+  margin-top: 28px;
+}
+
+.banner-blog-top {
+  margin-bottom: 28px;
+}
+
 .banner {
   position: relative;
   overflow: hidden;
@@ -8683,6 +8692,15 @@ main:has(> .section-seo:last-child) + .site-footer {
   height: 30px;
   stroke-width: 1.6;
   color: var(--accent);
+}
+
+/* Contact card with the profile's banner ads below it. */
+.agency-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  align-self: start;
 }
 
 .agency-contact {

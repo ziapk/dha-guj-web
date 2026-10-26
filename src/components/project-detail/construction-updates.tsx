@@ -25,6 +25,8 @@ export type ConstructionUpdateCard = {
 export function ConstructionUpdates({ updates, viewAll }: { updates: ConstructionUpdateCard[]; viewAll: { text: string; url: string | null } | null }) {
   const [preview, setPreview] = useState<{ items: string[]; current: number; open: boolean }>({ items: [], current: 0, open: false });
   const allImages = [...new Set(updates.flatMap((update) => update.images))];
+  /** In the lightbox every picture of an update takes that update's alt text. */
+  const altBySrc = new Map(updates.flatMap((update) => update.images.map((src) => [src, update.alt] as const)).reverse());
 
   function open(items: string[]) {
     if (items.length > 0) {
@@ -78,7 +80,7 @@ export function ConstructionUpdates({ updates, viewAll }: { updates: Constructio
 
       {preview.items.length > 0 && (
         <Lightbox.PreviewGroup
-          items={preview.items}
+          items={preview.items.map((src) => ({ src, alt: altBySrc.get(src) ?? "Construction update" }))}
           preview={{
             open: preview.open,
             current: preview.current,

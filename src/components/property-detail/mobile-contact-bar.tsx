@@ -3,6 +3,7 @@
 import { PhoneOutlined, WhatsAppOutlined } from "@ant-design/icons";
 import { Avatar } from "antd";
 import { useEffect, useState } from "react";
+import { altText } from "@/lib/alt-text";
 import { sizedImage } from "@/lib/image";
 import { formatCompactPrice } from "@/lib/labels";
 import { whatsappNumber } from "@/lib/property";
@@ -63,7 +64,7 @@ export function MobileContactBar({ property }: { property: PublicProperty }) {
 
   return (
     <div className={`pd-mobile-bar${visible ? " is-visible" : ""}`} aria-hidden={!visible} inert={!visible}>
-      <Avatar size={40} className={contact.photo_url ? undefined : "avatar-accent"} src={sizedImage(contact.photo_url, "thumbnail") ?? undefined} alt={contact.name}>
+      <Avatar size={40} className={contact.photo_url ? undefined : "avatar-accent"} src={sizedImage(contact.photo_url, "thumbnail") ?? undefined} alt={altText(contact.photo_alt, contact.name)}>
         {contact.name.slice(0, 1).toUpperCase()}
       </Avatar>
       <div className="pd-mobile-bar-price">

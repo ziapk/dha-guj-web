@@ -24,7 +24,8 @@ export function PropertyCard({ property, priority = false, layout = "grid" }: { 
           {cover ? (
             <Image
               src={thumbnailUrl(cover)}
-              alt={property.title}
+              // The title is right below, so only a description written in the admin adds anything.
+              alt={cover.alt_text?.trim() ?? ""}
               fill
               priority={priority}
               sizes={isList ? "(max-width: 719px) 100vw, 340px" : "(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"}

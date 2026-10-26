@@ -7,17 +7,18 @@ import { CameraIcon, ChevronLeftIcon, ChevronRightIcon, HomeIcon } from "@/compo
 
 const MAX_DOTS = 8;
 
-/** A listing's photos with prev / next arrows and dots; the photo itself links to the listing. */
+/**
+ * A listing's photos with prev / next arrows and dots; the photo itself links to the listing. That link is hidden from
+ * screen readers (the card's title links to the same page), so the photos take alt="".
+ */
 export function ListingPhotoSlider({
   photos,
   href,
-  title,
   priority = false,
   children,
 }: {
   photos: string[];
   href: string;
-  title: string;
   /** Load the first photo eagerly: set it on the cards above the fold. */
   priority?: boolean;
   children?: React.ReactNode;
@@ -30,7 +31,7 @@ export function ListingPhotoSlider({
     <div className="listing-slider">
       <Link href={href} className="listing-slider-photo" tabIndex={-1} aria-hidden="true">
         {count > 0 ? (
-          <Image src={photos[index]} alt={index === 0 ? title : `${title}, photo ${index + 1}`} fill sizes="(max-width: 760px) 100vw, 360px" loading={priority && index === 0 ? "eager" : undefined} fetchPriority={priority && index === 0 ? "high" : undefined} style={{ objectFit: "cover" }} />
+          <Image src={photos[index]} alt="" fill sizes="(max-width: 760px) 100vw, 360px" loading={priority && index === 0 ? "eager" : undefined} fetchPriority={priority && index === 0 ? "high" : undefined} style={{ objectFit: "cover" }} />
         ) : (
           <HomeIcon className="placeholder-icon" />
         )}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { AgentProfileCard } from "@/components/agent-profile-card";
+import { BannerSlot } from "@/components/banner-slot";
 import { SectionHeading } from "@/components/home/section-heading";
 import { initials } from "@/components/home/agent-card";
 import { BuildingIcon, HomeIcon, ResetIcon, SearchIcon, ShieldCheckIcon, StarIcon, UserIcon, UsersIcon } from "@/components/icons";
@@ -198,6 +199,10 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
           </div>
         </section>
       )}
+
+      <div className="container">
+        <BannerSlot placement="agents_top" className="banner-page-top" />
+      </div>
 
       <section className="section" id="all-agents">
         <div className="container">

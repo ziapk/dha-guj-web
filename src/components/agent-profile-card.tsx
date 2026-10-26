@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ContactButtons, initials } from "@/components/home/agent-card";
 import { BriefcaseIcon, HandshakeIcon, KeyIcon, LayersIcon, PinIcon, ShieldCheckIcon, StarIcon, TagIcon } from "@/components/icons";
 import { agentHref } from "@/lib/agents";
+import { altText } from "@/lib/alt-text";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import type { PublicAgent } from "@/types/api";
@@ -30,7 +31,7 @@ export function AgentProfileCard({
   const dealsIn = agent.specialisation || agent.areas_of_expertise?.slice(0, 3).join(", ");
 
   const photo = agent.photo_url ? (
-    <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={agent.name} fill sizes="92px" style={{ objectFit: "cover" }} />
+    <Image src={sizedImage(agent.photo_url, "thumbnail")} alt={altText(agent.photo_alt, agent.name)} fill sizes="92px" style={{ objectFit: "cover" }} />
   ) : (
     <span aria-hidden="true">{initials(agent.name)}</span>
   );

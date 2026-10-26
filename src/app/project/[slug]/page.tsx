@@ -39,6 +39,7 @@ import { ProjectMobileBar } from "@/components/project-detail/mobile-contact-bar
 import { Rail } from "@/components/rail";
 import { SectionIcon } from "@/components/section-icon";
 import { ViewTracker } from "@/components/view-tracker";
+import { altText, logoAlt } from "@/lib/alt-text";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { developerHref } from "@/lib/developers";
 import { sizedImage } from "@/lib/image";
@@ -122,7 +123,7 @@ export async function generateMetadata({ params }: PageProps<"/project/[slug]">)
     title,
     description,
     alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: cover ? [{ url: mediumUrl(cover), alt: project.name }] : undefined }),
+    openGraph: await openGraph({ title, description, url, images: cover ? [{ url: mediumUrl(cover), alt: altText(cover.alt_text, project.name) }] : undefined }),
     twitter: { card: cover ? "summary_large_image" : "summary", title, description },
   };
 }
@@ -338,7 +339,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           label: null,
           caption: null,
           image: photo.thumbnail_url ?? photo.medium_url ?? photo.url,
-          alt: `Construction update ${index + 1}`,
+          alt: altText(photo.alt_text, `Construction update ${index + 1}`),
           featured: false,
           images: [photo.medium_url ?? photo.url],
         }))
@@ -416,9 +417,9 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
         <header className="pj-header">
           <div className="pj-logo">
             {logoUrl ? (
-              <Image src={logoUrl} alt={`${project.name} logo`} fill sizes="150px" style={{ objectFit: "contain" }} />
+              <Image src={logoUrl} alt={logoAlt(project.name, project.logo_url ? project.logo_alt : logo?.alt_text)} fill sizes="150px" style={{ objectFit: "contain" }} />
             ) : (
-              <AgencyLogo name={project.developer?.name ?? project.name} logoUrl={project.developer?.logo_url ?? null} size={64} />
+              <AgencyLogo name={project.developer?.name ?? project.name} logoUrl={project.developer?.logo_url ?? null} alt={project.developer?.logo_alt} size={64} />
             )}
           </div>
           <div className="pj-title">
@@ -833,7 +834,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           {(masterPlanImage || project.master_plan_html) && (
             <section className="pj-section pj-band pj-band-sky" aria-labelledby="pj-master-plan">
               <SectionHead id="pj-master-plan" eyebrow="Master Plan" title="Master" accent="Plan" sub={masterPlanImage ? "Zoom in to explore sectors, roads, parks and commercial zones." : undefined} />
-              {masterPlanImage && <MasterPlanViewer src={masterPlanImage.src} fullUrl={masterPlanImage.full} alt={`${project.name} master plan`} />}
+              {masterPlanImage && <MasterPlanViewer src={masterPlanImage.src} fullUrl={masterPlanImage.full} alt={altText(project.master_plan_image_url ? project.master_plan_image_alt : masterPlan?.alt_text, `${project.name} master plan`)} />}
               {project.master_plan_html && (
                 <div className="pj-plan-about">
                   <h3>
@@ -1093,7 +1094,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             <div className={`pj-location${locationMap ? " has-map" : ""}`}>
               {locationMap && (
                 <a className="pj-location-map" href={locationMap.url} target="_blank" rel="noopener noreferrer">
-                  <Image src={locationMap.medium_url ?? locationMap.url} alt={`${project.name} location map`} fill sizes="(max-width: 700px) 100vw, 420px" style={{ objectFit: "cover" }} />
+                  <Image src={locationMap.medium_url ?? locationMap.url} alt={altText(locationMap.alt_text, `${project.name} location map`)} fill sizes="(max-width: 700px) 100vw, 420px" style={{ objectFit: "cover" }} />
                 </a>
               )}
               <div>
@@ -1114,7 +1115,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
           <section className="pj-section pj-card" aria-labelledby="pj-developer">
             <SectionHead id="pj-developer" title="About the" accent="Developer" align="start" />
             <div className="pj-developer">
-              <AgencyLogo name={project.developer?.name ?? project.developer_name} logoUrl={project.developer?.logo_url ?? null} size={64} />
+              <AgencyLogo name={project.developer?.name ?? project.developer_name} logoUrl={project.developer?.logo_url ?? null} alt={project.developer?.logo_alt} size={64} />
               <div>
                 <strong>{project.developer_name}</strong>
                 {project.developer ? (
@@ -1187,7 +1188,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             <Link href={propertyHref(spotlight)} className="pd-spotlight">
               <div className="pd-spotlight-cover">
                 {spotlightCover ? (
-                  <Image src={thumbnailUrl(spotlightCover)} alt={spotlight.title} fill sizes="(max-width: 991px) 100vw, 360px" style={{ objectFit: "cover" }} />
+                  <Image src={thumbnailUrl(spotlightCover)} alt="" fill sizes="(max-width: 991px) 100vw, 360px" style={{ objectFit: "cover" }} />
                 ) : (
                   <HomeIcon className="placeholder-icon" />
                 )}
@@ -1212,7 +1213,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
                 {agency.cover_url ? (
                   <Image src={sizedImage(agency.cover_url, "medium")} alt="" fill sizes="360px" style={{ objectFit: "cover" }} />
                 ) : (
-                  <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={72} />
+                  <AgencyLogo name={agency.name} logoUrl={agency.logo_url} size={72} decorative />
                 )}
                 <span className="badge badge-featured">Featured</span>
               </Link>
@@ -1260,7 +1261,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
             </div>
           )}
 
-          <BannerSlot key={project.id} placement="listing_sidebar" />
+          <BannerSlot key={project.id} placement="project_sidebar" />
 
           <div className="pj-sticky">
             <div className="contact-card">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AgencyDirectoryCard } from "@/components/agency-directory-card";
+import { BannerSlot } from "@/components/banner-slot";
 import { heroStyle } from "@/components/home/hero";
 import { ArrowRightIcon, BuildingIcon, ChevronRightIcon, CrownIcon, HandshakeIcon, HomeIcon, PinIcon, SearchIcon, TrophyIcon, UsersIcon } from "@/components/icons";
 import { Rail } from "@/components/rail";
@@ -187,6 +188,10 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/dealers
           </div>
         </section>
       )}
+
+      <div className="container">
+        <BannerSlot placement="agents_top" className="banner-page-top" />
+      </div>
 
       <section className="section" id="all-agencies">
         <div className="container">

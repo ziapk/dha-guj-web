@@ -6,6 +6,7 @@ import { AgencyLogo } from "@/components/agency-card";
 import { VerifiedTick, developerFacts } from "@/components/developer-card";
 import { DeckSlider, type DeckCardState } from "@/components/home/deck-slider";
 import { BuildingIcon } from "@/components/icons";
+import { altText } from "@/lib/alt-text";
 import { developerHref } from "@/lib/developers";
 import { sizedImage } from "@/lib/image";
 import type { PublicDeveloper } from "@/types/api";
@@ -22,14 +23,14 @@ function FrontCard({ developer, state }: { developer: PublicDeveloper; state: De
   return (
     <article className={`project-hero-card is-${state}`} aria-hidden={leaving} inert={leaving}>
       {developer.card_image_url ? (
-        <Image src={sizedImage(developer.card_image_url, "medium")} alt="" fill priority sizes="(max-width: 1040px) 100vw, 620px" style={{ objectFit: "cover" }} />
+        <Image src={sizedImage(developer.card_image_url, "medium")} alt={altText(developer.card_image_alt, developer.name)} fill priority sizes="(max-width: 1040px) 100vw, 620px" style={{ objectFit: "cover" }} />
       ) : (
         <BuildingIcon className="placeholder-icon" />
       )}
       <span className="project-hero-badge">Featured Developer</span>
       <div className="project-hero-body">
         <div className="dl-deck-head">
-          <AgencyLogo name={developer.name} logoUrl={developer.logo_url} size={64} />
+          <AgencyLogo name={developer.name} logoUrl={developer.logo_url} alt={developer.logo_alt} size={64} />
           <div style={{ minWidth: 0 }}>
             <h3>
               {developer.name}

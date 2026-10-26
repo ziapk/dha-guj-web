@@ -32,6 +32,7 @@ import { Rail } from "@/components/rail";
 import { RecordRecentlyViewed } from "@/components/recently-viewed";
 import { ViewTracker } from "@/components/view-tracker";
 import { AmenityGroups } from "@/components/amenity-groups";
+import { altText } from "@/lib/alt-text";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import { JsonLd } from "@/components/json-ld";
@@ -124,7 +125,7 @@ export async function generateMetadata({ params }: PageProps<"/property/[listing
       title: seo.title,
       description,
       url,
-      images: cover ? [{ url: mediumUrl(cover), alt: property.title }] : undefined,
+      images: cover ? [{ url: mediumUrl(cover), alt: altText(cover.alt_text, property.title) }] : undefined,
     }),
     twitter: { card: cover ? "summary_large_image" : "summary", title: seo.title, description, images: cover ? [mediumUrl(cover)] : undefined },
   };
@@ -448,7 +449,7 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
             <Link href={propertyHref(spotlight)} className="pd-spotlight">
               <div className="pd-spotlight-cover">
                 {spotlightCover ? (
-                  <Image src={thumbnailUrl(spotlightCover)} alt={spotlight.title} fill sizes="(max-width: 991px) 100vw, 360px" style={{ objectFit: "cover" }} />
+                  <Image src={thumbnailUrl(spotlightCover)} alt="" fill sizes="(max-width: 991px) 100vw, 360px" style={{ objectFit: "cover" }} />
                 ) : (
                   <HomeIcon className="placeholder-icon" />
                 )}

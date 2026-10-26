@@ -41,7 +41,7 @@ export function BannerSlot({ placement, limit = 1, className }: { placement: Ban
             alt={banner.title}
             width={1200}
             height={300}
-            sizes={placement === "search_sidebar" || placement === "listing_sidebar" ? "(max-width: 1023px) 100vw, 340px" : "(max-width: 1240px) 100vw, 1200px"}
+            sizes={placement.endsWith("_sidebar") ? "(max-width: 1023px) 100vw, 340px" : "(max-width: 1240px) 100vw, 1200px"}
             unoptimized
           />
         );

@@ -3,6 +3,7 @@
 import { Image } from "antd";
 import { useState } from "react";
 import { CameraIcon } from "@/components/icons";
+import { altText } from "@/lib/alt-text";
 import { GALLERY_CATEGORY_LABELS } from "@/lib/developers";
 import { sizedImage } from "@/lib/image";
 import type { DeveloperGalleryItem, GalleryCategory } from "@/types/api";
@@ -11,7 +12,7 @@ import type { DeveloperGalleryItem, GalleryCategory } from "@/types/api";
 const VISIBLE = 4;
 
 function altOf(photo: DeveloperGalleryItem, name: string, index: number): string {
-  return photo.alt || photo.title || `${name} work photo ${index + 1}`;
+  return altText(photo.alt, photo.title || `${name} work photo ${index + 1}`);
 }
 
 /**

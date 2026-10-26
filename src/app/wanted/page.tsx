@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BannerSlot } from "@/components/banner-slot";
 import { KeyIcon, MegaphoneIcon } from "@/components/icons";
 import { WantedCard } from "@/components/wanted-card";
 import { publicApi } from "@/lib/api";
@@ -186,6 +187,7 @@ export default async function WantedPage({ searchParams }: PageProps<"/wanted">)
         </section>
 
         <aside className="results-aside">
+          <BannerSlot key={`side:${JSON.stringify(filters)}`} placement="wanted_sidebar" />
           <div className="aside-card tinted">
             <span className="aside-icon">
               <KeyIcon />

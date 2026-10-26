@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { initials } from "@/components/home/agent-card";
 import { ArrowRightIcon, CalendarIcon, CrownIcon, HandshakeIcon, HomeIcon, PhoneIcon, PinIcon, ShieldCheckIcon, StarIcon, WhatsAppIcon } from "@/components/icons";
+import { logoAlt } from "@/lib/alt-text";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
 import type { AgencyProfile } from "@/types/api";
@@ -50,7 +51,7 @@ export function AgencyDirectoryCard({ agency, fallbackWhatsapp, featured = false
       <div className="dealer-head">
         <Link href={href} className="dealer-logo" aria-label={`${agency.name} profile`}>
           {agency.logo_url ? (
-            <Image src={sizedImage(agency.logo_url, "thumbnail")} alt={`${agency.name} logo`} fill sizes="84px" style={{ objectFit: "contain" }} />
+            <Image src={sizedImage(agency.logo_url, "thumbnail")} alt={logoAlt(agency.name, agency.logo_alt)} fill sizes="84px" style={{ objectFit: "contain" }} />
           ) : (
             <span aria-hidden="true">{initials(agency.name)}</span>
           )}

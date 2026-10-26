@@ -14,13 +14,13 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-/** An agency as a compact row: the logo on the left, the name and area beside it. */
+/** An agency as a compact row: the logo on the left, the name and area beside it (so the logo takes alt=""). */
 export function AgencyLogoCard({ agency }: { agency: AgencyProfile }) {
   return (
     <Link href={`/dealer/${agency.slug}`} className="agency-tile">
       <span className="agency-tile-plate">
         {agency.logo_url ? (
-          <Image src={sizedImage(agency.logo_url, "thumbnail")} alt={`${agency.name} logo`} width={120} height={120} className="agency-tile-logo" />
+          <Image src={sizedImage(agency.logo_url, "thumbnail")} alt="" width={120} height={120} className="agency-tile-logo" />
         ) : (
           <span className="agency-tile-initials" aria-hidden="true">
             {initials(agency.name)}

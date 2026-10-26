@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { BannerSlot } from "@/components/banner-slot";
 import { ArrowRightIcon, CalendarIcon, ChevronDownIcon, ChevronRightIcon, HomeIcon, PlusIcon } from "@/components/icons";
 import { longDate, PostCard } from "@/components/post-card";
 import { getPostCategories, getPosts, postHref } from "@/lib/blog";
@@ -126,6 +127,7 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
       </header>
 
       <div className="container blog-index-body">
+        <BannerSlot key={named?.slug ?? "all"} placement="blog_top" className="banner-blog-top" />
         {!first ? (
           <div className="empty-results">
             <div style={{ fontSize: 44 }}>📰</div>

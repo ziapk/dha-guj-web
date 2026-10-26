@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BannerSlot } from "@/components/banner-slot";
 import { ArrowRightIcon, MapIcon, PlusIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { SectionIcon } from "@/components/section-icon";
@@ -182,6 +183,10 @@ export default async function SocietyMapsPage({ searchParams }: PageProps<"/dha-
           </div>
         </section>
       )}
+
+      <div className="container">
+        <BannerSlot placement="maps_top" className="banner-page-top" />
+      </div>
 
       <section className="section smaps-collection" id="maps">
         <div className="container">

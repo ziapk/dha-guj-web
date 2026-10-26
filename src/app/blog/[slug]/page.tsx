@@ -273,7 +273,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
           {spotlight && <PropertyCard property={spotlight} />}
           {agency && <AgencyCard agency={agency} />}
           {project && <ProjectCard project={project} />}
-          <BannerSlot placement="listing_sidebar" limit={2} />
+          <BannerSlot key={post.slug} placement="blog_sidebar" limit={2} />
         </aside>
       </div>
 
