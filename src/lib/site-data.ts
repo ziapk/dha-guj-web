@@ -14,6 +14,7 @@ export const EMPTY_SETTINGS: SiteSettings = {
   general: { site_name: null, tagline: null, logo_url: null },
   contact: { email: null, phone: null, whatsapp: null, address: null, office_hours: null },
   social: { facebook: null, instagram: null, youtube: null, x: null, linkedin: null, tiktok: null },
+  seo: { og_image_url: null, og_image_alt: null },
 };
 
 /** Top-level routes of this app. A CMS page with one of these slugs would be hidden by the route, so it is never linked. */
@@ -86,7 +87,7 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
       return values as SiteSettings[G];
     };
 
-    return { general: pick("general"), contact: pick("contact"), social: pick("social") };
+    return { general: pick("general"), contact: pick("contact"), social: pick("social"), seo: pick("seo") };
   } catch {
     return EMPTY_SETTINGS;
   }

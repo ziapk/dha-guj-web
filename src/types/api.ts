@@ -281,6 +281,8 @@ export type SiteSettings = {
   general: { site_name: string | null; tagline: string | null; logo_url: string | null };
   contact: { email: string | null; phone: string | null; whatsapp: string | null; address: string | null; office_hours: string | null };
   social: { facebook: string | null; instagram: string | null; youtube: string | null; x: string | null; linkedin: string | null; tiktok: string | null };
+  /** Default share (Open Graph) image for pages without one of their own. */
+  seo: { og_image_url: string | null; og_image_alt: string | null };
 };
 
 /** GET /public/settings → listing_page: which steps the listing page breadcrumb shows. */

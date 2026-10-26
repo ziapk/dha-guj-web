@@ -6,7 +6,7 @@ import { GOOGLE_SITE_VERIFICATION, GoogleTagManagerNoscript, GoogleTags } from "
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ScrollToTop } from "@/components/scroll-to-top";
-import { robots } from "@/lib/seo";
+import { defaultOgImages, robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getCmsPages, getSiteSettings, siteNameOf } from "@/lib/site-data";
 import { Providers } from "./providers";
@@ -15,6 +15,7 @@ import "./globals.css";
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   const siteName = siteNameOf(settings);
+  const images = defaultOgImages(settings);
   const description = "Search houses, flats, plots and commercial property for sale and rent in DHA Gujranwala, Lahore, Islamabad and Karachi.";
 
   return {
@@ -24,8 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: siteName,
     robots: robots(),
     verification: { google: GOOGLE_SITE_VERIFICATION },
-    openGraph: { siteName, type: "website", locale: "en_PK", description },
-    twitter: { card: "summary" },
+    openGraph: { siteName, type: "website", locale: "en_PK", description, images },
+    twitter: { card: images ? "summary_large_image" : "summary" },
   };
 }
 

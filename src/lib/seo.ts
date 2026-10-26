@@ -1,18 +1,27 @@
 /** Metadata helpers shared by pages. Server-only. */
 
 import type { Metadata } from "next";
+import { sizedImage } from "@/lib/image";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
+import type { SiteSettings } from "@/types/api";
 
 type OpenGraph = NonNullable<Metadata["openGraph"]>;
 
+/** The default share image from SEO settings (its 1280px copy), or undefined when none is set. */
+export function defaultOgImages(settings: SiteSettings): OpenGraph["images"] {
+  const url = settings.seo.og_image_url;
+
+  return url ? [{ url: sizedImage(url, "medium"), alt: settings.seo.og_image_alt ?? siteNameOf(settings) }] : undefined;
+}
+
 /**
  * A page's openGraph replaces the layout's instead of merging with it, so every page builds it here
- * to keep the site name, locale and type.
+ * to keep the site name, locale and type, and the default share image when the page has none.
  */
 export async function openGraph(values: OpenGraph & { url: string }): Promise<OpenGraph> {
   const settings = await getSiteSettings();
 
-  return { siteName: siteNameOf(settings), locale: "en_PK", type: "website", ...values } as OpenGraph;
+  return { siteName: siteNameOf(settings), locale: "en_PK", type: "website", ...values, images: values.images ?? defaultOgImages(settings) } as OpenGraph;
 }
 
 /** Plain text for meta descriptions, at most `max` characters. */
