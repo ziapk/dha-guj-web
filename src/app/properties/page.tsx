@@ -12,7 +12,7 @@ import { ValidationError, publicApi } from "@/lib/api";
 import { pickFilters, searchHeading } from "@/lib/property";
 import { PAGE_META } from "@/lib/page-meta";
 import { PURPOSE_PAGES, purposeHref } from "@/lib/purpose-search";
-import { openGraph, robots } from "@/lib/seo";
+import { openGraph, queryRobots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PropertyType, PublicProperty, Society } from "@/types/api";
 
@@ -20,7 +20,8 @@ import type { City, Collection, Paginated, PropertyType, PublicProperty, Society
 const LANDING_FILTERS = ["purpose", "category", "property_type_id", "city_id", "society_id", "page"] as const;
 
 export async function generateMetadata({ searchParams }: PageProps<"/properties">): Promise<Metadata> {
-  const filters = pickFilters(await searchParams);
+  const params = await searchParams;
+  const filters = pickFilters(params);
   const [cities, propertyTypes] = await Promise.all([
     publicApi<Collection<City>>("cities", { revalidate: 3600 }).then((response) => response.data).catch(() => []),
     publicApi<Collection<PropertyType>>("property-types", { revalidate: 3600 }).then((response) => response.data).catch(() => []),
@@ -44,14 +45,13 @@ export async function generateMetadata({ searchParams }: PageProps<"/properties"
 
   const canonical = canonicalQuery.toString() ? `/properties?${canonicalQuery.toString()}` : "/properties";
   // Keyword, price, area, sort and other refinements create near-duplicate pages; let crawlers follow them without indexing.
-  const refined = Object.keys(filters).some((key) => !(LANDING_FILTERS as readonly string[]).includes(key));
 
   return {
     title: plain ? { absolute: title } : title,
     description,
     alternates: { canonical },
     openGraph: await openGraph({ title, description, url: canonical }),
-    robots: robots(refined ? { index: false, follow: true } : undefined),
+    robots: queryRobots(params, LANDING_FILTERS),
   };
 }
 

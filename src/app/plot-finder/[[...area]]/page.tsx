@@ -4,7 +4,7 @@ import { PlotFinder } from "@/components/plot-finder/plot-finder";
 import { getMapAreas, getMapConfig } from "@/lib/plot-finder";
 import { areaTitle, mapsHref, resolveArea } from "@/lib/plot-finder-shared";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, openGraph } from "@/lib/seo";
+import { jsonLd, openGraph, queryRobots } from "@/lib/seo";
 import { portalUrl, siteUrl } from "@/lib/site";
 import { getSiteSettings } from "@/lib/site-data";
 import type { MapAreas } from "@/types/api";
@@ -19,7 +19,7 @@ function plotParam(value: string | string[] | undefined): number | null {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-export async function generateMetadata({ params }: PageProps<"/plot-finder/[[...area]]">): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps<"/plot-finder/[[...area]]">): Promise<Metadata> {
   const { area = [] } = await params;
   const areas = (await getMapAreas()) ?? EMPTY_AREAS;
   const resolved = resolveArea(areas, area);
@@ -39,6 +39,7 @@ export async function generateMetadata({ params }: PageProps<"/plot-finder/[[...
     alternates: { canonical: url },
     openGraph: await openGraph({ title, description, url }),
     twitter: { card: "summary", title, description },
+    robots: queryRobots(await searchParams),
   };
 }
 

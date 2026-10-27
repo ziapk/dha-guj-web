@@ -13,8 +13,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       disallow: [
-        // URLs with query parameters (filters, search, pagination).
-        "/*?",
         // Account, sign-in and internal API routes have nothing to index.
         "/api/",
         "/account",

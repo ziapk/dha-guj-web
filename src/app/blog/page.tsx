@@ -7,7 +7,7 @@ import { longDate, PostCard } from "@/components/post-card";
 import { getPostCategories, getPosts, postHref } from "@/lib/blog";
 import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
-import { openGraph } from "@/lib/seo";
+import { openGraph, queryRobots } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
 export const revalidate = 300;
@@ -53,6 +53,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/blog">): Pr
     alternates: { canonical: url },
     openGraph: await openGraph({ title, description, url }),
     twitter: { card: "summary", title, description },
+    robots: queryRobots(params, ["category", "page"]),
   };
 }
 

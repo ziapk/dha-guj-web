@@ -11,7 +11,7 @@ import { getAgents } from "@/lib/agents";
 import { publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
-import { openGraph, robots } from "@/lib/seo";
+import { openGraph, queryRobots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 import type { Paginated } from "@/types/api";
 
@@ -34,15 +34,14 @@ function pageNumber(value: string | string[] | undefined): number {
 
 export async function generateMetadata({ searchParams }: PageProps<"/agents">): Promise<Metadata> {
   const params = await searchParams;
-  // Search results and "load more" pages are copies of the main list, so keep them out of the index.
-  const filtered = Boolean(pick(params.name) || pick(params.agency) || pageNumber(params.page) > 1);
 
   return {
     title: { absolute: TITLE },
     description: DESCRIPTION,
     alternates: { canonical: "/agents" },
     openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/agents" }),
-    robots: robots(filtered ? { index: false, follow: true } : undefined),
+    // Search results and "load more" pages are copies of the main list, so keep them out of the index.
+    robots: queryRobots(params),
   };
 }
 

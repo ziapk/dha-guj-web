@@ -9,7 +9,7 @@ import { SearchSuggest } from "@/components/search-suggest";
 import { publicApi } from "@/lib/api";
 import { CONSTRUCTION_STATUS_LABELS } from "@/lib/labels";
 import { CONSTRUCTION_STATUSES, projectHref, projectLocationOf, projectPhotosOf } from "@/lib/project";
-import { openGraph, robots } from "@/lib/seo";
+import { openGraph, queryRobots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { DeveloperDirectory } from "@/lib/developers";
 import type { City, Collection, Paginated, PublicProject, Sector, Society } from "@/types/api";
@@ -159,16 +159,15 @@ function pickFilters(params: Record<string, string | string[] | undefined>): Fil
 }
 
 export async function generateMetadata({ searchParams }: PageProps<"/projects">): Promise<Metadata> {
-  const filters = pickFilters(await searchParams);
-  // Filtered and later pages are thin variations of the main list.
-  const filtered = Object.keys(filters).length > 0;
+  const params = await searchParams;
 
   return {
     title: TITLE,
     description: DESCRIPTION,
     alternates: { canonical: "/projects" },
     openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/projects" }),
-    robots: robots(filtered ? { index: false, follow: true } : undefined),
+    // Filtered and later pages are thin variations of the main list.
+    robots: queryRobots(params),
   };
 }
 

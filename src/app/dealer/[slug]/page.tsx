@@ -32,7 +32,7 @@ import { altText, logoAlt } from "@/lib/alt-text";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { jsonLd, metaText, openGraph, queryRobots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import type { AgencyProfile, Paginated, PublicProperty, Resource } from "@/types/api";
 
@@ -78,7 +78,7 @@ const getAgency = cache(async (slug: string): Promise<AgencyProfile | null> => {
   }
 });
 
-export async function generateMetadata({ params }: PageProps<"/dealer/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps<"/dealer/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const agency = await getAgency(slug);
 
@@ -97,6 +97,7 @@ export async function generateMetadata({ params }: PageProps<"/dealer/[slug]">):
     alternates: { canonical: url },
     openGraph: await openGraph({ title, description, url, images: agency.logo_url ? [{ url: agency.logo_url, alt: logoAlt(agency.name, agency.logo_alt) }] : undefined }),
     twitter: { card: "summary", title, description },
+    robots: queryRobots(await searchParams),
   };
 }
 

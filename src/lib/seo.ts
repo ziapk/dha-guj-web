@@ -66,6 +66,22 @@ const NOINDEX_RULE: Metadata["robots"] = {
   googleBot: { index: false, follow: false, noimageindex: true },
 };
 
+/** Ad and analytics tags: they never change what a page shows, so a URL carrying them is not a filtered copy. */
+const TRACKING_PARAM = /^(utm_[a-z_]+|gclid|gbraid|wbraid|dclid|fbclid|msclkid|ttclid|twclid|li_fat_id|mc_cid|mc_eid|_ga|_gl)$/i;
+
+/**
+ * robots for a page that reads query parameters: a URL with any parameter (a filter, search, sort or page number)
+ * is a copy of the page, so search engines skip it but still follow its links. `indexable` names the parameters that
+ * make a landing page of their own, whose canonical URL keeps them. Ad and analytics tags and empty values are ignored.
+ */
+export function queryRobots(params: Record<string, string | string[] | undefined>, indexable: readonly string[] = []): Metadata["robots"] {
+  const filtered = Object.entries(params).some(
+    ([key, value]) => !TRACKING_PARAM.test(key) && !indexable.includes(key) && [value].flat().some((item) => item !== undefined && item.trim() !== ""),
+  );
+
+  return robots(filtered ? { index: false, follow: true } : undefined);
+}
+
 /**
  * A page's `robots` replaces the layout's instead of merging with it — passing `undefined`
  * clears it too — so every page that sets `robots` builds it here to keep staging's noindex.

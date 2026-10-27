@@ -10,7 +10,7 @@ import { getMapsPage, MAPS_SLUG } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { PAGE_META } from "@/lib/page-meta";
-import { metaText, openGraph, shareImages } from "@/lib/seo";
+import { metaText, openGraph, queryRobots, shareImages } from "@/lib/seo";
 import { getSocietyMaps, isSocietyMapCategory } from "@/lib/society-maps";
 import type { SectionHeading } from "@/types/api";
 
@@ -79,13 +79,13 @@ function HeadingText({ heading, fallback }: { heading: SectionHeading; fallback:
 }
 
 export async function generateMetadata({ searchParams }: PageProps<"/dha-gujranwala-maps">): Promise<Metadata> {
-  const filters = filtersOf(await searchParams);
+  const query = await searchParams;
+  const filters = filtersOf(query);
   const [result, { page, sections }] = await Promise.all([getSocietyMaps(1, filters), getMapsPage()]);
   const category = result?.filters.categories.find((item) => item.value === filters.category);
   // The admin's SEO title is a full title, like the spec's default, so the layout's "| site name" is not added to it.
   const title = category ? `DHA Gujranwala ${category.label}s` : (page?.meta_title ?? PAGE_META.maps.title);
   const description = metaText(page?.meta_description ?? sections.hero.subtitle ?? DESCRIPTION);
-  const filtered = Boolean(filters.society || filters.search);
   const image = sections.hero.image_url ?? sections.about.image_url;
 
   return {
@@ -93,8 +93,8 @@ export async function generateMetadata({ searchParams }: PageProps<"/dha-gujranw
     description,
     alternates: { canonical: filters.category ? `/dha-gujranwala-maps?category=${filters.category}` : "/dha-gujranwala-maps" },
     openGraph: await openGraph({ title, description, url: "/dha-gujranwala-maps", images: shareImages(page ?? {}, title, image ? { url: image } : null) }),
-    // Searches and society filters are thin copies of the list.
-    robots: filtered ? { index: false, follow: true } : undefined,
+    // Category pages are landing pages of their own; searches and society filters are thin copies of the list.
+    robots: queryRobots(query, ["category"]),
   };
 }
 

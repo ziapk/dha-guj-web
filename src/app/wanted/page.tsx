@@ -4,7 +4,7 @@ import { BannerSlot } from "@/components/banner-slot";
 import { KeyIcon, MegaphoneIcon } from "@/components/icons";
 import { WantedCard } from "@/components/wanted-card";
 import { publicApi } from "@/lib/api";
-import { openGraph, robots } from "@/lib/seo";
+import { openGraph, queryRobots } from "@/lib/seo";
 import { PORTAL_WANTED_PATH, portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PropertyType, Society, WantedPost } from "@/types/api";
 
@@ -36,16 +36,15 @@ function pickFilters(params: Record<string, string | string[] | undefined>): Fil
 }
 
 export async function generateMetadata({ searchParams }: PageProps<"/wanted">): Promise<Metadata> {
-  const filters = pickFilters(await searchParams);
-  // Filtered and later pages are thin variations of the main list.
-  const filtered = Object.keys(filters).length > 0;
+  const params = await searchParams;
 
   return {
     title: TITLE,
     description: DESCRIPTION,
     alternates: { canonical: "/wanted" },
     openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/wanted" }),
-    robots: robots(filtered ? { index: false, follow: true } : undefined),
+    // Filtered and later pages are thin variations of the main list.
+    robots: queryRobots(params),
   };
 }
 

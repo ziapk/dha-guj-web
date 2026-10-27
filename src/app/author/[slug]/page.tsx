@@ -19,7 +19,7 @@ import {
 } from "@/components/icons";
 import { authorInitials, authorSocials, getAuthor, getAuthors } from "@/lib/authors";
 import { sizedImage } from "@/lib/image";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { jsonLd, metaText, openGraph, queryRobots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
@@ -51,7 +51,7 @@ function splitName(name: string): [string, string] {
   return parts.length > 1 ? [parts.slice(0, -1).join(" "), parts.at(-1) ?? ""] : ["", name];
 }
 
-export async function generateMetadata({ params }: PageProps<"/author/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps<"/author/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const result = await getAuthor(slug);
 
@@ -77,6 +77,7 @@ export async function generateMetadata({ params }: PageProps<"/author/[slug]">):
       images: image ? [{ url: image }] : undefined,
     }),
     twitter: { card: image ? "summary_large_image" : "summary", title, description },
+    robots: queryRobots(await searchParams),
   };
 }
 

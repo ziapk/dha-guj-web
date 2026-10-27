@@ -13,7 +13,7 @@ import { searchHeading } from "@/lib/property";
 import { PURPOSE_PAGES, PURPOSE_PAGE_SIZE, purposeFilters, purposeHref, sectorOptions } from "@/lib/purpose-search";
 import { PAGE_META } from "@/lib/page-meta";
 import { searchPageChips } from "@/lib/search-pages";
-import { openGraph, robots } from "@/lib/seo";
+import { openGraph, queryRobots } from "@/lib/seo";
 import type { AgencyProfile, Block, Collection, HomeData, Paginated, PropertyPurpose, PropertyType, PublicProperty, Resource, SearchPage, Sector } from "@/types/api";
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -31,7 +31,8 @@ async function propertyTypesList(): Promise<PropertyType[]> {
 
 export async function purposeMetadata(purpose: PropertyPurpose, searchParams: Promise<SearchParams>): Promise<Metadata> {
   const page = PURPOSE_PAGES[purpose];
-  const filters = purposeFilters(await searchParams);
+  const query = await searchParams;
+  const filters = purposeFilters(query);
   const heading = searchHeading({ ...filters, purpose }, [], await propertyTypesList());
   // The unfiltered page uses the SEO spec's wording; filtered landing pages describe what they list.
   const plain = Object.keys(filters).length === 0;
@@ -40,14 +41,13 @@ export async function purposeMetadata(purpose: PropertyPurpose, searchParams: Pr
     ? PAGE_META[purpose].description
     : `Browse verified property ${page.phrase} in ${PLACE}: houses, plots and commercial units with photos, prices and direct Call and WhatsApp contact.`;
   const canonical = purposeHref(page.path, Object.fromEntries(Object.entries(filters).filter(([key]) => LANDING_FILTERS.includes(key))));
-  const refined = Object.keys(filters).some((key) => !LANDING_FILTERS.includes(key));
 
   return {
     title: plain ? { absolute: title } : title,
     description,
     alternates: { canonical },
     openGraph: await openGraph({ title, description, url: canonical }),
-    robots: robots(refined ? { index: false, follow: true } : undefined),
+    robots: queryRobots(query, LANDING_FILTERS),
   };
 }
 
