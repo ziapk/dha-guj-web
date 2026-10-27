@@ -4039,6 +4039,30 @@ button.auth-close {
   font-weight: 700;
 }
 
+.prose-wide {
+  max-width: none;
+}
+
+/* Tables wrapped by the CMS page: the box scrolls, so the table itself can fill the width. */
+.prose-table-scroll {
+  margin: 0 0 18px;
+  overflow-x: auto;
+}
+
+.prose .prose-table-scroll > table {
+  display: table;
+  width: 100%;
+  margin: 0;
+}
+
+.prose .prose-table-scroll th {
+  white-space: nowrap;
+}
+
+.prose .prose-table-scroll tbody tr:nth-child(even) {
+  background: var(--app-surface-2);
+}
+
 /* Images with captions and video embeds from the Admin Portal's visual editor. */
 .prose figure {
   display: table;
@@ -13530,6 +13554,15 @@ body .ant-image-preview .ant-image-preview-mask {
 
 .blog-detail-aside .agency-card {
   height: auto;
+}
+
+/* No featured cards and no running ad: drop the empty sidebar so the article takes the full width. */
+.blog-detail-aside:empty {
+  display: none;
+}
+
+.blog-detail-layout:has(> .blog-detail-aside:empty) {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 @media (max-width: 1023px) {

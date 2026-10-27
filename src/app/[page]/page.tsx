@@ -17,6 +17,11 @@ import { cmsPageHref, getCmsPage, getCmsPages, getSiteSettings, hasContactDetail
 
 export const revalidate = 300;
 
+/** Wraps each table in its own scroll box, so a wide table fills the column and scrolls sideways only when it must. */
+function withScrollableTables(html: string): string {
+  return html.replace(/<table\b/gi, '<div class="prose-table-scroll"><table').replace(/<\/table>/gi, "</table></div>");
+}
+
 /** Pre-render the published pages; any page published later renders on first visit. Empty when the API is unavailable at build time. */
 export async function generateStaticParams(): Promise<{ page: string }[]> {
   const pages = await getCmsPages();
@@ -60,6 +65,7 @@ export default async function CmsPageView({ params }: PageProps<"/[page]">) {
   const isContact = page.slug === "contact";
   const showContact = isContact && hasContactDetails(settings);
   const hasSocial = Object.values(settings.social).some(Boolean);
+  const hasTables = /<table\b/i.test(page.content_html);
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -100,7 +106,8 @@ export default async function CmsPageView({ params }: PageProps<"/[page]">) {
 
       <div className={`cms-layout${showContact || (isContact && hasSocial) ? " has-aside" : ""}`}>
         {/* content_html is sanitised by the API (Markdown rendered with unsafe HTML stripped). */}
-        <article className="prose" dangerouslySetInnerHTML={{ __html: page.content_html }} />
+        {/* Pages with tables (e.g. rate lists) use the full width; text-only pages keep a readable line length. */}
+        <article className={`prose${hasTables ? " prose-wide" : ""}`} dangerouslySetInnerHTML={{ __html: withScrollableTables(page.content_html) }} />
 
         {isContact && (showContact || hasSocial) && (
           <aside className="cms-aside" aria-label="Contact details">
