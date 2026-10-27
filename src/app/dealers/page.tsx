@@ -11,6 +11,8 @@ import { PAGE_META } from "@/lib/page-meta";
 import { pageMetadata, queryRobots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 import type { AgencyDirectoryStats, AgencyProfile, City, Collection, Paginated } from "@/types/api";
+import { collectionPageSchemas } from "@/lib/schema";
+import { JsonLd } from "@/components/json-ld";
 
 const { title: TITLE, description: DESCRIPTION } = PAGE_META.dealers;
 const PER_PAGE = 12;
@@ -94,6 +96,16 @@ export default async function AgenciesPage({ searchParams }: PageProps<"/dealers
 
   return (
     <>
+      <JsonLd
+        data={collectionPageSchemas({
+          path: pageHref(page),
+          name: TITLE,
+          description: DESCRIPTION,
+          breadcrumb: [{ name: "Dealers", path: "/dealers" }],
+          items: agencies.map((agency) => ({ url: `/dealer/${agency.slug}`, name: agency.name, image: agency.logo_url })),
+          search: filtered,
+        })}
+      />
       <section className="dealers-hero">
         <div className="dealers-hero-image" style={heroStyle(null)} aria-hidden="true" />
         <div className="container dealers-hero-body">

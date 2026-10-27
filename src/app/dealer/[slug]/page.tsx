@@ -32,9 +32,11 @@ import { altText, logoAlt } from "@/lib/alt-text";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
-import { adminShareImage, jsonLd, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
+import { adminShareImage, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
 import type { AgencyProfile, Paginated, PublicProperty, Resource } from "@/types/api";
+import { ref, schemaId, schemaText, webPageSchemas } from "@/lib/schema";
+import { dealerSchema, propertyListSchema } from "@/lib/schema-entities";
+import { JsonLd } from "@/components/json-ld";
 
 const LISTINGS_SHOWN = 12;
 
@@ -137,28 +139,26 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/d
     { icon: <ShieldCheckIcon />, label: "Service Areas", value: agency.service_areas ?? agency.city?.name ?? null },
   ].filter((fact) => fact.value);
 
-  const agencyUrl = `${siteUrl()}/dealer/${agency.slug}`;
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": ["RealEstateAgent", "Organization"],
-    "@id": `${agencyUrl}#agency`,
-    name: agency.name,
-    url: agencyUrl,
-    logo: agency.logo_url ?? undefined,
-    image: agency.cover_url ?? agency.logo_url ?? undefined,
-    description: agency.about ?? undefined,
-    telephone: agency.phone ?? undefined,
-    email: agency.email ?? undefined,
-    foundingDate: agency.established_year ? String(agency.established_year) : undefined,
-    sameAs: [agency.website, ...socials.map((social) => social.href)].filter(Boolean),
-    areaServed: agency.service_areas ?? (agency.city ? { "@type": "City", name: agency.city.name } : undefined),
-    address: location ? { "@type": "PostalAddress", streetAddress: agency.address ?? undefined, addressLocality: agency.city?.name, addressCountry: "PK" } : undefined,
-    employee: agents.length > 0 ? agents.map((agent) => ({ "@type": "Person", name: agent.name, jobTitle: agent.designation ?? undefined })) : undefined,
-  };
+  const structuredData = [
+    ...webPageSchemas({
+      path: pageUrl,
+      type: "ProfilePage",
+      name: agency.name,
+      description: agency.about ? schemaText(agency.about, 300) : null,
+      breadcrumb: [
+        { name: "Dealers", path: "/dealers" },
+        { name: agency.name, path: pageUrl },
+      ],
+      mainEntity: ref(schemaId.dealer(agency.slug)),
+      extra: { dateCreated: agency.created_at },
+    }),
+    dealerSchema(agency),
+    listings ? propertyListSchema(pageUrl, listings.data, `Properties listed by ${agency.name}`) : null,
+  ];
 
   return (
     <div className="agency-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
+      <JsonLd data={structuredData} />
 
       <div className="container">
         <nav className="breadcrumbs" aria-label="Breadcrumb">

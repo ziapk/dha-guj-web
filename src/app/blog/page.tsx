@@ -9,6 +9,8 @@ import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
 import { pageMetadata, queryRobots } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
+import { collectionPageSchemas } from "@/lib/schema";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 300;
 
@@ -85,6 +87,15 @@ export default async function BlogPage({ searchParams }: PageProps<"/blog">) {
 
   return (
     <div className="blog-index">
+      <JsonLd
+        data={collectionPageSchemas({
+          path: pageHref(page),
+          name: named ? `${named.name} articles` : PAGE_META.blog.title,
+          description: named?.description ?? PAGE_META.blog.description,
+          breadcrumb: [{ name: "Blog", path: "/blog" }, ...(named ? [{ name: named.name, path: pageHref(1) }] : [])],
+          items: posts.map((post) => ({ url: postHref(post.slug), name: post.title, image: post.cover_image_url })),
+        })}
+      />
       <header className="blog-hero">
         {featured?.cover_image_url && (
           <div className="blog-hero-art" aria-hidden="true">

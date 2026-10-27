@@ -11,8 +11,10 @@ import { altText } from "@/lib/alt-text";
 import { getMapAreas } from "@/lib/plot-finder";
 import { mapsHref, resolveArea } from "@/lib/plot-finder-shared";
 import { fileSizeLabel, getSocietyMap, societyMapHref, societyMapLocation } from "@/lib/society-maps";
-import { adminShareImage, jsonLd, notFoundMetadata, pageMetadata } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
+import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
+import { absoluteUrl, ref, webPageSchemas } from "@/lib/schema";
+import { societyMapSchema } from "@/lib/schema-entities";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 300;
 
@@ -52,7 +54,6 @@ export default async function SocietyMapPage({ params }: PageProps<"/map/[slug]"
   }
 
   const map = result.data;
-  const url = `${siteUrl()}${societyMapHref(map.slug)}`;
   const location = societyMapLocation(map);
   const size = fileSizeLabel(map.download_size);
   const updated = map.updated_at ?? map.published_at;
@@ -66,31 +67,26 @@ export default async function SocietyMapPage({ params }: PageProps<"/map/[slug]"
     { label: "Last updated", value: updated ? dayjs(updated).format("MMMM D, YYYY") : null },
   ].filter((item) => item.value);
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Map",
-    name: map.title,
-    url,
-    image: map.image_url,
-    description: map.description_text ?? undefined,
-    dateModified: updated ?? undefined,
-    contentLocation: location ? { "@type": "Place", name: location } : undefined,
-  };
-
-  const breadcrumbs = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl() },
-      { "@type": "ListItem", position: 2, name: "Society Maps", item: `${siteUrl()}/maps` },
-      { "@type": "ListItem", position: 3, name: map.title, item: url },
-    ],
-  };
+  const mapPath = societyMapHref(map.slug);
+  const structuredData = [
+    ...webPageSchemas({
+      path: mapPath,
+      name: map.meta_title ?? map.title,
+      description: map.meta_description ?? map.description_text,
+      breadcrumb: [
+        { name: "Society Maps", path: "/dha-gujranwala-maps" },
+        { name: map.title, path: mapPath },
+      ],
+      mainEntity: ref(`${absoluteUrl(mapPath)}#map`),
+      datePublished: map.published_at,
+      dateModified: updated,
+    }),
+    societyMapSchema(map),
+  ];
 
   return (
     <div className="smap-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
+      <JsonLd data={structuredData} />
 
       <div className="container">
         <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -130,7 +126,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/map/[slug]"
           <section>
             <h2>About this map</h2>
             {map.description ? <div className="smap-description prose" dangerouslySetInnerHTML={{ __html: map.description }} /> : <p className="smap-description">View {map.title} in full size above, or download it to keep a copy.</p>}
-            <ShareLinks url={url} title={map.title} />
+            <ShareLinks url={absoluteUrl(mapPath)} title={map.title} />
           </section>
           <aside className="aside-card">
             <h2>Map details</h2>

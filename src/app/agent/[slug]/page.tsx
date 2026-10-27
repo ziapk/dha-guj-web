@@ -6,15 +6,17 @@ import { AgencyLogo } from "@/components/agency-card";
 import { BannerSlot } from "@/components/banner-slot";
 import { ArrowRightIcon, BriefcaseIcon, HandshakeIcon, HomeIcon, KeyIcon, MailIcon, PhoneIcon, PinIcon, ShieldCheckIcon, WhatsAppIcon } from "@/components/icons";
 import { ListingRowCard, type ListingOwner } from "@/components/listing-row-card";
-import { agentSocials, getAgent, getAgents } from "@/lib/agents";
+import { agentHref, agentSocials, getAgent, getAgents } from "@/lib/agents";
 import { altText } from "@/lib/alt-text";
 import { publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
-import { adminShareImage, jsonLd, notFoundMetadata, pageMetadata } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
+import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import type { Paginated, PublicProperty } from "@/types/api";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
+import { ref, schemaId, webPageSchemas } from "@/lib/schema";
+import { agentSchema, propertyListSchema } from "@/lib/schema-entities";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 300;
 
@@ -79,7 +81,6 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
   const phone = agent.phone ?? settings.contact.phone;
   const whatsapp = whatsappNumber(agent.whatsapp ?? agent.phone ?? settings.contact.whatsapp);
   const socials = agentSocials(agent);
-  const url = `${siteUrl()}/agent/${agent.slug}`;
   const total = listings?.meta.total ?? 0;
   const place = agent.city?.name ?? null;
   const cover = agent.agency?.cover_url ?? null;
@@ -100,36 +101,27 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
     { icon: <HandshakeIcon />, value: agent.closed_deals_count ?? 0, label: "Closed Deals" },
   ];
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "RealEstateAgent",
-    name: agent.name,
-    url,
-    image: agent.photo_url ?? undefined,
-    jobTitle: agent.designation ?? undefined,
-    description: agent.short_bio ?? undefined,
-    telephone: phone ?? undefined,
-    email: agent.email ?? undefined,
-    knowsLanguage: agent.languages ?? undefined,
-    areaServed: agent.areas_of_expertise.length > 0 ? agent.areas_of_expertise : undefined,
-    worksFor: agent.agency ? { "@type": "Organization", name: agent.agency.name, url: `${siteUrl()}/dealer/${agent.agency.slug}` } : { "@type": "Organization", name: siteName, url: siteUrl() },
-    sameAs: socials.map((social) => social.url),
-  };
-
-  const breadcrumbs = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl() },
-      { "@type": "ListItem", position: 2, name: "Agents", item: `${siteUrl()}/agents` },
-      { "@type": "ListItem", position: 3, name: agent.name, item: url },
-    ],
-  };
+  const agentPath = agentHref(agent.slug);
+  const structuredData = [
+    ...webPageSchemas({
+      path: agentPath,
+      type: "ProfilePage",
+      name: agent.name,
+      description: agent.short_bio,
+      breadcrumb: [
+        { name: "Agents", path: "/agents" },
+        { name: agent.name, path: agentPath },
+      ],
+      mainEntity: ref(schemaId.agent(agent.slug)),
+      extra: { dateCreated: agent.created_at },
+    }),
+    agentSchema(agent),
+    listings ? propertyListSchema(agentPath, listings.data, `Properties listed by ${agent.name}`) : null,
+  ];
 
   return (
     <div className="agent-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
+      <JsonLd data={structuredData} />
 
       <section className={`agent-hero${cover ? " has-cover" : ""}`}>
         {cover && <Image src={sizedImage(cover, "medium")} alt={altText(agent.agency?.cover_alt, "")} fill priority sizes="100vw" className="agent-hero-cover" />}

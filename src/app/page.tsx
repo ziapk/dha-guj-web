@@ -18,6 +18,8 @@ import { PAGE_META } from "@/lib/page-meta";
 import { pageMetadata } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 import type { AgencyProfile, HomeData, HomeSections, Paginated, PublicProject, Resource } from "@/types/api";
+import { brandRef, imageObject, webPageSchemas } from "@/lib/schema";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 60;
 
@@ -83,6 +85,15 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd
+        data={webPageSchemas({
+          path: "/",
+          name: PAGE_META.home.title,
+          description: PAGE_META.home.description,
+          about: brandRef(),
+          image: imageObject(sections.hero_image_url, { caption: sections.hero_title }),
+        })}
+      />
       <HomeHero
         title={sections.hero_title}
         subtitle={sections.hero_subtitle}

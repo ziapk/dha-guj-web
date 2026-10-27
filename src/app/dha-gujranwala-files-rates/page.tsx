@@ -11,6 +11,7 @@ import { cmsPageSchemas } from "@/lib/page-schema";
 import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { RateTrend } from "@/types/api";
+import { absoluteUrl, brandRef, faqSchema } from "@/lib/schema";
 
 export const revalidate = 300;
 
@@ -45,26 +46,11 @@ export default async function FileRatesPage() {
   const phone = sections.cta.phone ?? settings.contact.phone;
   const whatsapp = whatsappNumber(sections.cta.whatsapp ?? settings.contact.whatsapp);
 
-  const pageSchema = { "@type": "WebPage", name: page.meta_title ?? page.title, dateModified: page.updated_at ?? undefined };
-
-  const faqSchema =
-    sections.faqs.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: sections.faqs.map((faq) => ({
-            "@type": "Question",
-            name: faq.question,
-            acceptedAnswer: { "@type": "Answer", text: faq.answer },
-          })),
-        }
-      : null;
-
   const howToSchema =
     sections.steps.length > 0
       ? {
-          "@context": "https://schema.org",
           "@type": "HowTo",
+          "@id": `${absoluteUrl(`/${FILE_RATES_SLUG}`)}#howto`,
           name: "How to buy a DHA Gujranwala file",
           step: sections.steps.map((step, index) => ({
             "@type": "HowToStep",
@@ -77,7 +63,7 @@ export default async function FileRatesPage() {
 
   return (
     <div className="container page-section">
-      <JsonLd data={[...cmsPageSchemas(page, `/${FILE_RATES_SLUG}`, pageSchema), faqSchema, howToSchema]} />
+      <JsonLd data={[...cmsPageSchemas(page, `/${FILE_RATES_SLUG}`, { about: brandRef() }), faqSchema(`/${FILE_RATES_SLUG}`, sections.faqs), howToSchema]} />
 
       <nav className="breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>

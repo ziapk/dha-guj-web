@@ -13,6 +13,8 @@ import { pageMetadata, queryRobots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { DeveloperDirectory } from "@/lib/developers";
 import type { City, Collection, Paginated, PublicProject, Sector, Society } from "@/types/api";
+import { collectionPageSchemas } from "@/lib/schema";
+import { JsonLd } from "@/components/json-ld";
 
 const TITLE = "New projects by developers";
 const DESCRIPTION = "Browse new housing projects from developers: unit types, prices, payment plans and brochures. Contact the developer directly.";
@@ -216,6 +218,17 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
 
   return (
     <div className="pl-page">
+      <JsonLd
+        data={collectionPageSchemas({
+          path: pageHref(page),
+          name: TITLE,
+          description: DESCRIPTION,
+          breadcrumb: [{ name: "Projects", path: "/projects" }],
+          // Portfolio projects are showcased on their developer's page and have no page of their own.
+          items: (projects?.data ?? []).filter((project) => project.kind !== "portfolio").map((project) => ({ url: projectHref(project.slug), name: project.name, image: project.cover_url })),
+          search: Boolean(filters.search),
+        })}
+      />
       <section className="pl-hero">
         <div className="pl-hero-image" aria-hidden="true" />
         <div className="container pl-hero-inner">

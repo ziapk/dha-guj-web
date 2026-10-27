@@ -13,6 +13,19 @@ const PAGES_REVALIDATE = 300;
 export const EMPTY_SETTINGS: SiteSettings = {
   general: { site_name: null, tagline: null, logo_url: null },
   contact: { email: null, phone: null, whatsapp: null, address: null, office_hours: null },
+  business: {
+    legal_name: null,
+    street_address: null,
+    locality: null,
+    region: null,
+    postal_code: null,
+    country_code: null,
+    latitude: null,
+    longitude: null,
+    map_url: null,
+    opening_hours: null,
+    founding_year: null,
+  },
   social: { facebook: null, instagram: null, youtube: null, x: null, linkedin: null, tiktok: null },
   seo: { og_image_url: null, og_image_alt: null },
 };
@@ -77,17 +90,18 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   try {
     const { data } = await publicApi<Resource<Partial<SiteSettings>>>("settings", { revalidate: SETTINGS_REVALIDATE });
     const pick = <G extends keyof SiteSettings>(group: G): SiteSettings[G] => {
-      const values = { ...EMPTY_SETTINGS[group] } as Record<string, string | null>;
+      const values = { ...EMPTY_SETTINGS[group] } as Record<string, string | number | null>;
       const source = (data?.[group] ?? {}) as Record<string, unknown>;
 
       for (const key of Object.keys(values)) {
-        values[key] = clean(source[key]);
+        const value = source[key];
+        values[key] = typeof value === "number" && Number.isFinite(value) ? value : clean(value);
       }
 
       return values as SiteSettings[G];
     };
 
-    return { general: pick("general"), contact: pick("contact"), social: pick("social"), seo: pick("seo") };
+    return { general: pick("general"), contact: pick("contact"), business: pick("business"), social: pick("social"), seo: pick("seo") };
   } catch {
     return EMPTY_SETTINGS;
   }

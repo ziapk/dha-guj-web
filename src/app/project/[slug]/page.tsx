@@ -63,7 +63,8 @@ import {
 } from "@/lib/project";
 import { coverOf, descriptionText, locationOf, mediumUrl, propertyHref, thumbnailUrl } from "@/lib/property";
 import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
+import { faqSchema, imageObject, ref, schemaId, webPageSchemas } from "@/lib/schema";
+import { developerRef, projectSchemas } from "@/lib/schema-entities";
 import type { AgencyProfile, PageIcon, Paginated, ProjectPaymentPlan, PublicProject, PublicProperty, Resource } from "@/types/api";
 
 export const revalidate = 300;
@@ -361,50 +362,28 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
       ].filter((stat) => stat.value !== null && stat.value !== undefined && stat.value !== "")
     : [];
 
-  const projectUrl = `${siteUrl()}${projectHref(project.slug)}`;
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: project.name,
-    description: project.short_description ?? descriptionText(project.description ?? ""),
-    url: projectUrl,
-    image: photos.map((photo) => mediumUrl(photo)),
-    brand: {
-      "@type": "Organization",
-      name: project.developer_name,
-      url: project.developer ? `${siteUrl()}${developerHref(project.developer.slug)}` : (project.developer_website ?? undefined),
-    },
-    ...(units.length > 0
-      ? {
-          offers: {
-            "@type": "AggregateOffer",
-            priceCurrency: project.currency ?? "PKR",
-            lowPrice: project.price_from ?? undefined,
-            highPrice: project.price_to ?? undefined,
-            offerCount: units.length,
-            availability: project.construction_status === "ready" ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
-          },
-        }
-      : {}),
-  };
-  const breadcrumbs = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl() },
-      { "@type": "ListItem", position: 2, name: "Projects", item: `${siteUrl()}/projects` },
-      { "@type": "ListItem", position: 3, name: project.name, item: projectUrl },
-    ],
-  };
-  const faqData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.text } })),
-  };
+  const projectPath = projectHref(project.slug);
+  const structuredData = [
+    ...webPageSchemas({
+      path: projectPath,
+      name: project.meta_title || project.name,
+      description: project.meta_description || project.short_description,
+      breadcrumb: [
+        { name: "Projects", path: "/projects" },
+        { name: project.name, path: projectPath },
+      ],
+      image: photos[0] ? imageObject(mediumUrl(photos[0]), { caption: altText(photos[0].alt_text, project.name) }) : null,
+      mainEntity: ref(schemaId.project(project.slug)),
+      about: developerRef(project.developer),
+      datePublished: project.published_at,
+    }),
+    ...projectSchemas(project),
+    faqSchema(projectPath, faqs.map((faq) => ({ question: faq.question, answer: faq.text }))),
+  ];
 
   return (
     <div className="container page-section pj-page">
-      <JsonLd data={faqs.length > 0 ? [structuredData, breadcrumbs, faqData] : [structuredData, breadcrumbs]} />
+      <JsonLd data={structuredData} />
       <ViewTracker slug={project.slug} subject="project" />
 
       <div className="pj-top">

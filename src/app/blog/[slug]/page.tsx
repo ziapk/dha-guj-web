@@ -17,10 +17,12 @@ import { getPost, getPosts, postHref, readingMinutes, splitArticle, stripHtml } 
 import { authorHref, authorSocials, getAuthor } from "@/lib/authors";
 import { sizedImage } from "@/lib/image";
 import { formatDate } from "@/lib/labels";
-import { adminShareImage, jsonLd, metaText, notFoundMetadata, pageMetadata } from "@/lib/seo";
+import { adminShareImage, metaText, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
-import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { AgencyProfile, BlogPostSummary, HomeData, Paginated, PublicAuthor, PublicProject, PublicProperty, Resource } from "@/types/api";
+import { absoluteUrl, ref, webPageSchemas } from "@/lib/schema";
+import { blogPostSchema } from "@/lib/schema-entities";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 300;
 
@@ -102,13 +104,11 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
     notFound();
   }
 
-  const [settings, related, promoted, authorPage] = await Promise.all([
-    getSiteSettings(),
+  const [related, promoted, authorPage] = await Promise.all([
     relatedPosts(post.id, post.category?.slug),
     promotions(),
     post.author ? getAuthor(post.author.slug).catch(() => null) : null,
   ]);
-  const siteName = siteNameOf(settings);
   const url = `${siteUrl()}${postHref(post.slug)}`;
   const author: PublicAuthor | null = authorPage?.data ?? null;
   const socials = author ? authorSocials(author) : [];
@@ -120,37 +120,23 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
   // The editor's own read time wins; otherwise it is worked out from the article.
   const minutes = post.read_time_minutes ?? readingMinutes(post.content_html);
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: metaText(post.meta_description ?? post.excerpt ?? stripHtml(post.content_html)) || undefined,
-    url,
-    mainEntityOfPage: { "@type": "WebPage", "@id": url },
-    image: post.cover_image_url ? [post.cover_image_url] : undefined,
-    articleSection: post.category?.name ?? undefined,
-    datePublished: post.published_at ?? undefined,
-    dateModified: post.updated_at ?? post.published_at ?? undefined,
-    author: post.author
-      ? { "@type": "Person", name: post.author.name, url: `${siteUrl()}${authorHref(post.author.slug)}`, jobTitle: post.author.designation ?? undefined }
-      : { "@type": "Organization", name: siteName, url: siteUrl() },
-    publisher: {
-      "@type": "Organization",
-      name: siteName,
-      url: siteUrl(),
-      ...(settings.general.logo_url ? { logo: { "@type": "ImageObject", url: settings.general.logo_url } } : {}),
-    },
-  };
-
-  const breadcrumbData = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl()}/` },
-      { "@type": "ListItem", position: 2, name: "Blog", item: `${siteUrl()}/blog` },
-      { "@type": "ListItem", position: 3, name: post.title, item: url },
-    ],
-  };
+  const postPath = postHref(post.slug);
+  const structuredData = [
+    ...webPageSchemas({
+      path: postPath,
+      name: post.meta_title || post.title,
+      description: metaText(post.meta_description ?? post.excerpt ?? stripHtml(post.content_html)),
+      breadcrumb: [
+        { name: "Blog", path: "/blog" },
+        ...(post.category ? [{ name: post.category.name, path: `/blog?category=${post.category.slug}` }] : []),
+        { name: post.title, path: postPath },
+      ],
+      mainEntity: ref(`${absoluteUrl(postPath)}#article`),
+      datePublished: post.published_at,
+      dateModified: post.updated_at,
+    }),
+    blogPostSchema(post, metaText(post.meta_description ?? post.excerpt ?? stripHtml(post.content_html))),
+  ];
 
   const propertyRail =
     railProperties.length > 0 ? (
@@ -169,8 +155,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
 
   return (
     <div className="container page-section blog-detail">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbData) }} />
+      <JsonLd data={structuredData} />
 
       <nav className="breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>

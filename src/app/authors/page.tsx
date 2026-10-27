@@ -4,10 +4,12 @@ import Link from "next/link";
 import { AuthorCard } from "@/components/author-card";
 import { SectionHeading } from "@/components/home/section-heading";
 import { ChartIcon, DocumentIcon, MegaphoneIcon, PlusIcon, ShieldCheckIcon, ArrowRightIcon } from "@/components/icons";
-import { authorInitials, getAuthorsPage } from "@/lib/authors";
+import { authorHref, authorInitials, getAuthorsPage } from "@/lib/authors";
 import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
 import { pageMetadata, queryRobots } from "@/lib/seo";
+import { collectionPageSchemas } from "@/lib/schema";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 300;
 
@@ -56,6 +58,15 @@ export default async function AuthorsPage({ searchParams }: PageProps<"/authors"
 
   return (
     <div className="authors-index">
+      <JsonLd
+        data={collectionPageSchemas({
+          path: page > 1 ? `/authors?page=${page}` : "/authors",
+          name: PAGE_META.authors.title,
+          description: PAGE_META.authors.description,
+          breadcrumb: [{ name: "Authors", path: "/authors" }],
+          items: authors.map((author) => ({ url: authorHref(author.slug), name: author.name, image: author.photo_url })),
+        })}
+      />
       <section className="authors-hero">
         <div className="container authors-hero-inner">
           <div className="authors-hero-text">

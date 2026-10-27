@@ -2,10 +2,12 @@ import "@fontsource-variable/plus-jakarta-sans";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import type { Metadata, Viewport } from "next";
 import { CompareTray } from "@/components/compare-tray";
+import { JsonLd } from "@/components/json-ld";
 import { GOOGLE_SITE_VERIFICATION, GoogleTagManagerNoscript, GoogleTags } from "@/components/google-tags";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { navigationSchema, organizationSchema, websiteSchema } from "@/lib/schema";
 import { SEO, noindex, pageMetadata, robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getCmsPages, getSiteSettings } from "@/lib/site-data";
@@ -50,6 +52,8 @@ export default async function RootLayout({ children, modal }: LayoutProps<"/">) 
       <body>
         <GoogleTagManagerNoscript />
         <GoogleTags />
+        {/* The brand, website and main menu, on every page; page-level structured data refers to them by "@id". */}
+        <JsonLd data={[organizationSchema(settings), websiteSchema(settings), navigationSchema()]} />
         <AntdRegistry>
           <Providers>
             <ScrollToTop />

@@ -12,9 +12,9 @@ import { CONTACT_SLUG, getContactPage } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
 import { getSiteSettings, hasContactDetails, siteNameOf } from "@/lib/site-data";
 import type { AgencyProfile, Paginated } from "@/types/api";
+import { brandRef, faqSchema } from "@/lib/schema";
 
 export const revalidate = 300;
 
@@ -53,41 +53,15 @@ export default async function ContactPage() {
         .catch(() => [] as AgencyProfile[])
     : [];
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "ContactPage",
-    name: page.meta_title ?? page.title,
-    url: `${siteUrl()}/${CONTACT_SLUG}`,
-    dateModified: page.updated_at ?? undefined,
-    mainEntity: {
-      "@type": "Organization",
-      name: siteName,
-      url: siteUrl(),
-      logo: settings.general.logo_url ?? undefined,
-      telephone: settings.contact.phone ?? undefined,
-      email: settings.contact.email ?? undefined,
-      address: settings.contact.address ?? undefined,
-      openingHours: sections.office_hours.map((row) => `${row.days} ${row.hours}`),
-      sameAs: Object.values(settings.social).filter(Boolean),
-    },
-  };
-
-  const faqSchema =
-    sections.faqs.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: sections.faqs.map((faq) => ({
-            "@type": "Question",
-            name: faq.question,
-            acceptedAnswer: { "@type": "Answer", text: faq.answer },
-          })),
-        }
-      : null;
+  // The office details (phone, address, hours) are the brand's, described once in the root layout.
+  const structuredData = [
+    ...cmsPageSchemas(page, `/${CONTACT_SLUG}`, { type: "ContactPage", mainEntity: brandRef(), about: brandRef() }),
+    faqSchema(`/${CONTACT_SLUG}`, sections.faqs),
+  ];
 
   return (
     <>
-      <JsonLd data={[...cmsPageSchemas(page, `/${CONTACT_SLUG}`, structuredData), faqSchema]} />
+      <JsonLd data={structuredData} />
 
       <section className={`page-banner${sections.hero.image_url ? " has-image" : ""}`}>
         {sections.hero.image_url && <Image src={sizedImage(sections.hero.image_url, "medium")} alt="" fill priority sizes="100vw" style={{ objectFit: "cover" }} />}

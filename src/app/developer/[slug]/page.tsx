@@ -39,10 +39,12 @@ import { altText, logoAlt } from "@/lib/alt-text";
 import { DEVELOPER_TYPE_LABELS, developerHref, developerSocials, getDeveloper, sectionHeading, yearsInBusiness } from "@/lib/developers";
 import { sizedImage, type ImageSize } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
-import { adminShareImage, jsonLd, metaText, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
+import { adminShareImage, metaText, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
-import { siteUrl } from "@/lib/site";
 import type { DeveloperLeader, DeveloperStat, DeveloperTeamMember, PublicDeveloper } from "@/types/api";
+import { faqSchema, ref, schemaId, webPageSchemas } from "@/lib/schema";
+import { developerSchema } from "@/lib/schema-entities";
+import { JsonLd } from "@/components/json-ld";
 
 function pageOf(value: string | string[] | undefined): number {
   return Math.max(1, Number.parseInt(typeof value === "string" ? value : "", 10) || 1);
@@ -265,43 +267,23 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
   const isVerified = developer.verification_status ? developer.verification_status === "verified" : developer.is_verified;
   const head = (section: Parameters<typeof sectionHeading>[1], fallback: Parameters<typeof sectionHeading>[2]) => sectionHeading(developer, section, fallback);
 
-  const pageUrl = `${siteUrl()}${developerHref(developer.slug)}`;
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${pageUrl}#organization`,
-    name: developer.name,
-    legalName: developer.legal_name ?? undefined,
-    url: pageUrl,
-    logo: developer.logo_url ?? undefined,
-    image: developer.cover_url ?? developer.logo_url ?? undefined,
-    description: developer.short_description ?? undefined,
-    telephone: developer.phone ?? undefined,
-    email: developer.email ?? undefined,
-    taxID: developer.ntn_number ?? undefined,
-    foundingDate: developer.established_year ? String(developer.established_year) : undefined,
-    sameAs: [developer.website, ...socials.map((social) => social.url)].filter(Boolean),
-    address: location ? { "@type": "PostalAddress", streetAddress: developer.address ?? undefined, addressLocality: developer.city?.name, addressCountry: "PK" } : undefined,
-    employee:
-      leaders.length + team.length > 0 ? [...leaders, ...team].map((member) => ({ "@type": "Person", name: member.name, jobTitle: member.designation ?? undefined })) : undefined,
-  };
-  const faqData =
-    faqs.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
-        }
-      : null;
-  const breadcrumbs = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl()}/` },
-      { "@type": "ListItem", position: 2, name: "Developers", item: `${siteUrl()}/developers` },
-      { "@type": "ListItem", position: 3, name: developer.name, item: pageUrl },
-    ],
-  };
+  const developerPath = developerHref(developer.slug);
+  const structuredData = [
+    ...webPageSchemas({
+      path: developerPath,
+      type: "ProfilePage",
+      name: developer.meta_title || developer.name,
+      description: developer.meta_description || developer.short_description,
+      breadcrumb: [
+        { name: "Developers", path: "/developers" },
+        { name: developer.name, path: developerPath },
+      ],
+      mainEntity: ref(schemaId.developer(developer.slug)),
+    }),
+    developerSchema(developer),
+    // The questions are shown on the first page only.
+    page === 1 ? faqSchema(developerPath, faqs) : null,
+  ];
 
   function pageHref(target: number): string {
     return target > 1 ? `${developerHref(developer.slug)}?page=${target}` : developerHref(developer.slug);
@@ -329,9 +311,7 @@ export default async function DeveloperPage({ params, searchParams }: PageProps<
 
   return (
     <div className="container page-section dv-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
-      {page === 1 && faqData && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(faqData) }} />}
+      <JsonLd data={structuredData} />
 
       <nav className="breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>

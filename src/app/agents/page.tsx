@@ -7,13 +7,15 @@ import { SectionHeading } from "@/components/home/section-heading";
 import { initials } from "@/components/home/agent-card";
 import { BuildingIcon, HomeIcon, ResetIcon, SearchIcon, ShieldCheckIcon, StarIcon, UserIcon, UsersIcon } from "@/components/icons";
 import { Rail } from "@/components/rail";
-import { getAgents } from "@/lib/agents";
+import { agentHref, getAgents } from "@/lib/agents";
 import { publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
 import { pageMetadata, queryRobots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 import type { Paginated } from "@/types/api";
+import { collectionPageSchemas } from "@/lib/schema";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 300;
 
@@ -105,6 +107,16 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
 
   return (
     <>
+      <JsonLd
+        data={collectionPageSchemas({
+          path: pageHref(page),
+          name: TITLE,
+          description: DESCRIPTION,
+          breadcrumb: [{ name: "Agents", path: "/agents" }],
+          items: agents.map((agent) => ({ url: agentHref(agent.slug), name: agent.name, image: agent.photo_url })),
+          search: filtered,
+        })}
+      />
       <section className="agents-hero">
         <div className="container agents-hero-inner">
           <div className="agents-hero-text">

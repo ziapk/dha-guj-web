@@ -6,9 +6,9 @@ import { SellPropertyForm } from "@/components/sell-property-form";
 import { publicApi } from "@/lib/api";
 import { whatsappNumber } from "@/lib/property";
 import { pageMetadata } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { Collection, Phase, PropertyType } from "@/types/api";
+import { brandRef, webPageSchemas } from "@/lib/schema";
 
 export const revalidate = 300;
 
@@ -56,16 +56,13 @@ export default async function SellPropertyPage() {
   return (
     <div className="container page-section sell-page">
       <JsonLd
-        data={[
-          {
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            name: TITLE,
-            description: DESCRIPTION,
-            url: `${siteUrl()}${PATH}`,
-            publisher: { "@type": "Organization", name: siteName, url: siteUrl() },
-          },
-        ]}
+        data={webPageSchemas({
+          path: PATH,
+          name: TITLE,
+          description: DESCRIPTION,
+          breadcrumb: [{ name: TITLE, path: PATH }],
+          about: brandRef(),
+        })}
       />
 
 

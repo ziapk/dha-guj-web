@@ -6,13 +6,14 @@ import { ArrowRightIcon, MapIcon, PlusIcon } from "@/components/icons";
 import { JsonLd } from "@/components/json-ld";
 import { SectionIcon } from "@/components/section-icon";
 import { SocietyMapCard } from "@/components/society-maps/society-map-card";
-import { getMapsPage, MAPS_SLUG } from "@/lib/cms-sections";
+import { getMapsPage } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { PAGE_META } from "@/lib/page-meta";
 import { adminShareImage, metaText, pageMetadata, queryRobots } from "@/lib/seo";
-import { getSocietyMaps, isSocietyMapCategory } from "@/lib/society-maps";
+import { getSocietyMaps, isSocietyMapCategory, societyMapHref } from "@/lib/society-maps";
 import type { SectionHeading } from "@/types/api";
+import { itemListSchema, ref, schemaId } from "@/lib/schema";
 
 export const revalidate = 300;
 
@@ -118,11 +119,18 @@ export default async function SocietyMapsPage({ searchParams }: PageProps<"/dha-
     <div className="smaps-index">
       {content.page && (
         <JsonLd
-          data={cmsPageSchemas(content.page, `/${MAPS_SLUG}`, {
-            "@type": "CollectionPage",
-            name: content.page.meta_title ?? content.page.title,
-            description: content.page.meta_description ?? hero.subtitle ?? DESCRIPTION,
-          })}
+          data={[
+            ...cmsPageSchemas(content.page, "/dha-gujranwala-maps", {
+              type: "CollectionPage",
+              description: content.page.meta_description ?? hero.subtitle ?? DESCRIPTION,
+              mainEntity: maps.length > 0 ? ref(schemaId.itemList("/dha-gujranwala-maps")) : null,
+            }),
+            itemListSchema(
+              "/dha-gujranwala-maps",
+              maps.map((map) => ({ url: societyMapHref(map.slug), name: map.title, image: sizedImage(map.image_url, "medium") })),
+              "DHA Gujranwala maps",
+            ),
+          ]}
         />
       )}
 

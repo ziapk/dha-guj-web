@@ -8,8 +8,8 @@ import { ABOUT_SLUG, getAboutPage } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
+import { brandRef, imageObject, sameAsLinks } from "@/lib/schema";
 
 export const revalidate = 300;
 
@@ -50,32 +50,25 @@ export default async function AboutPage() {
   const settings = await getSiteSettings();
   const siteName = siteNameOf(settings);
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "AboutPage",
-    name: page.meta_title ?? page.title,
-    url: `${siteUrl()}/${ABOUT_SLUG}`,
-    dateModified: page.updated_at ?? undefined,
-    mainEntity: {
-      "@type": "Organization",
-      name: siteName,
-      url: siteUrl(),
-      logo: settings.general.logo_url ?? undefined,
-      telephone: settings.contact.phone ?? undefined,
-      email: settings.contact.email ?? undefined,
-      address: settings.contact.address ?? undefined,
-      employee: sections.leadership.map((person) => ({
+  const structuredData = cmsPageSchemas(page, `/${ABOUT_SLUG}`, {
+    type: "AboutPage",
+    mainEntity: brandRef(),
+    about: brandRef(),
+    extra: {
+      mentions: sections.leadership.map((person) => ({
         "@type": "Person",
         name: person.name,
         jobTitle: person.role ?? undefined,
+        image: imageObject(person.photo_url, { caption: person.name }),
+        sameAs: sameAsLinks([person.linkedin]),
+        worksFor: brandRef(),
       })),
-      sameAs: Object.values(settings.social).filter(Boolean),
     },
-  };
+  });
 
   return (
     <>
-      <JsonLd data={cmsPageSchemas(page, `/${ABOUT_SLUG}`, structuredData)} />
+      <JsonLd data={structuredData} />
 
       <section className={`page-banner${sections.hero.image_url ? " has-image" : ""}`}>
         {sections.hero.image_url && <Image src={sizedImage(sections.hero.image_url, "medium")} alt="" fill priority sizes="100vw" style={{ objectFit: "cover" }} />}

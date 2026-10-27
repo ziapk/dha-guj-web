@@ -12,9 +12,12 @@ import { sizedImage } from "@/lib/image";
 import { searchHeading } from "@/lib/property";
 import { PURPOSE_PAGES, PURPOSE_PAGE_SIZE, purposeFilters, purposeHref, sectorOptions } from "@/lib/purpose-search";
 import { PAGE_META } from "@/lib/page-meta";
-import { searchPageChips } from "@/lib/search-pages";
+import { searchPageChips, searchPageHref } from "@/lib/search-pages";
 import { pageMetadata, queryRobots } from "@/lib/seo";
 import type { AgencyProfile, Block, Collection, HomeData, Paginated, PropertyPurpose, PropertyType, PublicProperty, Resource, SearchPage, Sector } from "@/types/api";
+import { ref, schemaId, webPageSchemas } from "@/lib/schema";
+import { propertyListSchema } from "@/lib/schema-entities";
+import { JsonLd } from "@/components/json-ld";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -98,9 +101,32 @@ export async function PurposeListingPage({ purpose, searchParams, landing }: { p
   const total = results?.meta.total ?? 0;
   const searchKey = JSON.stringify(filters);
   const saveFilters = { ...filters, purpose };
+  // A keyword search is a results page; the plain page, its landing filters and saved landing pages are collections.
+  const schemaPath = landing
+    ? searchPageHref(landing.slug)
+    : purposeHref(page.path, Object.fromEntries(Object.entries(filters).filter(([key]) => LANDING_FILTERS.includes(key))));
+  const listed = results?.data ?? [];
+  const structuredData = [
+    ...webPageSchemas({
+      path: schemaPath,
+      type: fromUrl.q ? "SearchResultsPage" : "CollectionPage",
+      name: landing ? (landing.meta_title ?? landing.heading ?? landing.title) : heading,
+      description: landing?.meta_description,
+      breadcrumb: landing
+        ? [
+            { name: page.label, path: page.path },
+            { name: landing.title, path: schemaPath },
+          ]
+        : [{ name: page.label, path: page.path }],
+      mainEntity: listed.length > 0 ? ref(schemaId.itemList(schemaPath)) : null,
+      dateModified: landing?.updated_at,
+    }),
+    propertyListSchema(schemaPath, listed, heading),
+  ];
 
   return (
     <>
+      <JsonLd data={structuredData} />
       <section className="purpose-hero">
         <div className="purpose-hero-image" style={heroStyle(sizedImage(heroImage, "medium"))} aria-hidden="true" />
         <div className="container purpose-hero-inner">

@@ -7,9 +7,11 @@ import { DeveloperCard } from "@/components/developer-card";
 import { FeaturedDevelopers } from "@/components/developer/featured-developers";
 import { ArrowRightIcon, BuildingIcon, HandshakeIcon, LayersIcon, PinIcon } from "@/components/icons";
 import { publicApi } from "@/lib/api";
-import { DEVELOPER_TYPE_LABELS, DEVELOPER_TYPES, type DeveloperDirectory } from "@/lib/developers";
+import { DEVELOPER_TYPE_LABELS, DEVELOPER_TYPES, developerHref, type DeveloperDirectory } from "@/lib/developers";
 import { pageMetadata, queryRobots } from "@/lib/seo";
 import type { DeveloperType, Paginated, PublicDeveloper } from "@/types/api";
+import { collectionPageSchemas } from "@/lib/schema";
+import { JsonLd } from "@/components/json-ld";
 
 const TITLE = "Property developers & builders";
 const DESCRIPTION = "Explore real estate developers and construction companies: verified builders, their projects and investment opportunities, all in one place.";
@@ -92,6 +94,16 @@ export default async function DevelopersPage({ searchParams }: PageProps<"/devel
 
   return (
     <div className="container page-section dl-page">
+      <JsonLd
+        data={collectionPageSchemas({
+          path: pageHref(page),
+          name: TITLE,
+          description: DESCRIPTION,
+          breadcrumb: [{ name: "Developers", path: "/developers" }],
+          items: (developers?.data ?? []).map((developer) => ({ url: developerHref(developer.slug), name: developer.name, image: developer.logo_url })),
+          search: Boolean(q),
+        })}
+      />
       <section className={`dl-hero${heroImage ? " dl-hero-image" : ""}`}>
         {heroImage && (
           <div className="dl-hero-photo" aria-hidden="true">

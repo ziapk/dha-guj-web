@@ -12901,9 +12901,38 @@ body .ant-image-preview .ant-image-preview-mask {
 
 @media (max-width: 640px) {
   .pd-breadcrumbs,
-  .pd-gallery-desktop,
-  .pd-stats:not(.pd-stats-plain) {
+  .pd-gallery-desktop {
     display: none;
+  }
+
+  /* Key stats: a compact 2×2 grid */
+  .pd-stats:not(.pd-stats-plain) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .pd-stats:not(.pd-stats-plain) li {
+    gap: 6px;
+    padding: 10px 12px;
+  }
+
+  .pd-stats:not(.pd-stats-plain) .pd-stat-label {
+    font-size: 12px;
+  }
+
+  .pd-stats:not(.pd-stats-plain) .pd-stat-value {
+    gap: 8px;
+  }
+
+  .pd-stats:not(.pd-stats-plain) .pd-stat-value .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .pd-stats:not(.pd-stats-plain) strong {
+    font-size: 15px;
+    overflow-wrap: anywhere;
   }
 
   .pd-page {

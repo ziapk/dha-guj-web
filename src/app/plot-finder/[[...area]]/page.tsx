@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PlotFinder } from "@/components/plot-finder/plot-finder";
 import { getMapAreas, getMapConfig } from "@/lib/plot-finder";
-import { areaTitle, mapsHref, resolveArea } from "@/lib/plot-finder-shared";
+import { areaTitle, mapsHref, resolveArea, sectorEntries } from "@/lib/plot-finder-shared";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
-import { portalUrl, siteUrl } from "@/lib/site";
+import { notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
+import { portalUrl } from "@/lib/site";
 import { getSiteSettings } from "@/lib/site-data";
 import type { MapAreas } from "@/types/api";
+import { absoluteUrl, itemListSchema, ref, webPageSchemas } from "@/lib/schema";
+import { plotFinderPlaceSchema } from "@/lib/schema-entities";
+import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 300;
 
@@ -59,19 +62,38 @@ export default async function PlotFinderPage({ params, searchParams }: PageProps
   const block = resolved?.block ?? null;
   const name = areaTitle(entry, block);
 
-  const breadcrumbs = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl() },
-      { "@type": "ListItem", position: 2, name: "Plot Finder", item: `${siteUrl()}/plot-finder` },
-      ...(entry ? [{ "@type": "ListItem", position: 3, name, item: `${siteUrl()}${mapsHref(entry, block)}` }] : []),
-    ],
-  };
+  const path = mapsHref(entry, block);
+  const structuredData = [
+    ...webPageSchemas({
+      path,
+      name: entry ? `${name} – Plots, Map & Location` : `${name} Plot Finder & Map`,
+      breadcrumb: [
+        { name: "Plot Finder", path: "/plot-finder" },
+        ...(entry ? [{ name: areaTitle(entry, null), path: mapsHref(entry) }] : []),
+        ...(entry && block ? [{ name: areaTitle(entry, block), path }] : []),
+      ],
+      mainEntity: entry ? ref(`${absoluteUrl(path)}#place`) : null,
+    }),
+    entry ? plotFinderPlaceSchema(entry, block) : null,
+    // The areas the finder lists: every mapped sector on the main page, a sector's blocks on its own page.
+    entry && !block
+      ? itemListSchema(
+          path,
+          entry.sector.blocks.map((item) => ({ url: mapsHref(entry, item), name: areaTitle(entry, item) })),
+          `Blocks in ${areaTitle(entry, null)}`,
+        )
+      : !entry
+        ? itemListSchema(
+            path,
+            sectorEntries(areas).map((item) => ({ url: mapsHref(item), name: areaTitle(item, null) })),
+            "Mapped sectors",
+          )
+        : null,
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
+      <JsonLd data={structuredData} />
       <PlotFinder
         config={config}
         areas={areas}

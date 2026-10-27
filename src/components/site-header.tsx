@@ -24,6 +24,7 @@ import {
 } from "@/components/icons";
 import { useSession } from "@/components/session-provider";
 import { SiteLogo } from "@/components/site-logo";
+import { MAIN_NAV } from "@/lib/navigation";
 import { whatsappNumber } from "@/lib/property";
 import { portalUrl } from "@/lib/site";
 import { useThemeSettings } from "@/theme/theme-provider";
@@ -31,16 +32,18 @@ import type { SiteSettings } from "@/types/api";
 
 type NavLink = { href: string; label: string; icon: ComponentType<{ className?: string }> };
 
+const NAV_ICONS: Record<(typeof MAIN_NAV)[number]["href"], NavLink["icon"]> = {
+  "/properties-for-sale": HomeIcon,
+  "/properties-for-rent": KeyIcon,
+  "/projects": BuildingIcon,
+  "/developers": UsersIcon,
+  "/dha-gujranwala-maps": MapIcon,
+  "/dealers": UserIcon,
+  "/dha-gujranwala-files-rates": DocumentIcon,
+};
+
 /** The main menu (design: header-image.png); the mobile panel shows the same links with icons (nav-responsive.png). */
-const LINKS: NavLink[] = [
-  { href: "/properties-for-sale", label: "Buy", icon: HomeIcon },
-  { href: "/properties-for-rent", label: "Rent", icon: KeyIcon },
-  { href: "/projects", label: "Projects", icon: BuildingIcon },
-  { href: "/developers", label: "Developers", icon: UsersIcon },
-  { href: "/dha-gujranwala-maps", label: "Maps", icon: MapIcon },
-  { href: "/dealers", label: "Dealers", icon: UserIcon },
-  { href: "/dha-gujranwala-files-rates", label: "File Rates", icon: DocumentIcon },
-];
+const LINKS: NavLink[] = MAIN_NAV.map((link) => ({ ...link, icon: NAV_ICONS[link.href] }));
 
 const SELL_PROPERTY_HREF = "/sell-property";
 

@@ -6,8 +6,8 @@ import { ContactList, SocialLinks } from "@/components/site-contact";
 import { formatDate } from "@/lib/labels";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { adminShareImage, metaText, notFoundMetadata, pageMetadata } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
 import { cmsPageHref, getCmsPage, getCmsPages, getSiteSettings, hasContactDetails, siteNameOf } from "@/lib/site-data";
+import { brandRef } from "@/lib/schema";
 
 /**
  * CMS pages at short URLs: /about, /contact, /terms, /privacy, /faq and any other published page.
@@ -60,31 +60,15 @@ export default async function CmsPageView({ params }: PageProps<"/[page]">) {
   const hasSocial = Object.values(settings.social).some(Boolean);
   const hasTables = /<table\b/i.test(page.content_html);
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": isContact ? "ContactPage" : page.slug === "about" ? "AboutPage" : "WebPage",
-    name: page.meta_title ?? page.title,
-    url: `${siteUrl()}${cmsPageHref(page.slug)}`,
-    dateModified: page.updated_at ?? undefined,
-    ...(isContact
-      ? {
-          mainEntity: {
-            "@type": "Organization",
-            name: siteName,
-            url: siteUrl(),
-            logo: settings.general.logo_url ?? undefined,
-            telephone: settings.contact.phone ?? undefined,
-            email: settings.contact.email ?? undefined,
-            address: settings.contact.address ?? undefined,
-            sameAs: Object.values(settings.social).filter(Boolean),
-          },
-        }
-      : {}),
-  };
+  const structuredData = cmsPageSchemas(
+    page,
+    cmsPageHref(page.slug),
+    isContact ? { type: "ContactPage", mainEntity: brandRef(), about: brandRef() } : page.slug === "about" ? { type: "AboutPage", mainEntity: brandRef(), about: brandRef() } : {},
+  );
 
   return (
     <div className="container page-section">
-      <JsonLd data={cmsPageSchemas(page, cmsPageHref(page.slug), structuredData)} />
+      <JsonLd data={structuredData} />
 
       <nav className="breadcrumbs" aria-label="Breadcrumb">
         <Link href="/">Home</Link>

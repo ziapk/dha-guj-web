@@ -91,6 +91,9 @@ export type PublicProperty = {
   sector: string | null;
   block: string | null;
   address: string | null;
+  /** The pin the lister set, when there is one. */
+  latitude?: string | number | null;
+  longitude?: string | number | null;
   bedrooms: number | null;
   bathrooms: number | null;
   kitchens: number | null;
@@ -288,6 +291,20 @@ export type PublicAgent = {
 export type SiteSettings = {
   general: { site_name: string | null; tagline: string | null; logo_url: string | null };
   contact: { email: string | null; phone: string | null; whatsapp: string | null; address: string | null; office_hours: string | null };
+  /** Verified office details for structured data; opening_hours is one "Mo-Sa 10:00-18:00" rule per line. */
+  business: {
+    legal_name: string | null;
+    street_address: string | null;
+    locality: string | null;
+    region: string | null;
+    postal_code: string | null;
+    country_code: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    map_url: string | null;
+    opening_hours: string | null;
+    founding_year: number | null;
+  };
   social: { facebook: string | null; instagram: string | null; youtube: string | null; x: string | null; linkedin: string | null; tiktok: string | null };
   /** Default share (Open Graph) image for pages without one of their own. */
   seo: { og_image_url: string | null; og_image_alt: string | null };

@@ -17,11 +17,13 @@ import {
   QuoteIcon,
   UsersIcon,
 } from "@/components/icons";
-import { authorInitials, authorSocials, getAuthor, getAuthors } from "@/lib/authors";
+import { authorHref, authorInitials, getAuthor, getAuthors } from "@/lib/authors";
 import { sizedImage } from "@/lib/image";
-import { adminShareImage, jsonLd, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
-import { siteUrl } from "@/lib/site";
-import { getSiteSettings, siteNameOf } from "@/lib/site-data";
+import { adminShareImage, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
+import { itemListSchema, ref, schemaId, webPageSchemas } from "@/lib/schema";
+import { authorSchema } from "@/lib/schema-entities";
+import { JsonLd } from "@/components/json-ld";
+import { postHref } from "@/lib/blog";
 
 export const revalidate = 300;
 
@@ -87,9 +89,6 @@ export default async function AuthorPage({ params, searchParams }: PageProps<"/a
   const pages = [result.posts, ...more.map((item) => item?.posts).filter((item) => item !== undefined)];
   const posts = pages.flatMap((item) => item.data);
   const lastPage = pages.at(-1)?.meta.last_page ?? 1;
-  const settings = await getSiteSettings();
-  const socials = authorSocials(author);
-  const url = `${siteUrl()}/author/${author.slug}`;
   const [firstName, lastName] = splitName(author.name);
   const quote = author.personal_note ?? author.tagline;
 
@@ -106,34 +105,32 @@ export default async function AuthorPage({ params, searchParams }: PageProps<"/a
     { title: "Languages", items: author.languages },
   ].filter((list) => list.items.length > 0);
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: author.name,
-    url,
-    image: author.photo_url ?? undefined,
-    jobTitle: author.designation,
-    description: author.short_bio,
-    knowsAbout: author.areas_of_expertise.length > 0 ? author.areas_of_expertise : undefined,
-    knowsLanguage: author.languages.length > 0 ? author.languages : undefined,
-    worksFor: { "@type": "Organization", name: siteNameOf(settings), url: siteUrl() },
-    sameAs: socials.map((social) => social.url),
-  };
-
-  const breadcrumbs = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl() },
-      { "@type": "ListItem", position: 2, name: "Authors", item: `${siteUrl()}/authors` },
-      { "@type": "ListItem", position: 3, name: author.name, item: url },
-    ],
-  };
+  const authorPath = authorHref(author.slug);
+  const structuredData = [
+    ...webPageSchemas({
+      path: authorPath,
+      type: "ProfilePage",
+      name: author.meta_title || author.name,
+      description: author.meta_description || author.short_bio,
+      breadcrumb: [
+        { name: "Authors", path: "/authors" },
+        { name: author.name, path: authorPath },
+      ],
+      mainEntity: ref(schemaId.author(author.slug)),
+      extra: { dateCreated: author.created_at },
+      dateModified: author.updated_at,
+    }),
+    authorSchema(author),
+    itemListSchema(
+      authorPath,
+      posts.map((post) => ({ url: postHref(post.slug), name: post.title })),
+      `Articles by ${author.name}`,
+    ),
+  ];
 
   return (
     <div className="author-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(structuredData) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }} />
+      <JsonLd data={structuredData} />
 
       <section className="author-hero">
         <div className="container">

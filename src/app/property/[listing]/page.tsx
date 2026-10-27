@@ -40,7 +40,10 @@ import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref
 import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { getListingPageSettings } from "@/lib/site-data";
 import { siteUrl } from "@/lib/site";
+import { absoluteUrl, imageObject, ref, webPageSchemas } from "@/lib/schema";
+import { propertySchemas } from "@/lib/schema-entities";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
+import { PURPOSE_PAGES } from "@/lib/purpose-search";
 
 /**
  * Listing pages live at /property/{slug}-{ref}; the random ref at the end is permanent. An admin can drop the ref,
@@ -89,19 +92,6 @@ const NOTICES: Record<NonNullable<PropertySeo["notice"]>, { badge: string; title
   rented: { badge: "Rented", title: "This property has been rented out", text: "It is no longer available. Have a look at similar properties that are still available below." },
   expired: { badge: "Listing expired", title: "This listing has expired", text: "The owner has not renewed it, so it may no longer be available. See similar properties that are still on the market below." },
 };
-
-/** schema.org availability for the Offer, from the property and listing status. */
-function availabilityOf(property: PublicProperty, notice: PropertySeo["notice"]): string {
-  if (notice === "sold" || notice === "rented") {
-    return "https://schema.org/SoldOut";
-  }
-
-  if (notice === "expired") {
-    return "https://schema.org/Discontinued";
-  }
-
-  return property.property_status === "under_offer" ? "https://schema.org/LimitedAvailability" : "https://schema.org/InStock";
-}
 
 export async function generateMetadata({ params }: PageProps<"/property/[listing]">): Promise<Metadata> {
   const { listing } = await params;
@@ -196,18 +186,18 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
   const [currency, ...priceWords] = formatCompactPrice(property.price).split(" ");
   const browseHref = `/properties?purpose=${property.purpose}${property.city ? `&city_id=${property.city.id}` : ""}`;
 
-  const listingUrl = seo.canonical_url;
   /** Breadcrumb steps chosen in Site Settings → Listing page; each one narrows the search of the step before it. */
-  const crumbFilters = new URLSearchParams({ purpose: property.purpose });
+  const purposePath = PURPOSE_PAGES[property.purpose].path;
+  const crumbFilters = new URLSearchParams();
   const searchCrumb = (name: string, key: string, value: number) => {
     crumbFilters.set(key, String(value));
 
-    return { name, path: `/properties?${crumbFilters.toString()}` };
+    return { name, path: `${purposePath}?${crumbFilters.toString()}` };
   };
   const trail = [
     pageSettings.breadcrumb_show_purpose && {
       name: property.purpose === "rent" ? pageSettings.breadcrumb_rent_label : pageSettings.breadcrumb_sale_label,
-      path: `/properties?purpose=${property.purpose}`,
+      path: purposePath,
     },
     pageSettings.breadcrumb_show_property_type && property.property_type && searchCrumb(property.property_type.name, "property_type_id", property.property_type.id),
     pageSettings.breadcrumb_show_city && property.city && searchCrumb(property.city.name, "city_id", property.city.id),
@@ -216,42 +206,24 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
   const breadcrumbs = [{ name: pageSettings.breadcrumb_home_label, path: "/" }, ...trail];
   const currentCrumb = { name: property.title, path: seo.path };
   /** Search engines always get the listing as the last step, even when the visible trail leaves the title out. */
-  const breadcrumbData = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [...breadcrumbs, currentCrumb].map((crumb, index) => ({ "@type": "ListItem", position: index + 1, name: crumb.name, item: `${siteUrl()}${crumb.path}` })),
-  };
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "RealEstateListing",
-    name: property.title,
-    description: descriptionText(property.description),
-    url: listingUrl,
-    datePosted: property.published_at ?? undefined,
-    dateModified: property.refreshed_at ?? undefined,
-    image: photos.map((photo) => mediumUrl(photo)),
-    offers: {
-      "@type": "Offer",
-      url: listingUrl,
-      price: Number(property.price),
-      priceCurrency: "PKR",
-      availability: availabilityOf(property, seo.notice),
-      businessFunction: property.purpose === "rent" ? "http://purl.org/goodrelations/v1#LeaseOut" : "http://purl.org/goodrelations/v1#Sell",
-      ...(property.purpose === "rent" ? { priceSpecification: { "@type": "UnitPriceSpecification", price: Number(property.price), priceCurrency: "PKR", unitCode: "MON" } } : {}),
-      ...(property.contact?.agency ? { offeredBy: { "@type": "RealEstateAgent", name: property.contact.agency.name, url: `${siteUrl()}/dealer/${property.contact.agency.slug}` } } : {}),
-    },
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: [property.address, property.block, property.sector, property.phase, property.society?.name].filter(Boolean).join(", ") || undefined,
-      addressLocality: property.city?.name,
-      addressCountry: "PK",
-    },
-    ...(property.property_type ? { category: property.property_type.name } : {}),
-  };
+  const structuredData = [
+    ...webPageSchemas({
+      path: seo.path,
+      type: "RealEstateListing",
+      name: property.title,
+      description: seo.description,
+      breadcrumb: pageSettings.breadcrumb_enabled ? [...breadcrumbs, currentCrumb] : false,
+      image: photos[0] ? imageObject(mediumUrl(photos[0]), { caption: altText(photos[0].alt_text, property.title) }) : null,
+      mainEntity: ref(`${absoluteUrl(seo.path)}#property`),
+      extra: { datePosted: property.published_at ?? undefined },
+      dateModified: property.refreshed_at,
+    }),
+    ...propertySchemas(property, seo.path, seo.notice),
+  ];
 
   return (
     <div className="container page-section pd-page">
-      <JsonLd data={pageSettings.breadcrumb_enabled ? [structuredData, breadcrumbData] : [structuredData]} />
+      <JsonLd data={structuredData} />
       <ViewTracker slug={String(property.id)} />
       <RecordRecentlyViewed propertyId={property.id} />
 
