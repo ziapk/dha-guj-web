@@ -47,6 +47,8 @@ const nextConfig: NextConfig = {
       { source: "/author", destination: "/authors", statusCode: 301 },
       { source: "/projects/:slug", destination: "/project/:slug", statusCode: 301 },
       { source: "/project", destination: "/projects", statusCode: 301 },
+      // Renamed project slugs.
+      { source: "/project/rachana-villas", destination: "/project/rachna-villas", statusCode: 301 },
       { source: "/developers/:slug", destination: "/developer/:slug", statusCode: 301 },
       { source: "/developer", destination: "/developers", statusCode: 301 },
     ];
