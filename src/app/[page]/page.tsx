@@ -5,7 +5,7 @@ import { JsonLd } from "@/components/json-ld";
 import { ContactList, SocialLinks } from "@/components/site-contact";
 import { formatDate } from "@/lib/labels";
 import { cmsPageSchemas } from "@/lib/page-schema";
-import { metaText, openGraph, shareImages } from "@/lib/seo";
+import { adminShareImage, metaText, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { cmsPageHref, getCmsPage, getCmsPages, getSiteSettings, hasContactDetails, siteNameOf } from "@/lib/site-data";
 
@@ -34,22 +34,15 @@ export async function generateMetadata({ params }: PageProps<"/[page]">): Promis
   const page = await getCmsPage(slug);
 
   if (!page) {
-    return { title: "Page not found", robots: { index: false } };
+    return notFoundMetadata("Page not found");
   }
 
-  const settings = await getSiteSettings();
-  const title = page.meta_title ?? page.title;
-  const description = metaText(page.meta_description ?? page.content_html.replace(/<[^>]*>/g, " ")) || `${page.title} | ${siteNameOf(settings)}`;
-  const url = cmsPageHref(page.slug);
-  const images = shareImages(page, title);
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images }),
-    twitter: { card: images ? "summary_large_image" : "summary", title, description },
-  };
+  return pageMetadata({
+    title: page.meta_title ?? page.title,
+    description: metaText(page.meta_description ?? page.content_html.replace(/<[^>]*>/g, " ")),
+    path: cmsPageHref(page.slug),
+    images: [adminShareImage(page)],
+  });
 }
 
 export default async function CmsPageView({ params }: PageProps<"/[page]">) {

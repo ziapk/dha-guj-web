@@ -11,7 +11,7 @@ import { altText } from "@/lib/alt-text";
 import { getMapAreas } from "@/lib/plot-finder";
 import { mapsHref, resolveArea } from "@/lib/plot-finder-shared";
 import { fileSizeLabel, getSocietyMap, societyMapHref, societyMapLocation } from "@/lib/society-maps";
-import { jsonLd, metaText, openGraph, shareImages } from "@/lib/seo";
+import { adminShareImage, jsonLd, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 
 export const revalidate = 300;
@@ -21,21 +21,18 @@ export async function generateMetadata({ params }: PageProps<"/map/[slug]">): Pr
   const result = await getSocietyMap(slug);
 
   if (!result) {
-    return { title: "Map not found", robots: { index: false } };
+    return notFoundMetadata("Map not found");
   }
 
   const map = result.data;
-  const title = map.meta_title ?? map.title;
-  const description = metaText(map.meta_description ?? map.description_text ?? `${map.title}: view in full size, zoom in and download.`);
-  const url = societyMapHref(map.slug);
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: shareImages(map, map.title, { url: map.image_url, alt: altText(map.image_alt, map.title) }) }),
-    twitter: { card: "summary_large_image", title, description },
-  };
+  return pageMetadata({
+    title: map.meta_title ?? map.title,
+    description: map.meta_description ?? map.description_text ?? `${map.title}: view the DHA Gujranwala map in full size, zoom in and download it.`,
+    path: societyMapHref(map.slug),
+    // Maps are shared whole rather than cropped.
+    images: [adminShareImage(map), map.image_url && { url: map.image_url, alt: altText(map.image_alt, map.title), fit: "contain" }],
+    imageAlt: map.title,
+  });
 }
 
 export default async function SocietyMapPage({ params }: PageProps<"/map/[slug]">) {

@@ -8,7 +8,7 @@ import { Rail } from "@/components/rail";
 import { SearchSuggest } from "@/components/search-suggest";
 import { publicApi } from "@/lib/api";
 import { PAGE_META } from "@/lib/page-meta";
-import { openGraph, queryRobots } from "@/lib/seo";
+import { pageMetadata, queryRobots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 import type { AgencyDirectoryStats, AgencyProfile, City, Collection, Paginated } from "@/types/api";
 
@@ -20,14 +20,14 @@ const MAX_PAGE = 20;
 export async function generateMetadata({ searchParams }: PageProps<"/dealers">): Promise<Metadata> {
   const params = await searchParams;
 
-  return {
-    title: { absolute: TITLE },
+  return pageMetadata({
+    title: TITLE,
+    absoluteTitle: true,
     description: DESCRIPTION,
-    alternates: { canonical: "/dealers" },
-    openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/dealers" }),
+    path: "/dealers",
     // Filtered and "load more" pages are copies of the main list, so keep them out of the index.
     robots: queryRobots(params),
-  };
+  });
 }
 
 function pick(value: string | string[] | undefined): string {

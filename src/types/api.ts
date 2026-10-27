@@ -197,6 +197,9 @@ export type AgencyProfile = {
   logo_alt?: string | null;
   cover_url: string | null;
   cover_alt?: string | null;
+  /** Featured share (Open Graph) image an admin set; shared before the cover and logo. */
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   phone: string | null;
   whatsapp: string | null;
   email: string | null;
@@ -253,6 +256,9 @@ export type PublicAgent = {
   bio_html?: string;
   photo_url: string | null;
   photo_alt?: string | null;
+  /** Featured share (Open Graph) image an admin set; shared before the photo. */
+  og_image_url?: string | null;
+  og_image_alt?: string | null;
   experience_years: number | null;
   specialisation: string | null;
   areas_of_expertise: string[];

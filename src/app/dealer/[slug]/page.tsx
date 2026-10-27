@@ -32,7 +32,7 @@ import { altText, logoAlt } from "@/lib/alt-text";
 import { NotFoundError, publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, metaText, openGraph, queryRobots } from "@/lib/seo";
+import { adminShareImage, jsonLd, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import type { AgencyProfile, Paginated, PublicProperty, Resource } from "@/types/api";
 
@@ -83,22 +83,28 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/dea
   const agency = await getAgency(slug);
 
   if (!agency) {
-    return { title: "Dealer not found" };
+    return notFoundMetadata("Dealer not found");
   }
 
-  const place = agency.city ? ` in ${agency.city.name}` : "";
-  const description = metaText(agency.about ? `${agency.name}, real estate agency${place}. ${agency.about}` : `${agency.name}, real estate agency${place}. Meet the agents and browse every property they have for sale or rent.`);
-  const url = `/dealer/${agency.slug}`;
-  const title = `${agency.name}: real estate agency${place}`;
+  const place = agency.city?.name ?? "DHA Gujranwala";
 
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: agency.logo_url ? [{ url: agency.logo_url, alt: logoAlt(agency.name, agency.logo_alt) }] : undefined }),
-    twitter: { card: "summary", title, description },
+  // Shares the admin's featured image, else the dealer's cover photo, else its logo, else the default image.
+  return pageMetadata({
+    title: `${agency.name} | DHA Gujranwala Property Dealer`,
+    absoluteTitle: true,
+    description: agency.about
+      ? `${agency.name}, property dealer in ${place}. ${agency.about}`
+      : `Explore ${agency.name}'s profile, property listings and real estate services in DHA Gujranwala.`,
+    path: `/dealer/${agency.slug}`,
+    images: [
+      adminShareImage(agency),
+      agency.cover_url && { url: agency.cover_url, alt: altText(agency.cover_alt, `${agency.name} office`) },
+      agency.logo_url && { url: agency.logo_url, alt: logoAlt(agency.name, agency.logo_alt), fit: "contain" },
+    ],
+    imageAlt: agency.name,
+    type: "profile",
     robots: queryRobots(await searchParams),
-  };
+  });
 }
 
 export default async function AgencyPage({ params, searchParams }: PageProps<"/dealer/[slug]">) {

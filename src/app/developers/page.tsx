@@ -8,7 +8,7 @@ import { FeaturedDevelopers } from "@/components/developer/featured-developers";
 import { ArrowRightIcon, BuildingIcon, HandshakeIcon, LayersIcon, PinIcon } from "@/components/icons";
 import { publicApi } from "@/lib/api";
 import { DEVELOPER_TYPE_LABELS, DEVELOPER_TYPES, type DeveloperDirectory } from "@/lib/developers";
-import { openGraph, queryRobots } from "@/lib/seo";
+import { pageMetadata, queryRobots } from "@/lib/seo";
 import type { DeveloperType, Paginated, PublicDeveloper } from "@/types/api";
 
 const TITLE = "Property developers & builders";
@@ -42,14 +42,13 @@ function pickType(value: string | string[] | undefined): DeveloperType | "" {
 export async function generateMetadata({ searchParams }: PageProps<"/developers">): Promise<Metadata> {
   const params = await searchParams;
 
-  return {
+  return pageMetadata({
     title: TITLE,
     description: DESCRIPTION,
-    alternates: { canonical: "/developers" },
-    openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/developers" }),
+    path: "/developers",
     // Filtered and later result pages are thin copies of the main list, so keep them out of the index.
     robots: queryRobots(params),
-  };
+  });
 }
 
 export default async function DevelopersPage({ searchParams }: PageProps<"/developers">) {

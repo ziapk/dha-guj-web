@@ -4,7 +4,7 @@ import { cache } from "react";
 import { NotFoundError, publicApi } from "@/lib/api";
 import type { CmsPage, CmsPageSummary, Collection, ListingPageSettings, Resource, SiteSettings } from "@/types/api";
 
-export const DEFAULT_SITE_NAME = "DHA GUJ Properties";
+export const DEFAULT_SITE_NAME = "DHA GRW Properties";
 export const DEFAULT_TAGLINE = "Homes, plots and commercial property for sale and rent across DHA Gujranwala, Lahore, Islamabad and Karachi.";
 
 const SETTINGS_REVALIDATE = 300;

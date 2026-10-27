@@ -39,7 +39,7 @@ import { altText, logoAlt } from "@/lib/alt-text";
 import { DEVELOPER_TYPE_LABELS, developerHref, developerSocials, getDeveloper, sectionHeading, yearsInBusiness } from "@/lib/developers";
 import { sizedImage, type ImageSize } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, metaText, openGraph, queryRobots, shareImages } from "@/lib/seo";
+import { adminShareImage, jsonLd, metaText, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import { siteUrl } from "@/lib/site";
 import type { DeveloperLeader, DeveloperStat, DeveloperTeamMember, PublicDeveloper } from "@/types/api";
@@ -69,7 +69,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/dev
   const result = await getDeveloper(slug, page);
 
   if (!result) {
-    return { title: "Company not found" };
+    return notFoundMetadata("Company not found");
   }
 
   const developer = result.data;
@@ -80,17 +80,21 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/dev
     developer.meta_description ?? developer.short_description ?? `${developer.name}, ${kind}${place}. See the company's background and every project it has live right now.`,
   );
   const url = developerHref(developer.slug);
-  const image = developer.cover_url ?? developer.logo_url;
 
-  return {
+  return pageMetadata({
     title,
     description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: shareImages(developer, developer.name, image ? { url: image, alt: developer.cover_url ? altText(developer.cover_alt, developer.name) : logoAlt(developer.name, developer.logo_alt) } : null) }),
-    twitter: { card: developer.cover_url || developer.og_image_url ? "summary_large_image" : "summary", title, description },
+    path: url,
+    images: [
+      adminShareImage(developer),
+      developer.cover_url && { url: developer.cover_url, alt: altText(developer.cover_alt, developer.name) },
+      developer.logo_url && { url: developer.logo_url, alt: logoAlt(developer.name, developer.logo_alt), fit: "contain" },
+    ],
+    imageAlt: developer.name,
+    type: "profile",
     // Later project pages repeat the company profile.
     robots: queryRobots(query),
-  };
+  });
 }
 
 function SectionHead({ eyebrow, title, accent, text, center = false }: { eyebrow?: string; title: string; accent?: string; text?: string; center?: boolean }) {

@@ -37,7 +37,7 @@ import { NotFoundError, publicApi } from "@/lib/api";
 import { FURNISHED_LABELS, PROPERTY_PURPOSE_LABELS, formatArea, formatCompactPrice, formatDate, formatPrice } from "@/lib/labels";
 import { JsonLd } from "@/components/json-ld";
 import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref, purposeTagOf, thumbnailUrl, videoEmbedUrl } from "@/lib/property";
-import { openGraph, robots, shareImages } from "@/lib/seo";
+import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { getListingPageSettings } from "@/lib/site-data";
 import { siteUrl } from "@/lib/site";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
@@ -108,28 +108,21 @@ export async function generateMetadata({ params }: PageProps<"/property/[listing
   const property = await getProperty(listing);
 
   if (!property) {
-    return { title: "Listing not found" };
+    return notFoundMetadata("Listing not found");
   }
 
   const cover = coverOf(property);
-  const images = shareImages(property.seo ?? {}, property.title, cover ? { url: mediumUrl(cover), alt: altText(cover.alt_text, property.title) } : null);
   const seo = seoOf(property);
-  const { description } = seo;
-  const url = seo.path;
 
-  return {
+  return pageMetadata({
     title: seo.title,
-    description,
-    alternates: { canonical: url },
-    robots: robots({ index: seo.index, follow: seo.follow }),
-    openGraph: await openGraph({
-      title: seo.title,
-      description,
-      url,
-      images,
-    }),
-    twitter: { card: images ? "summary_large_image" : "summary", title: seo.title, description, images: images?.map((image) => image.url) },
-  };
+    description: seo.description,
+    path: seo.path,
+    // The listing's featured image: an admin's share image, else its cover photo.
+    images: [adminShareImage(property.seo), cover && { url: mediumUrl(cover), alt: altText(cover.alt_text, property.title) }],
+    imageAlt: property.title,
+    robots: seo.index && seo.follow ? undefined : { index: seo.index, follow: seo.follow },
+  });
 }
 
 export default async function PropertyPage({ params }: PageProps<"/property/[listing]">) {

@@ -11,7 +11,7 @@ import { publicApi } from "@/lib/api";
 import { CONTACT_SLUG, getContactPage } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
-import { metaText, openGraph, shareImages } from "@/lib/seo";
+import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, hasContactDetails, siteNameOf } from "@/lib/site-data";
 import type { AgencyProfile, Paginated } from "@/types/api";
@@ -22,27 +22,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const result = await getContactPage();
 
   if (!result) {
-    return { title: "Contact us", robots: { index: false } };
+    return notFoundMetadata("Contact us");
   }
 
   const { page, sections } = result;
-  const title = page.meta_title ?? page.title;
-  const description = metaText(page.meta_description ?? sections.hero.subtitle ?? page.title);
-  const url = `/${CONTACT_SLUG}`;
-  const images = shareImages(page, title, sections.hero.image_url ? { url: sections.hero.image_url } : null);
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({
-      title,
-      description,
-      url,
-      images,
-    }),
-    twitter: { card: images ? "summary_large_image" : "summary", title, description },
-  };
+  return pageMetadata({
+    title: page.meta_title ?? page.title,
+    description: page.meta_description ?? sections.hero.subtitle ?? page.title,
+    path: `/${CONTACT_SLUG}`,
+    images: [adminShareImage(page), sections.hero.image_url && { url: sections.hero.image_url }],
+  });
 }
 
 export default async function ContactPage() {

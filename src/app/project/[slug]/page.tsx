@@ -62,7 +62,7 @@ import {
   projectTimelineOf,
 } from "@/lib/project";
 import { coverOf, descriptionText, locationOf, mediumUrl, propertyHref, thumbnailUrl } from "@/lib/property";
-import { metaText, openGraph, shareImages } from "@/lib/seo";
+import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import type { AgencyProfile, PageIcon, Paginated, ProjectPaymentPlan, PublicProject, PublicProperty, Resource } from "@/types/api";
 
@@ -109,24 +109,25 @@ export async function generateMetadata({ params }: PageProps<"/project/[slug]">)
   const project = await getProject(slug);
 
   if (!project) {
-    return { title: "Project not found" };
+    return notFoundMetadata("Project not found");
   }
 
   const cover = projectPhotosOf(project)[0];
-  const title = project.meta_title ?? project.name;
-  const from = project.price_from ? formatCompactPrice(project.price_from) : null;
-  const description = metaText(
-    project.meta_description ?? `${project.name} by ${project.developer_name}${from ? ` — from ${from}` : ""}. ${project.short_description ?? descriptionText(project.description ?? "")}`,
-  );
-  const url = projectHref(project.slug);
+  // Spec: "Project Name | Location & Prices | DHA GRW Properties" unless the admin wrote a title.
+  const title = project.meta_title ?? `${project.name} | Location & Prices`;
+  const from = project.price_from && !project.hide_price ? formatCompactPrice(project.price_from) : null;
+  const location = [project.sector, project.society?.name, project.city?.name].filter(Boolean).join(", ");
+  const description =
+    project.meta_description ??
+    `${project.name} by ${project.developer_name}${location ? ` in ${location}` : ""}${from ? `, from ${from}` : ""}. ${project.short_description ?? descriptionText(project.description ?? "")}`;
 
-  return {
+  return pageMetadata({
     title,
     description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: shareImages(project, project.name, cover ? { url: mediumUrl(cover), alt: altText(cover.alt_text, project.name) } : null) }),
-    twitter: { card: cover || project.og_image_url ? "summary_large_image" : "summary", title, description },
-  };
+    path: projectHref(project.slug),
+    images: [adminShareImage(project), cover && { url: mediumUrl(cover), alt: altText(cover.alt_text, project.name) }],
+    imageAlt: project.name,
+  });
 }
 
 /** "— KEY HIGHLIGHTS —" over a title whose last words are in the accent colour. */

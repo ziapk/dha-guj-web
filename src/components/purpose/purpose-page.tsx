@@ -13,7 +13,7 @@ import { searchHeading } from "@/lib/property";
 import { PURPOSE_PAGES, PURPOSE_PAGE_SIZE, purposeFilters, purposeHref, sectorOptions } from "@/lib/purpose-search";
 import { PAGE_META } from "@/lib/page-meta";
 import { searchPageChips } from "@/lib/search-pages";
-import { openGraph, queryRobots } from "@/lib/seo";
+import { pageMetadata, queryRobots } from "@/lib/seo";
 import type { AgencyProfile, Block, Collection, HomeData, Paginated, PropertyPurpose, PropertyType, PublicProperty, Resource, SearchPage, Sector } from "@/types/api";
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -42,13 +42,7 @@ export async function purposeMetadata(purpose: PropertyPurpose, searchParams: Pr
     : `Browse verified property ${page.phrase} in ${PLACE}: houses, plots and commercial units with photos, prices and direct Call and WhatsApp contact.`;
   const canonical = purposeHref(page.path, Object.fromEntries(Object.entries(filters).filter(([key]) => LANDING_FILTERS.includes(key))));
 
-  return {
-    title: plain ? { absolute: title } : title,
-    description,
-    alternates: { canonical },
-    openGraph: await openGraph({ title, description, url: canonical }),
-    robots: queryRobots(query, LANDING_FILTERS),
-  };
+  return pageMetadata({ title, absoluteTitle: plain, description, path: canonical, robots: queryRobots(query, LANDING_FILTERS) });
 }
 
 /** Verified agencies with the most live listings first; the top one is the sidebar spotlight. */

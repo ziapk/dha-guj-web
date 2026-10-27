@@ -15,7 +15,7 @@ import { SECTOR_MAPS } from "@/lib/home-content";
 import { getSocietyMaps } from "@/lib/society-maps";
 import { getMasterData } from "@/lib/master-data";
 import { PAGE_META } from "@/lib/page-meta";
-import { openGraph } from "@/lib/seo";
+import { pageMetadata } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 import type { AgencyProfile, HomeData, HomeSections, Paginated, PublicProject, Resource } from "@/types/api";
 
@@ -24,13 +24,7 @@ export const revalidate = 60;
 export async function generateMetadata(): Promise<Metadata> {
   const { title, description } = PAGE_META.home;
 
-  return {
-    title: { absolute: title },
-    description,
-    alternates: { canonical: "/" },
-    openGraph: await openGraph({ title, description, url: "/" }),
-    twitter: { card: "summary", title, description },
-  };
+  return pageMetadata({ title, absoluteTitle: true, description, path: "/" });
 }
 
 const EMPTY_HOME: HomeData = { total_listings: 0, hot: [], featured: [], latest: [], posts: [], cities: [], popular_societies: [] };

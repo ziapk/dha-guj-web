@@ -11,7 +11,7 @@ import { altText } from "@/lib/alt-text";
 import { publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, metaText, openGraph } from "@/lib/seo";
+import { adminShareImage, jsonLd, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import type { Paginated, PublicProperty } from "@/types/api";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
@@ -42,26 +42,25 @@ export async function generateMetadata({ params }: PageProps<"/agent/[slug]">): 
   const agent = await getAgent(slug);
 
   if (!agent) {
-    return { title: "Agent not found", robots: { index: false } };
+    return notFoundMetadata("Agent not found");
   }
 
-  const title = `${agent.name}${agent.designation ? ` — ${agent.designation}` : ""}`;
-  const description = metaText(agent.short_bio ?? agent.specialisation ?? `Contact ${agent.name} about property in DHA Gujranwala.`);
-  const url = `/agent/${agent.slug}`;
+  const role = agent.designation ? `${agent.designation}${agent.agency ? ` at ${agent.agency.name}` : ""}` : agent.agency ? `Agent at ${agent.agency.name}` : null;
 
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({
-      title,
-      description,
-      url,
-      type: "profile",
-      images: agent.photo_url ? [{ url: agent.photo_url, alt: altText(agent.photo_alt, agent.name) }] : undefined,
-    }),
-    twitter: { card: agent.photo_url ? "summary" : "summary", title, description },
-  };
+  // Shares the admin's featured image, else the agent's photo, else the default image.
+  return pageMetadata({
+    title: `${agent.name} | DHA Gujranwala Property Agent`,
+    absoluteTitle: true,
+    description:
+      agent.short_bio ??
+      (role || agent.specialisation
+        ? `${agent.name}${role ? `, ${role}` : ""}. ${agent.specialisation ?? "View property listings and real estate services in DHA Gujranwala."}`
+        : `View ${agent.name}'s profile, property listings and real estate services in DHA Gujranwala.`),
+    path: `/agent/${agent.slug}`,
+    images: [adminShareImage(agent), agent.photo_url && { url: agent.photo_url, alt: altText(agent.photo_alt, agent.name) }],
+    imageAlt: agent.name,
+    type: "profile",
+  });
 }
 
 export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) {

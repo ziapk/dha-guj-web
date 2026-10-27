@@ -10,7 +10,7 @@ import { getMapsPage, MAPS_SLUG } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { PAGE_META } from "@/lib/page-meta";
-import { metaText, openGraph, queryRobots, shareImages } from "@/lib/seo";
+import { adminShareImage, metaText, pageMetadata, queryRobots } from "@/lib/seo";
 import { getSocietyMaps, isSocietyMapCategory } from "@/lib/society-maps";
 import type { SectionHeading } from "@/types/api";
 
@@ -88,14 +88,15 @@ export async function generateMetadata({ searchParams }: PageProps<"/dha-gujranw
   const description = metaText(page?.meta_description ?? sections.hero.subtitle ?? DESCRIPTION);
   const image = sections.hero.image_url ?? sections.about.image_url;
 
-  return {
-    title: category ? title : { absolute: title },
+  return pageMetadata({
+    title,
+    absoluteTitle: !category,
     description,
-    alternates: { canonical: filters.category ? `/dha-gujranwala-maps?category=${filters.category}` : "/dha-gujranwala-maps" },
-    openGraph: await openGraph({ title, description, url: "/dha-gujranwala-maps", images: shareImages(page ?? {}, title, image ? { url: image } : null) }),
+    path: filters.category ? `/dha-gujranwala-maps?category=${filters.category}` : "/dha-gujranwala-maps",
+    images: [adminShareImage(page), image && { url: image }],
     // Category pages are landing pages of their own; searches and society filters are thin copies of the list.
     robots: queryRobots(query, ["category"]),
-  };
+  });
 }
 
 export default async function SocietyMapsPage({ searchParams }: PageProps<"/dha-gujranwala-maps">) {

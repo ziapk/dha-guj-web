@@ -7,7 +7,7 @@ import { longDate, PostCard } from "@/components/post-card";
 import { getPostCategories, getPosts, postHref } from "@/lib/blog";
 import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
-import { openGraph, queryRobots } from "@/lib/seo";
+import { pageMetadata, queryRobots } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
 export const revalidate = 300;
@@ -47,14 +47,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/blog">): Pr
 
   const url = query.size > 0 ? `/blog?${query}` : "/blog";
 
-  return {
-    title: plain ? { absolute: title } : title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url }),
-    twitter: { card: "summary", title, description },
-    robots: queryRobots(params, ["category", "page"]),
-  };
+  return pageMetadata({ title, absoluteTitle: plain, description, path: url, robots: queryRobots(params, ["category", "page"]) });
 }
 
 /** "Load more" keeps earlier pages on screen, so page N shows pages 1…N. Capped to keep the render bounded. */

@@ -7,7 +7,7 @@ import { SectionIcon } from "@/components/section-icon";
 import { ABOUT_SLUG, getAboutPage } from "@/lib/cms-sections";
 import { sizedImage } from "@/lib/image";
 import { cmsPageSchemas } from "@/lib/page-schema";
-import { metaText, openGraph, shareImages } from "@/lib/seo";
+import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
@@ -27,27 +27,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const result = await getAboutPage();
 
   if (!result) {
-    return { title: "About us", robots: { index: false } };
+    return notFoundMetadata("About us");
   }
 
   const { page, sections } = result;
-  const title = page.meta_title ?? page.title;
-  const description = metaText(page.meta_description ?? sections.hero.subtitle ?? page.title);
-  const url = `/${ABOUT_SLUG}`;
-  const images = shareImages(page, title, sections.hero.image_url ? { url: sections.hero.image_url } : null);
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({
-      title,
-      description,
-      url,
-      images,
-    }),
-    twitter: { card: images ? "summary_large_image" : "summary", title, description },
-  };
+  return pageMetadata({
+    title: page.meta_title ?? page.title,
+    description: page.meta_description ?? sections.hero.subtitle ?? page.title,
+    path: `/${ABOUT_SLUG}`,
+    images: [adminShareImage(page), sections.hero.image_url && { url: sections.hero.image_url }],
+  });
 }
 
 export default async function AboutPage() {

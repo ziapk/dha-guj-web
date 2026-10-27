@@ -5,7 +5,7 @@ import { JsonLd } from "@/components/json-ld";
 import { SellPropertyForm } from "@/components/sell-property-form";
 import { publicApi } from "@/lib/api";
 import { whatsappNumber } from "@/lib/property";
-import { openGraph } from "@/lib/seo";
+import { pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { Collection, Phase, PropertyType } from "@/types/api";
@@ -18,13 +18,7 @@ const DESCRIPTION =
 const PATH = "/sell-property";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: TITLE,
-    description: DESCRIPTION,
-    alternates: { canonical: PATH },
-    openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: PATH }),
-    twitter: { card: "summary", title: TITLE, description: DESCRIPTION },
-  };
+  return pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
 }
 
 const STEPS = [

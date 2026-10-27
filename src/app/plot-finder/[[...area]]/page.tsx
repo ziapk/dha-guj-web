@@ -4,7 +4,7 @@ import { PlotFinder } from "@/components/plot-finder/plot-finder";
 import { getMapAreas, getMapConfig } from "@/lib/plot-finder";
 import { areaTitle, mapsHref, resolveArea } from "@/lib/plot-finder-shared";
 import { whatsappNumber } from "@/lib/property";
-import { jsonLd, openGraph, queryRobots } from "@/lib/seo";
+import { jsonLd, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
 import { portalUrl, siteUrl } from "@/lib/site";
 import { getSiteSettings } from "@/lib/site-data";
 import type { MapAreas } from "@/types/api";
@@ -25,22 +25,21 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/plo
   const resolved = resolveArea(areas, area);
 
   if (!resolved) {
-    return { title: "Map not found", robots: { index: false } };
+    return notFoundMetadata("Map not found");
   }
 
   const name = areaTitle(resolved.entry, resolved.block);
-  const title = `${name} Plot Finder & Map`;
-  const description = `Find any plot in ${name} on a live satellite map: plot numbers, sizes, parks, commercial areas and listings for sale or rent.`;
-  const url = mapsHref(resolved.entry, resolved.block);
+  const place = resolved.block ? "block" : "sector";
 
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url }),
-    twitter: { card: "summary", title, description },
+  return pageMetadata({
+    title: resolved.entry ? `${name} – Plots, Map & Location` : `${name} Plot Finder & Map`,
+    absoluteTitle: Boolean(resolved.entry),
+    description: resolved.entry
+      ? `Explore ${name}: find any plot on a live satellite map with plot numbers, sizes, parks, commercial areas, ${place} location and plots for sale or rent.`
+      : `Find any plot in ${name} on a live satellite map: plot numbers, sizes, parks, commercial areas and listings for sale or rent.`,
+    path: mapsHref(resolved.entry, resolved.block),
     robots: queryRobots(await searchParams),
-  };
+  });
 }
 
 export default async function PlotFinderPage({ params, searchParams }: PageProps<"/plot-finder/[[...area]]">) {

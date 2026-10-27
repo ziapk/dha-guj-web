@@ -11,7 +11,7 @@ import { getAgents } from "@/lib/agents";
 import { publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
-import { openGraph, queryRobots } from "@/lib/seo";
+import { pageMetadata, queryRobots } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/site-data";
 import type { Paginated } from "@/types/api";
 
@@ -35,14 +35,14 @@ function pageNumber(value: string | string[] | undefined): number {
 export async function generateMetadata({ searchParams }: PageProps<"/agents">): Promise<Metadata> {
   const params = await searchParams;
 
-  return {
-    title: { absolute: TITLE },
+  return pageMetadata({
+    title: TITLE,
+    absoluteTitle: true,
     description: DESCRIPTION,
-    alternates: { canonical: "/agents" },
-    openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/agents" }),
+    path: "/agents",
     // Search results and "load more" pages are copies of the main list, so keep them out of the index.
     robots: queryRobots(params),
-  };
+  });
 }
 
 /** Directory-wide totals for the stats strip: unfiltered agents, live listings and agencies. */

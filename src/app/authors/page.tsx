@@ -7,7 +7,7 @@ import { ChartIcon, DocumentIcon, MegaphoneIcon, PlusIcon, ShieldCheckIcon, Arro
 import { authorInitials, getAuthorsPage } from "@/lib/authors";
 import { sizedImage } from "@/lib/image";
 import { PAGE_META } from "@/lib/page-meta";
-import { openGraph, queryRobots } from "@/lib/seo";
+import { pageMetadata, queryRobots } from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -35,15 +35,14 @@ export async function generateMetadata({ searchParams }: PageProps<"/authors">):
   const { description } = PAGE_META.authors;
   const title = page > 1 ? `${PAGE_META.authors.title} – page ${page}` : PAGE_META.authors.title;
 
-  return {
-    title: { absolute: title },
+  return pageMetadata({
+    title,
+    absoluteTitle: true,
     description,
     // Every "load more" page repeats the first, so they all point at it.
-    alternates: { canonical: "/authors" },
-    openGraph: await openGraph({ title, description, url: "/authors" }),
-    twitter: { card: "summary", title, description },
+    path: "/authors",
     robots: queryRobots(params),
-  };
+  });
 }
 
 export default async function AuthorsPage({ searchParams }: PageProps<"/authors">) {

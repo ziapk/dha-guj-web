@@ -12,7 +12,7 @@ import { ValidationError, publicApi } from "@/lib/api";
 import { pickFilters, searchHeading } from "@/lib/property";
 import { PAGE_META } from "@/lib/page-meta";
 import { PURPOSE_PAGES, purposeHref } from "@/lib/purpose-search";
-import { openGraph, queryRobots } from "@/lib/seo";
+import { pageMetadata, queryRobots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PropertyType, PublicProperty, Society } from "@/types/api";
 
@@ -44,15 +44,15 @@ export async function generateMetadata({ searchParams }: PageProps<"/properties"
   }
 
   const canonical = canonicalQuery.toString() ? `/properties?${canonicalQuery.toString()}` : "/properties";
-  // Keyword, price, area, sort and other refinements create near-duplicate pages; let crawlers follow them without indexing.
 
-  return {
-    title: plain ? { absolute: title } : title,
+  return pageMetadata({
+    title,
+    absoluteTitle: plain,
     description,
-    alternates: { canonical },
-    openGraph: await openGraph({ title, description, url: canonical }),
+    path: canonical,
+    // Keyword, price, area, sort and other refinements create near-duplicate pages; let crawlers follow them without indexing.
     robots: queryRobots(params, LANDING_FILTERS),
-  };
+  });
 }
 
 const PAGE_SIZE = 24;

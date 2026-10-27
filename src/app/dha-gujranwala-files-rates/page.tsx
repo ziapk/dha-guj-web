@@ -8,7 +8,7 @@ import { FILE_RATES_SLUG, getFileRates } from "@/lib/file-rates";
 import { formatDate } from "@/lib/labels";
 import { whatsappNumber } from "@/lib/property";
 import { cmsPageSchemas } from "@/lib/page-schema";
-import { metaText, openGraph, shareImages } from "@/lib/seo";
+import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { RateTrend } from "@/types/api";
 
@@ -20,22 +20,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const result = await getFileRates();
 
   if (!result) {
-    return { title: "File rates", robots: { index: false } };
+    return notFoundMetadata("File rates");
   }
 
   const { page, sections } = result;
-  const title = page.meta_title ?? page.title;
-  const description = metaText(page.meta_description ?? sections.hero.subtitle ?? `Latest DHA Gujranwala file rates from ${page.title}.`);
-  const url = `/${FILE_RATES_SLUG}`;
-  const images = shareImages(page, title);
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images }),
-    twitter: { card: images ? "summary_large_image" : "summary", title, description },
-  };
+  return pageMetadata({
+    title: page.meta_title ?? page.title,
+    description: page.meta_description ?? sections.hero.subtitle ?? `Latest DHA Gujranwala plot and file rates from ${page.title}.`,
+    path: `/${FILE_RATES_SLUG}`,
+    images: [adminShareImage(page)],
+  });
 }
 
 export default async function FileRatesPage() {

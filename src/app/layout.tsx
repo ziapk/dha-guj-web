@@ -1,34 +1,39 @@
 import "@fontsource-variable/plus-jakarta-sans";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { CompareTray } from "@/components/compare-tray";
 import { GOOGLE_SITE_VERIFICATION, GoogleTagManagerNoscript, GoogleTags } from "@/components/google-tags";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ScrollToTop } from "@/components/scroll-to-top";
-import { defaultOgImages, robots } from "@/lib/seo";
+import { SEO, noindex, pageMetadata, robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
-import { getCmsPages, getSiteSettings, siteNameOf } from "@/lib/site-data";
+import { getCmsPages, getSiteSettings } from "@/lib/site-data";
 import { Providers } from "./providers";
 import "./globals.css";
 
+/**
+ * Site-wide defaults from the SEO spec. Every public page sets its own metadata with pageMetadata() (src/lib/seo.ts);
+ * these only fill in for pages that set none, such as the sign-in and account pages.
+ */
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings();
-  const siteName = siteNameOf(settings);
-  const images = defaultOgImages(settings);
-  const description = "Search houses, flats, plots and commercial property for sale and rent in DHA Gujranwala, Lahore, Islamabad and Karachi.";
+  const defaults = await pageMetadata({ title: SEO.title, absoluteTitle: true, description: SEO.description, path: "/" });
 
   return {
+    ...defaults,
     metadataBase: new URL(siteUrl()),
-    title: { default: `${siteName}: homes, plots and commercial property`, template: `%s | ${siteName}` },
-    description,
-    applicationName: siteName,
-    robots: robots(),
+    title: { default: SEO.title, template: `%s | ${SEO.siteName}` },
+    // A page without its own canonical URL must not claim the home page's.
+    alternates: undefined,
+    openGraph: { ...defaults.openGraph, url: undefined },
+    // Public pages set their own robots; leaving it unset here keeps the 404 page's noindex from conflicting.
+    robots: noindex() ? robots() : undefined,
+    applicationName: SEO.siteName,
     verification: { google: GOOGLE_SITE_VERIFICATION },
-    openGraph: { siteName, type: "website", locale: "en_PK", description, images },
-    twitter: { card: images ? "summary_large_image" : "summary" },
   };
 }
+
+export const viewport: Viewport = { themeColor: SEO.themeColor };
 
 /** Applies dark mode before first paint only when the visitor chose it with the toggle; otherwise light. */
 const themeScript = `(function(){var d=false;try{d=JSON.parse(localStorage.getItem('dha-web-theme')||'{}').mode==='dark';}catch(e){}document.documentElement.dataset.theme=d?'dark':'light';})();`;

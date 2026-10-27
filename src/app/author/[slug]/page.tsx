@@ -19,7 +19,7 @@ import {
 } from "@/components/icons";
 import { authorInitials, authorSocials, getAuthor, getAuthors } from "@/lib/authors";
 import { sizedImage } from "@/lib/image";
-import { jsonLd, metaText, openGraph, queryRobots } from "@/lib/seo";
+import { adminShareImage, jsonLd, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 
@@ -56,29 +56,20 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/aut
   const result = await getAuthor(slug);
 
   if (!result) {
-    return { title: "Author not found", robots: { index: false } };
+    return notFoundMetadata("Author not found");
   }
 
   const author = result.data;
-  const title = author.meta_title ?? `${author.name} — ${author.designation}`;
-  const description = metaText(author.meta_description ?? author.short_bio);
-  const url = `/author/${author.slug}`;
-  const image = author.og_image_url ?? author.photo_url;
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({
-      title: author.og_title ?? title,
-      description: author.og_description ? metaText(author.og_description) : description,
-      url,
-      type: "profile",
-      images: image ? [{ url: image }] : undefined,
-    }),
-    twitter: { card: image ? "summary_large_image" : "summary", title, description },
+  return pageMetadata({
+    title: author.meta_title ?? `${author.name} — ${author.designation}`,
+    description: author.meta_description ?? author.short_bio,
+    path: `/author/${author.slug}`,
+    social: { title: author.og_title, description: author.og_description },
+    images: [adminShareImage(author), author.photo_url && { url: author.photo_url, alt: author.name }],
+    imageAlt: author.name,
+    type: "profile",
     robots: queryRobots(await searchParams),
-  };
+  });
 }
 
 export default async function AuthorPage({ params, searchParams }: PageProps<"/author/[slug]">) {

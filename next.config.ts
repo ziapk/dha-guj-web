@@ -7,6 +7,14 @@ const r2Url = process.env.R2_MEDIA_URL ? new URL(process.env.R2_MEDIA_URL) : nul
 /** Staging and other non-production deployments set NOINDEX=true at build time (see .env.example). */
 const noindex = process.env.NOINDEX === "true";
 
+/** Canonical origin (NEXT_PUBLIC_SITE_URL, e.g. https://dhagrwproperties.com); www requests are sent to it. */
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : null;
+
+// Canonical URLs, Open Graph URLs and the sitemap all use NEXT_PUBLIC_SITE_URL, so an indexable build must not point at staging.
+if (process.env.NODE_ENV === "production" && !noindex && siteUrl && /staging|localhost|127\.0\.0\.1/.test(siteUrl.hostname)) {
+  console.warn(`\n⚠ NEXT_PUBLIC_SITE_URL is ${siteUrl.origin} but NOINDEX is not set: search engines would index staging URLs.\n`);
+}
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -29,6 +37,10 @@ const nextConfig: NextConfig = {
   // /maps/{sector} links land on /map/{sector}, and the map page sends those on to the Plot Finder.
   async redirects() {
     return [
+      // www and non-www serve the same site; send www to the canonical host.
+      ...(siteUrl && !siteUrl.hostname.startsWith("www.")
+        ? [{ source: "/:path*", has: [{ type: "host" as const, value: `www.${siteUrl.hostname}` }], destination: `${siteUrl.origin}/:path*`, statusCode: 301 as const }]
+        : []),
       { source: "/buy", destination: "/properties-for-sale", statusCode: 301 },
       { source: "/rent", destination: "/properties-for-rent", statusCode: 301 },
       { source: "/property", destination: "/properties", statusCode: 301 },

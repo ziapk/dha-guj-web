@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { publicApi } from "@/lib/api";
 import { formatPrice } from "@/lib/labels";
-import { openGraph } from "@/lib/seo";
+import { pageMetadata } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { Collection, Offer, OfferItem } from "@/types/api";
 
@@ -11,12 +11,7 @@ const TITLE = "Pricing for owners and dealers";
 const DESCRIPTION = "Compare listing plans for property owners and real estate agencies: property listings, featured ads, refresh credits and more.";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: TITLE,
-    description: DESCRIPTION,
-    alternates: { canonical: "/pricing" },
-    openGraph: await openGraph({ title: TITLE, description: DESCRIPTION, url: "/pricing" }),
-  };
+  return pageMetadata({ title: TITLE, description: DESCRIPTION, path: "/pricing" });
 }
 
 function featureText(item: OfferItem): string {

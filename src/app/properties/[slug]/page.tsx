@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PurposeListingPage } from "@/components/purpose/purpose-page";
 import { getSearchPage, searchPageHref } from "@/lib/search-pages";
-import { metaText, openGraph, queryRobots, shareImages } from "@/lib/seo";
+import { adminShareImage, metaText, notFoundMetadata, pageMetadata, queryRobots } from "@/lib/seo";
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/properties/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const landing = await getSearchPage(slug);
 
   if (!landing) {
-    return { title: "Page not found" };
+    return notFoundMetadata("Page not found");
   }
 
   const query = await searchParams;
@@ -24,16 +24,17 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/pro
     .map((keyword) => keyword.trim())
     .filter(Boolean);
 
-  return {
-    // The admin's meta title is used as written, without the site-wide "| DHA GUJ" suffix.
-    title: { absolute: title },
+  return pageMetadata({
+    // The admin's meta title is used as written, without the site-wide "| site name" suffix.
+    title,
+    absoluteTitle: true,
     description,
-    keywords: keywords?.length ? keywords : undefined,
-    alternates: { canonical: url },
-    openGraph: await openGraph({ title, description, url, images: shareImages(landing, title) }),
+    path: url,
+    images: [adminShareImage(landing)],
+    keywords,
     // Later pages and other sort orders repeat the same search.
     robots: queryRobots(query),
-  };
+  });
 }
 
 /**

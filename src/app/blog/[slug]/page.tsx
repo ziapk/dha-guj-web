@@ -17,7 +17,7 @@ import { getPost, getPosts, postHref, readingMinutes, splitArticle, stripHtml } 
 import { authorHref, authorSocials, getAuthor } from "@/lib/authors";
 import { sizedImage } from "@/lib/image";
 import { formatDate } from "@/lib/labels";
-import { jsonLd, metaText, openGraph, shareImages } from "@/lib/seo";
+import { adminShareImage, jsonLd, metaText, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
 import { getSiteSettings, siteNameOf } from "@/lib/site-data";
 import type { AgencyProfile, BlogPostSummary, HomeData, Paginated, PublicAuthor, PublicProject, PublicProperty, Resource } from "@/types/api";
@@ -36,30 +36,23 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
   const post = await getPost(slug);
 
   if (!post) {
-    return { title: "Article not found", robots: { index: false } };
+    return notFoundMetadata("Article not found");
   }
 
-  const title = post.meta_title ?? post.title;
-  const description = metaText(post.meta_description ?? post.excerpt ?? stripHtml(post.content_html)) || post.title;
-  const url = postHref(post.slug);
-  const images = shareImages(post, post.title, post.cover_image_url ? { url: post.cover_image_url, alt: post.title } : null);
-
-  return {
-    title,
-    description,
-    alternates: { canonical: url },
-    openGraph: await openGraph({
-      title,
-      description,
-      url,
-      type: "article",
-      publishedTime: post.published_at ?? undefined,
-      modifiedTime: post.updated_at ?? undefined,
+  return pageMetadata({
+    title: post.meta_title ?? post.title,
+    description: metaText(post.meta_description ?? post.excerpt ?? stripHtml(post.content_html)) || post.title,
+    path: postHref(post.slug),
+    images: [adminShareImage(post), post.cover_image_url && { url: post.cover_image_url, alt: post.title }],
+    imageAlt: post.title,
+    type: "article",
+    article: {
+      publishedTime: post.published_at,
+      modifiedTime: post.updated_at,
       authors: post.author ? [post.author.name] : undefined,
-      images,
-    }),
-    twitter: { card: images ? "summary_large_image" : "summary", title, description, images: images?.map((image) => image.url) },
-  };
+      section: post.category?.name,
+    },
+  });
 }
 
 const RELATED_COUNT = 8;
