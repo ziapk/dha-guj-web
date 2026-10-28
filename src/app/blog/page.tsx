@@ -49,7 +49,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/blog">): Pr
 
   const url = query.size > 0 ? `/blog?${query}` : "/blog";
 
-  return pageMetadata({ title, absoluteTitle: plain, description, path: url, robots: queryRobots(params, ["category", "page"]) });
+  return pageMetadata({ title, absoluteTitle: plain, description, path: url, robots: queryRobots(params) });
 }
 
 /** "Load more" keeps earlier pages on screen, so page N shows pages 1…N. Capped to keep the render bounded. */

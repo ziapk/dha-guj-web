@@ -95,8 +95,8 @@ export async function generateMetadata({ searchParams }: PageProps<"/dha-gujranw
     description,
     path: filters.category ? `/dha-gujranwala-maps?category=${filters.category}` : "/dha-gujranwala-maps",
     images: [adminShareImage(page), image && { url: image }],
-    // Category pages are landing pages of their own; searches and society filters are thin copies of the list.
-    robots: queryRobots(query, ["category"]),
+    // Category, search and society filters are copies of the list; crawlers follow their links without indexing them.
+    robots: queryRobots(query),
   });
 }
 

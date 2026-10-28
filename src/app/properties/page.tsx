@@ -16,7 +16,7 @@ import { pageMetadata, queryRobots } from "@/lib/seo";
 import { portalUrl } from "@/lib/site";
 import type { City, Collection, Paginated, PropertyType, PublicProperty, Society } from "@/types/api";
 
-/** Filters that make a useful landing page ("Plots for sale in Lahore"); any other filter is a variation of one of these. */
+/** Filters the canonical URL keeps ("Plots for sale in Lahore"); any other filter is a variation of one of these. */
 const LANDING_FILTERS = ["purpose", "category", "property_type_id", "city_id", "society_id", "page"] as const;
 
 export async function generateMetadata({ searchParams }: PageProps<"/properties">): Promise<Metadata> {
@@ -50,8 +50,8 @@ export async function generateMetadata({ searchParams }: PageProps<"/properties"
     absoluteTitle: plain,
     description,
     path: canonical,
-    // Keyword, price, area, sort and other refinements create near-duplicate pages; let crawlers follow them without indexing.
-    robots: queryRobots(params, LANDING_FILTERS),
+    // Every filtered or paginated URL is a copy of the plain listing; crawlers follow its links without indexing it.
+    robots: queryRobots(params),
   });
 }
 

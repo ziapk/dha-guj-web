@@ -23,7 +23,7 @@ type SearchParams = Record<string, string | string[] | undefined>;
 
 const PLACE = "DHA Gujranwala";
 
-/** Filters that make a landing page worth indexing ("Houses for rent"); anything else is a refinement of one. */
+/** Filters the canonical URL keeps ("Houses for rent"); anything else is a refinement of one. */
 const LANDING_FILTERS = ["category", "property_type_id", "sector", "page"];
 
 async function propertyTypesList(): Promise<PropertyType[]> {
@@ -45,7 +45,7 @@ export async function purposeMetadata(purpose: PropertyPurpose, searchParams: Pr
     : `Browse verified property ${page.phrase} in ${PLACE}: houses, plots and commercial units with photos, prices and direct Call and WhatsApp contact.`;
   const canonical = purposeHref(page.path, Object.fromEntries(Object.entries(filters).filter(([key]) => LANDING_FILTERS.includes(key))));
 
-  return pageMetadata({ title, absoluteTitle: plain, description, path: canonical, robots: queryRobots(query, LANDING_FILTERS) });
+  return pageMetadata({ title, absoluteTitle: plain, description, path: canonical, robots: queryRobots(query) });
 }
 
 /** Verified agencies with the most live listings first; the top one is the sidebar spotlight. */
