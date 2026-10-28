@@ -55,7 +55,10 @@ async function collect<T>(path: string, maxPages: number): Promise<T[]> {
   return items;
 }
 
-/** Each child sitemap: its file name (served from the site root) and how to build its entries. */
+/**
+ * Each child sitemap: its file name (served from the site root) and how to build its entries. Each one starts with
+ * its directory page, so it is never an empty <urlset>, which Search Console rejects as "Missing XML tag".
+ */
 export const SITEMAPS = {
   "sitemap-main.xml": {
     description: "all the main pages of the website",
@@ -64,13 +67,6 @@ export const SITEMAPS = {
 
       return [
         { url: `${site}/`, changeFrequency: "daily", priority: 1 },
-        { url: `${site}/properties`, changeFrequency: "hourly", priority: 0.9 },
-        { url: `${site}/properties-for-sale`, changeFrequency: "hourly", priority: 0.8 },
-        { url: `${site}/properties-for-rent`, changeFrequency: "hourly", priority: 0.8 },
-        { url: `${site}/projects`, changeFrequency: "daily", priority: 0.7 },
-        { url: `${site}/dealers`, changeFrequency: "daily", priority: 0.6 },
-        { url: `${site}/agents`, changeFrequency: "daily", priority: 0.6 },
-        { url: `${site}/developers`, changeFrequency: "weekly", priority: 0.6 },
         { url: `${site}/wanted`, changeFrequency: "daily", priority: 0.5 },
         { url: `${site}/dha-gujranwala-files-rates`, changeFrequency: "daily", priority: 0.6 },
         { url: `${site}/pricing`, changeFrequency: "monthly", priority: 0.5 },
@@ -89,7 +85,12 @@ export const SITEMAPS = {
         .then((response) => response.data)
         .catch(() => []);
 
-      return properties.map((property) => ({ url: `${site}${property.path}`, lastModified: property.last_modified, changeFrequency: "daily", priority: 0.8 }));
+      return [
+        { url: `${site}/properties`, changeFrequency: "hourly", priority: 0.9 },
+        { url: `${site}/properties-for-sale`, changeFrequency: "hourly", priority: 0.8 },
+        { url: `${site}/properties-for-rent`, changeFrequency: "hourly", priority: 0.8 },
+        ...properties.map((property) => ({ url: `${site}${property.path}`, lastModified: property.last_modified, changeFrequency: "daily" as const, priority: 0.8 })),
+      ];
     },
   },
   "dealers.xml": {
@@ -97,7 +98,10 @@ export const SITEMAPS = {
     async entries(site: string): Promise<SitemapEntry[]> {
       const agencies = await collect<AgencyProfile>("agencies", MAX_AGENCY_PAGES);
 
-      return agencies.map((agency) => ({ url: `${site}/dealer/${agency.slug}`, changeFrequency: "weekly", priority: 0.6 }));
+      return [
+        { url: `${site}/dealers`, changeFrequency: "daily", priority: 0.6 },
+        ...agencies.map((agency) => ({ url: `${site}/dealer/${agency.slug}`, changeFrequency: "weekly" as const, priority: 0.6 })),
+      ];
     },
   },
   "maps.xml": {
@@ -119,7 +123,10 @@ export const SITEMAPS = {
     async entries(site: string): Promise<SitemapEntry[]> {
       const agents = await collect<PublicAgent>("agents", MAX_AGENT_PAGES);
 
-      return agents.map((agent) => ({ url: `${site}${agentHref(agent.slug)}`, changeFrequency: "weekly", priority: 0.5 }));
+      return [
+        { url: `${site}/agents`, changeFrequency: "daily", priority: 0.6 },
+        ...agents.map((agent) => ({ url: `${site}${agentHref(agent.slug)}`, changeFrequency: "weekly" as const, priority: 0.5 })),
+      ];
     },
   },
   "projects.xml": {
@@ -127,7 +134,10 @@ export const SITEMAPS = {
     async entries(site: string): Promise<SitemapEntry[]> {
       const projects = await collect<PublicProject>("projects", MAX_PROJECT_PAGES);
 
-      return projects.map((project) => ({ url: `${site}${projectHref(project.slug)}`, lastModified: project.published_at, changeFrequency: "daily", priority: 0.7 }));
+      return [
+        { url: `${site}/projects`, changeFrequency: "daily", priority: 0.7 },
+        ...projects.map((project) => ({ url: `${site}${projectHref(project.slug)}`, lastModified: project.published_at, changeFrequency: "daily" as const, priority: 0.7 })),
+      ];
     },
   },
   "developers.xml": {
@@ -135,7 +145,10 @@ export const SITEMAPS = {
     async entries(site: string): Promise<SitemapEntry[]> {
       const developers = await collect<PublicDeveloper>("developers", MAX_DEVELOPER_PAGES);
 
-      return developers.map((developer) => ({ url: `${site}${developerHref(developer.slug)}`, changeFrequency: "weekly", priority: 0.6 }));
+      return [
+        { url: `${site}/developers`, changeFrequency: "weekly", priority: 0.6 },
+        ...developers.map((developer) => ({ url: `${site}${developerHref(developer.slug)}`, changeFrequency: "weekly" as const, priority: 0.6 })),
+      ];
     },
   },
   "sitemap-blogs.xml": {
