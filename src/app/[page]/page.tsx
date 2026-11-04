@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
+import { SectorGuideLinks } from "@/components/sector-guides/sector-guide-links";
 import { ContactList, SocialLinks } from "@/components/site-contact";
 import { formatDate } from "@/lib/labels";
 import { cmsPageSchemas } from "@/lib/page-schema";
 import { adminShareImage, metaText, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { cmsPageHref, getCmsPage, getCmsPages, getSiteSettings, hasContactDetails, siteNameOf } from "@/lib/site-data";
 import { brandRef } from "@/lib/schema";
+import { getSectorGuides, PLOT_RATES_SLUG, withSectorGuideLinks } from "@/lib/sector-guides";
 
 /**
  * CMS pages at short URLs: /about, /contact, /terms, /privacy, /faq and any other published page.
@@ -59,6 +61,10 @@ export default async function CmsPageView({ params }: PageProps<"/[page]">) {
   const showContact = isContact && hasContactDetails(settings);
   const hasSocial = Object.values(settings.social).some(Boolean);
   const hasTables = /<table\b/i.test(page.content_html);
+  // The plot rates hub stays an independent CMS page, but links to the guide of each area it prices.
+  const isPlotRates = page.slug === PLOT_RATES_SLUG;
+  const sectorGuides = isPlotRates ? await getSectorGuides() : [];
+  const content = isPlotRates ? withSectorGuideLinks(page.content_html, sectorGuides) : page.content_html;
 
   const structuredData = cmsPageSchemas(
     page,
@@ -84,7 +90,7 @@ export default async function CmsPageView({ params }: PageProps<"/[page]">) {
       <div className={`cms-layout${showContact || (isContact && hasSocial) ? " has-aside" : ""}`}>
         {/* content_html is sanitised by the API (Markdown rendered with unsafe HTML stripped). */}
         {/* Pages with tables (e.g. rate lists) use the full width; text-only pages keep a readable line length. */}
-        <article className={`prose${hasTables ? " prose-wide" : ""}`} dangerouslySetInnerHTML={{ __html: withScrollableTables(page.content_html) }} />
+        <article className={`prose${hasTables ? " prose-wide" : ""}`} dangerouslySetInnerHTML={{ __html: withScrollableTables(content) }} />
 
         {isContact && (showContact || hasSocial) && (
           <aside className="cms-aside" aria-label="Contact details">
@@ -103,6 +109,8 @@ export default async function CmsPageView({ params }: PageProps<"/[page]">) {
           </aside>
         )}
       </div>
+
+      {sectorGuides.length > 0 && <SectorGuideLinks guides={sectorGuides} />}
     </div>
   );
 }

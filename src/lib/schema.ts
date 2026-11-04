@@ -410,13 +410,13 @@ export function websiteSchema(settings: SiteSettings): Schema {
   };
 }
 
-/** The main menu as SiteNavigationElement items (the same links as the header). */
-export function navigationSchema(): Schema {
+/** The main menu as SiteNavigationElement items (the same links as the header, including its Guides menu). */
+export function navigationSchema(guides: { href: string; label: string }[] = []): Schema {
   return {
     "@type": "ItemList",
     "@id": schemaId.navigation(),
     name: "Main menu",
-    itemListElement: MAIN_NAV.map((link, index) => ({ "@type": "SiteNavigationElement", position: index + 1, name: link.label, url: absoluteUrl(link.href) })),
+    itemListElement: [...MAIN_NAV, ...guides].map((link, index) => ({ "@type": "SiteNavigationElement", position: index + 1, name: link.label, url: absoluteUrl(link.href) })),
   };
 }
 

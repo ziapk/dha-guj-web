@@ -479,6 +479,28 @@ export function plotFinderPlaceSchema(entry: SectorEntry, block: MapBlock | null
   };
 }
 
+/** A sector or block guide's subject as a Place: inside its sector or phase, with its position when it has been drawn on the Plot Finder. */
+export function areaGuidePlaceSchema(
+  guide: { title: string; path: string; summary: string; map: { slug: string } | null },
+  within: { society: { name: string }; phase: { name: string }; sector?: { title: string; path: string } | null },
+  boundary?: GeoPolygon | null,
+): Schema {
+  const url = absoluteUrl(guide.path);
+
+  return {
+    "@type": "Place",
+    "@id": `${url}#place`,
+    name: `${guide.title}, ${within.society.name}`,
+    url,
+    description: guide.summary,
+    geo: boundaryCentre(boundary),
+    hasMap: guide.map ? absoluteUrl(societyMapHref(guide.map.slug)) : undefined,
+    containedInPlace: within.sector
+      ? { "@type": "Place", "@id": `${absoluteUrl(within.sector.path)}#place`, name: `${within.sector.title}, ${within.society.name}`, url: absoluteUrl(within.sector.path) }
+      : areaChain(within.society, within.phase),
+  };
+}
+
 /** A society map (master plan, sector map…) as a Map of the area it shows. */
 export function societyMapSchema(map: PublicSocietyMap): Schema {
   const url = absoluteUrl(societyMapHref(map.slug));

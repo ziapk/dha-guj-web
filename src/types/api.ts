@@ -339,6 +339,7 @@ export type CmsPageSummary = {
   /** Schema.org page type the admin picked; null = the layout's default, "none" = no automatic page block. */
   schema_type?: string | null;
   is_published: boolean;
+  show_in_header: boolean;
   show_in_footer: boolean;
   sort_order: number;
   updated_at: string | null;
@@ -1114,6 +1115,58 @@ export type PublicSocietyMap = {
   published_at: string | null;
   updated_at: string | null;
 };
+
+/** A block as listed on its sector's guide; `path` is null until the block has a published guide of its own. */
+export type SectorGuideBlock = {
+  id: number;
+  name: string;
+  title: string;
+  path: string | null;
+  summary: string | null;
+  listings_count: number;
+  show_in_header: boolean;
+  show_in_footer: boolean;
+  updated_at: string | null;
+};
+
+type AreaGuideBase = {
+  id: number;
+  name: string;
+  title: string;
+  path: string;
+  summary: string;
+  listings_count: number;
+  show_in_header: boolean;
+  show_in_footer: boolean;
+  updated_at: string | null;
+  map: PublicSocietyMap | null;
+};
+
+/** The written part of a guide's page; the rich text is sanitised by the API. */
+type AreaGuideContent = {
+  overview: string;
+  location_details: string | null;
+  roads_facilities: string | null;
+  development_info: string;
+  verified_on: string;
+  verified_source: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  published_at: string | null;
+};
+
+/** GET /public/sector-guides */
+export type SectorGuide = AreaGuideBase & {
+  phase: { id: number; name: string; slug: string };
+  society: { id: number; name: string; slug: string };
+  blocks: SectorGuideBlock[];
+};
+
+/** GET /public/sector-guides/{sector} */
+export type SectorGuideDetail = SectorGuide & AreaGuideContent;
+
+/** GET /public/sector-guides/{sector}/{block} */
+export type BlockGuide = AreaGuideBase & AreaGuideContent & { sector: SectorGuide };
 
 export type SocietyMapFilters = {
   categories: { value: SocietyMapCategory; label: string; count: number }[];

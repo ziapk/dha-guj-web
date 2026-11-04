@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FooterSection, FooterThemeToggle } from "@/components/footer-section";
-import { ArrowUpIcon, BuildingIcon, ChevronRightIcon, ClockIcon, HomeIcon, LinkIcon, MailIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "@/components/icons";
+import { ArrowUpIcon, BuildingIcon, ChevronRightIcon, ClockIcon, DocumentIcon, HomeIcon, LinkIcon, MailIcon, PhoneIcon, PinIcon, WhatsAppIcon } from "@/components/icons";
 import { SocialLinks } from "@/components/site-contact";
 import { SiteLogo } from "@/components/site-logo";
 import { whatsappNumber } from "@/lib/property";
@@ -47,7 +47,7 @@ function LinkList({ links }: { links: FooterLink[] }) {
   );
 }
 
-export function SiteFooter({ settings, pages }: { settings: SiteSettings; pages: CmsPageSummary[] }) {
+export function SiteFooter({ settings, pages, guides }: { settings: SiteSettings; pages: CmsPageSummary[]; guides: FooterLink[] }) {
   const siteName = siteNameOf(settings);
   const { contact } = settings;
   const whatsapp = whatsappNumber(contact.whatsapp);
@@ -64,7 +64,7 @@ export function SiteFooter({ settings, pages }: { settings: SiteSettings; pages:
   return (
     <footer className="site-footer">
       <div className="container">
-        <div className="footer-grid">
+        <div className={`footer-grid${guides.length > 0 ? " has-guides" : ""}`}>
           <div className="footer-brand">
             <SiteLogo siteName={siteName} logoUrl={settings.general.logo_url} />
             <p>{settings.general.tagline ?? DEFAULT_TAGLINE}</p>
@@ -78,6 +78,12 @@ export function SiteFooter({ settings, pages }: { settings: SiteSettings; pages:
           <FooterSection title="Properties" icon={<HomeIcon className="icon" />}>
             <LinkList links={[...PROPERTY_LINKS, { href: portalUrl("/listings/new"), label: "List Property", external: true }]} />
           </FooterSection>
+
+          {guides.length > 0 && (
+            <FooterSection title="Guides" icon={<DocumentIcon className="icon" />}>
+              <LinkList links={guides} />
+            </FooterSection>
+          )}
 
           <FooterSection title="Company" icon={<BuildingIcon className="icon" />}>
             <LinkList links={companyLinks} />

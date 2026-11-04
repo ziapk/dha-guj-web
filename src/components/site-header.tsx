@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { type ComponentType, useEffect, useState } from "react";
 import {
   BuildingIcon,
+  ChevronDownIcon,
   ChevronRightIcon,
   CloseIcon,
   DocumentIcon,
@@ -45,9 +46,34 @@ const NAV_ICONS: Record<(typeof MAIN_NAV)[number]["href"], NavLink["icon"]> = {
 /** The main menu (design: header-image.png); the mobile panel shows the same links with icons (nav-responsive.png). */
 const LINKS: NavLink[] = MAIN_NAV.map((link) => ({ ...link, icon: NAV_ICONS[link.href] }));
 
+type GuideLink = { href: string; label: string };
+
 const SELL_PROPERTY_HREF = "/sell-property";
 
 const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
+
+/**
+ * The Guides menu. It opens on hover and keyboard focus with CSS, and its links are always in the HTML so crawlers
+ * can follow them. Leaving focus on a clicked link would hold it open after the page changes.
+ */
+function GuidesMenu({ links, isActive }: { links: GuideLink[]; isActive: (href: string) => boolean }) {
+  const current = links.some((link) => isActive(link.href));
+
+  return (
+    <div className={`site-nav-menu${current ? " active" : ""}`}>
+      <button type="button" className="site-nav-menu-button" aria-haspopup="true">
+        Guides <ChevronDownIcon className="icon" />
+      </button>
+      <div className="site-nav-dropdown">
+        {links.map((link) => (
+          <Link key={link.href} href={link.href} aria-current={isActive(link.href) ? "page" : undefined} onClick={(event) => event.currentTarget.blur()}>
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /** The round account button, or the logged-in buyer's menu. */
 function AccountMenu() {
@@ -120,7 +146,7 @@ function MobileAccountLinks({ onNavigate }: { onNavigate: () => void }) {
   );
 }
 
-export function SiteHeader({ settings }: { settings: SiteSettings }) {
+export function SiteHeader({ settings, guides }: { settings: SiteSettings; guides: GuideLink[] }) {
   const siteName = settings.general.site_name ?? "DHA GUJ Properties";
   const phone = settings.contact.phone;
   const whatsapp = whatsappNumber(settings.contact.whatsapp);
@@ -158,6 +184,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
               {link.label}
             </Link>
           ))}
+          {guides.length > 0 && <GuidesMenu links={guides} isActive={isActive} />}
         </nav>
 
         <div className="site-actions">
@@ -205,6 +232,14 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
               {LINKS.map(({ href, label, icon: Icon }) => (
                 <Link key={href} href={href} onClick={close} aria-current={isActive(href) ? "page" : undefined}>
                   <Icon className="icon" />
+                  <span>{label}</span>
+                  <ChevronRightIcon className="icon mobile-menu-chevron" />
+                </Link>
+              ))}
+              {guides.length > 0 && <p className="mobile-menu-group">Guides</p>}
+              {guides.map(({ href, label }) => (
+                <Link key={href} href={href} onClick={close} aria-current={isActive(href) ? "page" : undefined}>
+                  <DocumentIcon className="icon" />
                   <span>{label}</span>
                   <ChevronRightIcon className="icon mobile-menu-chevron" />
                 </Link>

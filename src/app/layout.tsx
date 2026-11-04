@@ -10,6 +10,7 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import { navigationSchema, organizationSchema, websiteSchema } from "@/lib/schema";
 import { SEO, noindex, pageMetadata, robots } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
+import { getSectorGuides, guidesMenus, SECTORS_SLUG } from "@/lib/sector-guides";
 import { getCmsPages, getSiteSettings } from "@/lib/site-data";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -41,8 +42,9 @@ export const viewport: Viewport = { themeColor: SEO.themeColor };
 const themeScript = `(function(){var d=false;try{d=JSON.parse(localStorage.getItem('dha-web-theme')||'{}').mode==='dark';}catch(e){}document.documentElement.dataset.theme=d?'dark':'light';})();`;
 
 export default async function RootLayout({ children, modal }: LayoutProps<"/">) {
-  // Both fall back to empty values, so the site still renders when the API is unavailable.
-  const [settings, pages] = await Promise.all([getSiteSettings(), getCmsPages()]);
+  // All fall back to empty values, so the site still renders when the API is unavailable.
+  const [settings, pages, sectorGuides] = await Promise.all([getSiteSettings(), getCmsPages(), getSectorGuides()]);
+  const guides = guidesMenus(pages, sectorGuides);
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -53,13 +55,13 @@ export default async function RootLayout({ children, modal }: LayoutProps<"/">) 
         <GoogleTagManagerNoscript />
         <GoogleTags />
         {/* The brand, website and main menu, on every page; page-level structured data refers to them by "@id". */}
-        <JsonLd data={[organizationSchema(settings), websiteSchema(settings), navigationSchema()]} />
+        <JsonLd data={[organizationSchema(settings), websiteSchema(settings), navigationSchema(guides.header)]} />
         <AntdRegistry>
           <Providers>
             <ScrollToTop />
-            <SiteHeader settings={settings} />
+            <SiteHeader settings={settings} guides={guides.header} />
             <main>{children}</main>
-            <SiteFooter settings={settings} pages={pages.filter((page) => page.show_in_footer)} />
+            <SiteFooter settings={settings} pages={pages.filter((page) => page.show_in_footer && page.slug !== SECTORS_SLUG)} guides={guides.footer} />
             <CompareTray />
             {modal}
           </Providers>

@@ -9,6 +9,7 @@ import { projectHref } from "@/lib/project";
 import { siteUrl } from "@/lib/site";
 import { cmsPageHref, getCmsPages } from "@/lib/site-data";
 import { getSearchPages, searchPageHref } from "@/lib/search-pages";
+import { getSectorGuides } from "@/lib/sector-guides";
 import { societyMapHref } from "@/lib/society-maps";
 import type { AgencyProfile, BlogPostSummary, Paginated, PublicAgent, PublicAuthor, PublicDeveloper, PublicProject, PublicSocietyMap } from "@/types/api";
 
@@ -63,7 +64,9 @@ export const SITEMAPS = {
   "sitemap-main.xml": {
     description: "all the main pages of the website",
     async entries(site: string): Promise<SitemapEntry[]> {
-      const [pages, searchPages] = await Promise.all([getCmsPages(), getSearchPages(false, SITEMAP_REVALIDATE)]);
+      const [pages, searchPages, sectorGuides] = await Promise.all([getCmsPages(), getSearchPages(false, SITEMAP_REVALIDATE), getSectorGuides(SITEMAP_REVALIDATE)]);
+      // The directory page is a CMS page, so it is listed with them once published; only published guides come back from the API.
+      const guidePages = sectorGuides.flatMap((sector) => [sector, ...sector.blocks]).filter((guide): guide is typeof guide & { path: string } => guide.path !== null);
 
       return [
         { url: `${site}/`, changeFrequency: "daily", priority: 1 },
@@ -74,6 +77,7 @@ export const SITEMAPS = {
         { url: `${site}/contact`, changeFrequency: "monthly", priority: 0.3 },
         ...searchPages.map((page) => ({ url: `${site}${searchPageHref(page.slug)}`, lastModified: page.updated_at, changeFrequency: "daily" as const, priority: 0.7 })),
         ...pages.map((page) => ({ url: `${site}${cmsPageHref(page.slug)}`, lastModified: page.updated_at, changeFrequency: "monthly" as const, priority: 0.3 })),
+        ...guidePages.map((guide) => ({ url: `${site}${guide.path}`, lastModified: guide.updated_at, changeFrequency: "monthly" as const, priority: 0.6 })),
       ];
     },
   },
