@@ -12,7 +12,7 @@ import { getMapAreas } from "@/lib/plot-finder";
 import { mapsHref, resolveArea } from "@/lib/plot-finder-shared";
 import { fileSizeLabel, getSocietyMap, societyMapHref, societyMapLocation } from "@/lib/society-maps";
 import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
-import { absoluteUrl, ref, webPageSchemas } from "@/lib/schema";
+import { absoluteUrl, ref, schemaText, webPageSchemas } from "@/lib/schema";
 import { societyMapSchema } from "@/lib/schema-entities";
 import { JsonLd } from "@/components/json-ld";
 
@@ -72,7 +72,7 @@ export default async function SocietyMapPage({ params }: PageProps<"/map/[slug]"
     ...webPageSchemas({
       path: mapPath,
       name: map.meta_title ?? map.title,
-      description: map.meta_description ?? map.description_text,
+      description: schemaText(map.meta_description || map.subtitle || map.description_text, 300),
       breadcrumb: [
         { name: "Society Maps", path: "/dha-gujranwala-maps" },
         { name: map.title, path: mapPath },

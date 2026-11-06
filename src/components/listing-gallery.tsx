@@ -115,7 +115,7 @@ export function ListingGallery({ photos, title }: { photos: Photo[]; title: stri
       <div className="lgallery-stage" onKeyDown={many ? onKeyDown : undefined}>
         <div className="lgallery-track" ref={trackRef} onScroll={onScroll}>
           {photos.map((photo, photoIndex) => (
-            <button key={photo.id} type="button" className="lgallery-slide" aria-label={`${altOf(photo, photoIndex)} — view all ${photos.length} photos`} onClick={() => setGridOpen(true)}>
+            <button key={photo.id} type="button" className="lgallery-slide" aria-label={`${altOf(photo, photoIndex) || title} — view all ${photos.length} photos`} onClick={() => setGridOpen(true)}>
               {/* eslint-disable-next-line @next/next/no-img-element -- the blurred fill behind a photo that doesn't match the stage's shape */}
               <img className="lgallery-backdrop" src={thumbnailUrl(photo)} alt="" aria-hidden="true" loading={photoIndex === 0 ? "eager" : "lazy"} />
               {/* eslint-disable-next-line @next/next/no-img-element -- watermarked copies straight from the API */}

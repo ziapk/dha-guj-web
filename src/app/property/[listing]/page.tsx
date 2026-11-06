@@ -326,6 +326,13 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
             </div>
           </section>
 
+          {nearby.length > 0 && (
+            <section className="pd-section pd-amenities pd-nearby">
+              <h2>Nearby Locations</h2>
+              <AmenityGroups amenities={nearby.map((amenity) => ({ ...amenity, group: null }))} />
+            </section>
+          )}
+
           <section className="pd-section">
             <h2>Property Description</h2>
             <Expandable collapsedHeight={170}>
@@ -351,13 +358,6 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
                   <strong>{property.installments_count ?? "—"}</strong>
                 </li>
               </ul>
-            </section>
-          )}
-
-          {nearby.length > 0 && (
-            <section className="pd-section pd-amenities pd-nearby">
-              <h2>Nearby Locations</h2>
-              <AmenityGroups amenities={nearby.map((amenity) => ({ ...amenity, group: null }))} />
             </section>
           )}
 

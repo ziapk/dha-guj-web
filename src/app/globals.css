@@ -2667,6 +2667,14 @@ main h3 {
   object-fit: contain;
 }
 
+/* An uploaded SVG icon, painted in the icon colour like the built-in ones */
+.amenity-icon-mask {
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: var(--amenity-icon) center / contain no-repeat;
+  mask: var(--amenity-icon) center / contain no-repeat;
+}
+
 .contact-card {
   display: flex;
   flex-direction: column;
@@ -12460,28 +12468,33 @@ body .ant-image-preview .ant-image-preview-mask {
   color: var(--app-heading);
 }
 
-/* "About this property" — two striped columns */
+/* "About this property" — one panel, two striped columns split by a rule */
 .pd-facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: 16px;
+  gap: 0;
+  padding: 8px;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-l);
+  background: var(--app-surface);
 }
 
 .pd-facts dl {
   margin: 0;
-  padding: 6px;
-  border: 1px solid var(--app-border);
-  border-radius: var(--radius-l);
-  background: var(--app-surface);
+  padding: 0 8px;
+}
+
+.pd-facts dl + dl {
+  border-left: 1px solid var(--app-border);
 }
 
 .pd-facts dl > div {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
-  padding: 9px 12px;
-  border-radius: var(--radius-m);
-  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13.5px;
 }
 
 .pd-facts dl > div:nth-child(odd) {
@@ -13220,7 +13233,8 @@ body .ant-image-preview .ant-image-preview-mask {
     background: var(--app-surface);
   }
 
-  .pd-facts dl {
+  .pd-facts dl,
+  .pd-facts dl + dl {
     padding: 0 6px;
     border: 0;
     background: none;

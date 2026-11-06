@@ -3,7 +3,7 @@
  * maps), built from the same API data the pages render. See src/lib/schema.ts for the shared building blocks.
  */
 
-import { agentHref, agentSocials } from "@/lib/agents";
+import { agentDescription, agentHref, agentSocials } from "@/lib/agents";
 import { altText, galleryPhotoAlt, logoAlt } from "@/lib/alt-text";
 import { authorHref, authorSocials } from "@/lib/authors";
 import { AREA_UNIT_LABELS } from "@/lib/labels";
@@ -102,6 +102,17 @@ export function listingAvailability(property: PublicProperty, notice: PropertySe
   return property.property_status === "under_offer" ? "https://schema.org/LimitedAvailability" : "https://schema.org/InStock";
 }
 
+/** The Offer's own summary ("10 Marla House for sale in Sector G-2, DHA Gujranwala"), else the listing text. */
+function offerDescription(property: PublicProperty, listingText: string | undefined): string | undefined {
+  const where = [property.sector && sectorName(property.sector), property.phase && phaseName(property.phase), property.society?.name ?? property.city?.name]
+    .filter(Boolean)
+    .join(", ");
+  const what = property.property_type?.name ?? "Property";
+  const summary = `${what} for ${property.purpose === "rent" ? "rent" : "sale"}${where ? ` in ${where}` : ""}: ${property.title}.`;
+
+  return schemaText(summary, 300) ?? schemaText(listingText, 300);
+}
+
 /**
  * A listing page: the property (House, Apartment, Place…) with its address, position, size, rooms, amenities and
  * photos; the sale or rent Offer for it, offered by the dealer; and YouTube videos shown on the page.
@@ -146,6 +157,7 @@ export function propertySchemas(property: PublicProperty, path: string, notice: 
         "@id": `${url}#offer`,
         url,
         name: property.title,
+        description: offerDescription(property, description),
         category: property.property_type?.name,
         price,
         priceCurrency: SCHEMA_CURRENCY,
@@ -323,7 +335,7 @@ export function agentSchema(agent: PublicAgent): Schema {
     url: absoluteUrl(agentHref(agent.slug)),
     image: featuredImage(agent, agent.photo_url, altText(agent.photo_alt, agent.name)),
     jobTitle: agent.designation ?? undefined,
-    description: agent.short_bio ?? undefined,
+    description: agentDescription(agent),
     telephone: agent.phone ?? undefined,
     email: agent.email ?? undefined,
     knowsLanguage: (agent.languages ?? "").split(/[,/]/).map((language) => language.trim()),
@@ -425,7 +437,7 @@ export function blogPostSchema(post: BlogPost, description?: string): Schema {
 /* ---------- Maps, sectors and blocks ---------- */
 
 function phaseName(name: string): string {
-  return /^phase\b/i.test(name) ? name : `Phase ${name}`;
+  return /^phase/i.test(name) ? name : `Phase ${name}`;
 }
 
 /** The middle of an area's mapped boundary (its bounding box), or null when it has not been drawn. */
@@ -510,7 +522,8 @@ export function societyMapSchema(map: PublicSocietyMap): Schema {
     "@id": `${url}#map`,
     name: map.title,
     url,
-    description: map.description_text ?? map.subtitle ?? undefined,
+    // description_text is the whole guide article (up to ~11k characters): use the short summary, else a trimmed excerpt.
+    description: schemaText(map.meta_description || map.subtitle || map.description_text, 300),
     image: imageObject(map.image_url, { caption: altText(map.image_alt, map.title), width: map.image_width, height: map.image_height }),
     mapType: "https://schema.org/VenueMap",
     datePublished: map.published_at ?? undefined,

@@ -6,6 +6,19 @@ const AGENTS_REVALIDATE = 300;
 
 export const AGENTS_PER_PAGE = 24;
 
+/** The agent's bio, else a one-line summary of who they are (meta description and structured data). */
+export function agentDescription(agent: PublicAgent): string {
+  if (agent.short_bio) {
+    return agent.short_bio;
+  }
+
+  const role = agent.designation ? `${agent.designation}${agent.agency ? ` at ${agent.agency.name}` : ""}` : agent.agency ? `Agent at ${agent.agency.name}` : null;
+
+  return role || agent.specialisation
+    ? `${agent.name}${role ? `, ${role}` : ""}. ${agent.specialisation ?? "View property listings and real estate services in DHA Gujranwala."}`
+    : `View ${agent.name}'s profile, property listings and real estate services in DHA Gujranwala.`;
+}
+
 export function agentHref(slug: string): string {
   return `/agent/${slug}`;
 }

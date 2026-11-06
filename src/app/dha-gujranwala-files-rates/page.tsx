@@ -52,6 +52,7 @@ export default async function FileRatesPage() {
           "@type": "HowTo",
           "@id": `${absoluteUrl(`/${FILE_RATES_SLUG}`)}#howto`,
           name: "How to buy a DHA Gujranwala file",
+          description: `The ${sections.steps.length} steps to buy a DHA Gujranwala file: ${sections.steps.map((step) => step.title).join(", ")}.`,
           step: sections.steps.map((step, index) => ({
             "@type": "HowToStep",
             position: index + 1,

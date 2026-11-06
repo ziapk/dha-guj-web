@@ -6,7 +6,7 @@ import { AgencyLogo } from "@/components/agency-card";
 import { BannerSlot } from "@/components/banner-slot";
 import { ArrowRightIcon, BriefcaseIcon, HandshakeIcon, HomeIcon, KeyIcon, MailIcon, PhoneIcon, PinIcon, ShieldCheckIcon, WhatsAppIcon } from "@/components/icons";
 import { ListingRowCard, type ListingOwner } from "@/components/listing-row-card";
-import { agentHref, agentSocials, getAgent, getAgents } from "@/lib/agents";
+import { agentDescription, agentHref, agentSocials, getAgent, getAgents } from "@/lib/agents";
 import { altText } from "@/lib/alt-text";
 import { publicApi } from "@/lib/api";
 import { sizedImage } from "@/lib/image";
@@ -47,17 +47,11 @@ export async function generateMetadata({ params }: PageProps<"/agent/[slug]">): 
     return notFoundMetadata("Agent not found");
   }
 
-  const role = agent.designation ? `${agent.designation}${agent.agency ? ` at ${agent.agency.name}` : ""}` : agent.agency ? `Agent at ${agent.agency.name}` : null;
-
   // Shares the admin's featured image, else the agent's photo, else the default image.
   return pageMetadata({
     title: `${agent.name} | DHA Gujranwala Property Agent`,
     absoluteTitle: true,
-    description:
-      agent.short_bio ??
-      (role || agent.specialisation
-        ? `${agent.name}${role ? `, ${role}` : ""}. ${agent.specialisation ?? "View property listings and real estate services in DHA Gujranwala."}`
-        : `View ${agent.name}'s profile, property listings and real estate services in DHA Gujranwala.`),
+    description: agentDescription(agent),
     path: `/agent/${agent.slug}`,
     images: [adminShareImage(agent), agent.photo_url && { url: agent.photo_url, alt: altText(agent.photo_alt, agent.name) }],
     imageAlt: agent.name,
@@ -107,7 +101,7 @@ export default async function AgentPage({ params }: PageProps<"/agent/[slug]">) 
       path: agentPath,
       type: "ProfilePage",
       name: agent.name,
-      description: agent.short_bio,
+      description: agentDescription(agent),
       breadcrumb: [
         { name: "Agents", path: "/agents" },
         { name: agent.name, path: agentPath },
