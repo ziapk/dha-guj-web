@@ -21,7 +21,7 @@ import { adminShareImage, metaText, notFoundMetadata, pageMetadata } from "@/lib
 import { siteUrl } from "@/lib/site";
 import type { AgencyProfile, BlogPostSummary, HomeData, Paginated, PublicAuthor, PublicProject, PublicProperty, Resource } from "@/types/api";
 import { absoluteUrl, ref, webPageSchemas } from "@/lib/schema";
-import { blogPostSchema } from "@/lib/schema-entities";
+import { blogPostImage, blogPostSchema } from "@/lib/schema-entities";
 import { JsonLd } from "@/components/json-ld";
 
 export const revalidate = 300;
@@ -132,6 +132,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
         { name: post.title, path: postPath },
       ],
       mainEntity: ref(`${absoluteUrl(postPath)}#article`),
+      image: blogPostImage(post) ? ref(`${absoluteUrl(postPath)}#primaryimage`) : null,
       datePublished: post.published_at,
       dateModified: post.updated_at,
     }),

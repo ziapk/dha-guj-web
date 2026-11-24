@@ -63,8 +63,8 @@ import {
 } from "@/lib/project";
 import { coverOf, descriptionText, locationOf, mediumUrl, propertyHref, thumbnailUrl } from "@/lib/property";
 import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
-import { faqSchema, imageObject, ref, schemaId, webPageSchemas } from "@/lib/schema";
-import { developerRef, projectSchemas } from "@/lib/schema-entities";
+import { absoluteUrl, faqSchema, imageObject, ref, schemaId, webPageSchemas } from "@/lib/schema";
+import { developerRef, projectLowPrice, projectSchemas } from "@/lib/schema-entities";
 import type { AgencyProfile, PageIcon, Paginated, ProjectPaymentPlan, PublicProject, PublicProperty, Resource } from "@/types/api";
 
 export const revalidate = 300;
@@ -363,9 +363,12 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
     : [];
 
   const projectPath = projectHref(project.slug);
+  // With published prices the page is a listing of units for sale (it carries the project's AggregateOffer).
+  const onSale = projectLowPrice(project) !== undefined;
   const structuredData = [
     ...webPageSchemas({
       path: projectPath,
+      type: onSale ? "RealEstateListing" : "WebPage",
       name: project.meta_title || project.name,
       description: project.meta_description || project.short_description,
       breadcrumb: [
@@ -376,6 +379,7 @@ export default async function ProjectPage({ params }: PageProps<"/project/[slug]
       mainEntity: ref(schemaId.project(project.slug)),
       about: developerRef(project.developer),
       datePublished: project.published_at,
+      extra: onSale ? { datePosted: project.published_at ?? undefined, offers: ref(`${absoluteUrl(projectPath)}#offer`) } : undefined,
     }),
     ...projectSchemas(project),
     faqSchema(projectPath, faqs.map((faq) => ({ question: faq.question, answer: faq.text }))),

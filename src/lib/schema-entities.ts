@@ -28,7 +28,7 @@ import {
   videoSchema,
   type Schema,
 } from "@/lib/schema";
-import type { AgencyProfile, AreaUnit, BlogPost, GeoPolygon, MapBlock, PublicSocietyMap, PropertySeo, PublicAgent, PublicAuthor, PublicDeveloper, PublicProject, PublicProperty } from "@/types/api";
+import type { AgencyProfile, AreaUnit, BlockGuide, BlogPost, GeoPolygon, MapBlock, PublicSocietyMap, PropertySeo, PublicAgent, PublicAuthor, PublicDeveloper, PublicProject, PublicProperty, SectorGuideDetail } from "@/types/api";
 
 /** Prices on the website are in Pakistani rupees. */
 export const SCHEMA_CURRENCY = "PKR";
@@ -89,6 +89,19 @@ function listingTypeOf(property: PublicProperty): string {
   return "Accommodation";
 }
 
+/** "sold" / "rented out" for a closed deal, "listing expired" for a lapsed one, null while on the market. */
+function listingClosedAs(property: PublicProperty, notice: PropertySeo["notice"]): string | null {
+  if (notice === "sold" || property.property_status === "sold") {
+    return "sold";
+  }
+
+  if (notice === "rented" || property.property_status === "rented") {
+    return "rented out";
+  }
+
+  return notice === "expired" ? "(listing expired)" : null;
+}
+
 /** schema.org availability of a listing: sold / rented / expired listings are no longer on offer. */
 export function listingAvailability(property: PublicProperty, notice: PropertySeo["notice"]): string {
   if (notice === "sold" || notice === "rented" || property.property_status === "sold" || property.property_status === "rented") {
@@ -102,13 +115,17 @@ export function listingAvailability(property: PublicProperty, notice: PropertySe
   return property.property_status === "under_offer" ? "https://schema.org/LimitedAvailability" : "https://schema.org/InStock";
 }
 
-/** The Offer's own summary ("10 Marla House for sale in Sector G-2, DHA Gujranwala"), else the listing text. */
-function offerDescription(property: PublicProperty, listingText: string | undefined): string | undefined {
+/**
+ * The Offer's own summary ("10 Marla House for sale in Sector G-2, DHA Gujranwala"), else the listing text. A closed
+ * listing says so ("… sold", "… rented out", "… listing expired") instead of still offering it.
+ */
+function offerDescription(property: PublicProperty, listingText: string | undefined, notice: PropertySeo["notice"]): string | undefined {
   const where = [property.sector && sectorName(property.sector), property.phase && phaseName(property.phase), property.society?.name ?? property.city?.name]
     .filter(Boolean)
     .join(", ");
   const what = property.property_type?.name ?? "Property";
-  const summary = `${what} for ${property.purpose === "rent" ? "rent" : "sale"}${where ? ` in ${where}` : ""}: ${property.title}.`;
+  const closed = listingClosedAs(property, notice);
+  const summary = `${what} ${closed ?? `for ${property.purpose === "rent" ? "rent" : "sale"}`}${where ? ` in ${where}` : ""}: ${property.title}.`;
 
   return schemaText(summary, 300) ?? schemaText(listingText, 300);
 }
@@ -157,7 +174,7 @@ export function propertySchemas(property: PublicProperty, path: string, notice: 
         "@id": `${url}#offer`,
         url,
         name: property.title,
-        description: offerDescription(property, description),
+        description: offerDescription(property, description, notice),
         category: property.property_type?.name,
         price,
         priceCurrency: SCHEMA_CURRENCY,
@@ -166,8 +183,14 @@ export function propertySchemas(property: PublicProperty, path: string, notice: 
         businessFunction: property.purpose === "rent" ? "http://purl.org/goodrelations/v1#LeaseOut" : "http://purl.org/goodrelations/v1#Sell",
         availability: listingAvailability(property, notice),
         validFrom: property.published_at ?? undefined,
+        // A sold / rented listing's offer ended when the deal closed.
+        validThrough: property.closed_at ?? undefined,
         itemOffered: ref(propertyId),
-        offeredBy: dealerRef(property.contact?.agency),
+        // The dealer and, when the listing names one with a public profile, the agent handling it.
+        offeredBy: [
+          dealerRef(property.contact?.agency),
+          property.agent ? { "@type": "Person", "@id": schemaId.agent(property.agent.slug), name: property.agent.name, url: absoluteUrl(agentHref(property.agent.slug)) } : null,
+        ],
       }
     : null;
 
@@ -212,6 +235,11 @@ function projectTypeOf(project: PublicProject): string {
  * A project page: the project as a Residence / ApartmentComplex / Place with its address, position, photos, floor
  * plans and amenities; a price range AggregateOffer only when the developer publishes prices; YouTube videos.
  */
+/** The project's published starting price, or undefined when the developer hides prices (then there is no Offer). */
+export function projectLowPrice(project: PublicProject): number | undefined {
+  return project.hide_price ? undefined : schemaNumber(project.price_from);
+}
+
 export function projectSchemas(project: PublicProject): Schema[] {
   const path = projectHref(project.slug);
   const url = absoluteUrl(path);
@@ -220,7 +248,7 @@ export function projectSchemas(project: PublicProject): Schema[] {
   const photos = projectPhotosOf(project).slice(0, 10);
   const description = project.short_description || schemaText(descriptionText(project.description ?? ""));
   const developer = developerRef(project.developer) ?? (project.developer_name ? { "@type": "Organization", name: project.developer_name, url: project.developer_website ?? undefined } : null);
-  const lowPrice = project.hide_price ? undefined : schemaNumber(project.price_from);
+  const lowPrice = projectLowPrice(project);
   const highPrice = project.hide_price ? undefined : schemaNumber(project.price_to);
   const unitCount = (project.units ?? []).length;
   const floorPlans = (project.floor_plans ?? []).filter((plan) => plan.image_url);
@@ -409,6 +437,18 @@ export function authorSchema(author: PublicAuthor): Schema {
   };
 }
 
+/**
+ * A post's main image (the cover, else the admin's share image) under its own id, so the page node can name it as
+ * its primary image without repeating it.
+ */
+export function blogPostImage(post: BlogPost): Schema | null {
+  const id = `${absoluteUrl(postHref(post.slug))}#primaryimage`;
+
+  return post.cover_image_url
+    ? imageObject(post.cover_image_url, { id, caption: altText(post.cover_image_alt, post.title) })
+    : imageObject(post.og_image_url, { id, caption: post.og_image_alt || post.title });
+}
+
 /** A blog post as a BlogPosting by its author (or the brand), published by the brand. */
 export function blogPostSchema(post: BlogPost, description?: string): Schema {
   const url = absoluteUrl(postHref(post.slug));
@@ -421,11 +461,18 @@ export function blogPostSchema(post: BlogPost, description?: string): Schema {
     description: description || post.meta_description || post.excerpt || undefined,
     url,
     mainEntityOfPage: ref(schemaId.webPage(postHref(post.slug))),
-    image: post.cover_image_url ? imageObject(post.cover_image_url, { caption: post.title }) : imageObject(post.og_image_url, { caption: post.og_image_alt || post.title }),
+    image: blogPostImage(post),
     datePublished: post.published_at ?? undefined,
     dateModified: post.updated_at ?? post.published_at ?? undefined,
     author: post.author
-      ? { "@type": "Person", "@id": schemaId.author(post.author.slug), name: post.author.name, url: absoluteUrl(authorHref(post.author.slug)), jobTitle: post.author.designation ?? undefined }
+      ? {
+          "@type": "Person",
+          "@id": schemaId.author(post.author.slug),
+          name: post.author.name,
+          url: absoluteUrl(authorHref(post.author.slug)),
+          jobTitle: post.author.designation ?? undefined,
+          image: imageObject(post.author.photo_url, { caption: post.author.name }),
+        }
       : brandRef(),
     publisher: brandRef(),
     articleSection: post.category?.name,
@@ -510,6 +557,38 @@ export function areaGuidePlaceSchema(
     containedInPlace: within.sector
       ? { "@type": "Place", "@id": `${absoluteUrl(within.sector.path)}#place`, name: `${within.sector.title}, ${within.society.name}`, url: absoluteUrl(within.sector.path) }
       : areaChain(within.society, within.phase),
+  };
+}
+
+/**
+ * A sector or block guide's write-up as an Article about the guide's Place (see areaGuidePlaceSchema), published by
+ * the brand. The guide's map is its image; the word count covers the written sections shown on the page.
+ */
+export function areaGuideArticleSchema(
+  guide: SectorGuideDetail | BlockGuide,
+  headline: string,
+  description: string | null | undefined,
+): Schema {
+  const url = absoluteUrl(guide.path);
+  const text = [guide.overview, guide.location_details, guide.roads_facilities, guide.development_info].map((html) => schemaText(html) ?? "").join(" ").trim();
+
+  return {
+    "@type": "Article",
+    "@id": `${url}#article`,
+    headline: headline.length > 110 ? `${headline.slice(0, 109)}…` : headline,
+    name: headline,
+    description: description ?? undefined,
+    url,
+    mainEntityOfPage: ref(schemaId.webPage(guide.path)),
+    image: guide.map ? imageObject(guide.map.image_url, { caption: altText(guide.map.image_alt, guide.map.title), width: guide.map.image_width, height: guide.map.image_height }) : null,
+    datePublished: guide.published_at ?? undefined,
+    dateModified: guide.updated_at ?? guide.published_at ?? undefined,
+    author: brandRef(),
+    publisher: brandRef(),
+    about: ref(`${url}#place`),
+    articleSection: "Area guides",
+    wordCount: text ? text.split(" ").length : undefined,
+    inLanguage: "en",
   };
 }
 

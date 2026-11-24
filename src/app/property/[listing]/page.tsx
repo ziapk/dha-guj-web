@@ -40,7 +40,7 @@ import { coverOf, descriptionText, locationOf, mediumUrl, photosOf, propertyHref
 import { adminShareImage, notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { getListingPageSettings } from "@/lib/site-data";
 import { siteUrl } from "@/lib/site";
-import { absoluteUrl, imageObject, ref, webPageSchemas } from "@/lib/schema";
+import { absoluteUrl, imageObject, ref, schemaNumber, webPageSchemas } from "@/lib/schema";
 import { propertySchemas } from "@/lib/schema-entities";
 import type { Collection, PropertySeo, PublicProperty, Resource } from "@/types/api";
 import { PURPOSE_PAGES } from "@/lib/purpose-search";
@@ -212,10 +212,11 @@ export default async function PropertyPage({ params }: PageProps<"/property/[lis
       type: "RealEstateListing",
       name: property.title,
       description: seo.description,
-      breadcrumb: pageSettings.breadcrumb_enabled ? [...breadcrumbs, currentCrumb] : false,
+      // The trail follows the URL structure, so search engines get it even when the visible breadcrumb is turned off.
+      breadcrumb: [...breadcrumbs, currentCrumb],
       image: photos[0] ? imageObject(mediumUrl(photos[0]), { caption: altText(photos[0].alt_text, property.title) }) : null,
       mainEntity: ref(`${absoluteUrl(seo.path)}#property`),
-      extra: { datePosted: property.published_at ?? undefined },
+      extra: { datePosted: property.published_at ?? undefined, offers: schemaNumber(property.price) ? ref(`${absoluteUrl(seo.path)}#offer`) : undefined },
       dateModified: property.refreshed_at,
     }),
     ...propertySchemas(property, seo.path, seo.notice),

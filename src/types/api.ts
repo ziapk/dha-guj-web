@@ -106,6 +106,8 @@ export type PublicProperty = {
   contact?: { name: string; photo_url?: string | null; photo_alt?: string | null; phone: string | null; whatsapp: string | null; account_type: AccountType; agency?: AgencyLink | null };
   /** The agent who posted it; only on agency searches (?agency=), null when they have no public profile. */
   agent?: { name: string; slug: string; photo_url: string | null; photo_alt?: string | null; phone: string | null; whatsapp: string | null } | null;
+  /** When the listing was marked sold / rented; null while it is on the market. */
+  closed_at?: string | null;
   is_featured: boolean;
   /** Hot (premium) promotion; older API responses may leave it out. */
   is_hot?: boolean;

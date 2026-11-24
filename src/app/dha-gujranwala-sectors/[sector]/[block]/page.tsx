@@ -7,7 +7,7 @@ import { altText } from "@/lib/alt-text";
 import { getMapAreas } from "@/lib/plot-finder";
 import { mapsHref, sectorEntries } from "@/lib/plot-finder-shared";
 import { absoluteUrl, ref, webPageSchemas } from "@/lib/schema";
-import { areaGuidePlaceSchema, propertyListSchema } from "@/lib/schema-entities";
+import { areaGuideArticleSchema, areaGuidePlaceSchema, propertyListSchema } from "@/lib/schema-entities";
 import { notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { areaListingsHref, getAreaListings, getBlockGuide, SECTORS_PATH } from "@/lib/sector-guides";
 
@@ -59,10 +59,12 @@ export default async function BlockGuidePage({ params }: Params) {
             name: guide.meta_title ?? `${guide.title}, ${sector.title}, ${sector.society.name}`,
             description: guide.meta_description ?? guide.summary,
             breadcrumb: trail,
-            mainEntity: ref(`${absoluteUrl(guide.path)}#place`),
+            mainEntity: ref(`${absoluteUrl(guide.path)}#article`),
+            about: ref(`${absoluteUrl(guide.path)}#place`),
             datePublished: guide.published_at,
             dateModified: guide.updated_at,
           }),
+          areaGuideArticleSchema(guide, `${guide.title}, ${sector.title}, ${sector.society.name}`, guide.meta_description ?? guide.summary),
           areaGuidePlaceSchema(guide, { society: sector.society, phase: sector.phase, sector }, mappedBlock?.boundary),
           propertyListSchema(guide.path, listings, `Properties in ${guide.title}`),
         ]}

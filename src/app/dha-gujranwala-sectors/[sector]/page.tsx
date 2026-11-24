@@ -7,7 +7,7 @@ import { altText } from "@/lib/alt-text";
 import { getMapAreas } from "@/lib/plot-finder";
 import { mapsHref, sectorEntries } from "@/lib/plot-finder-shared";
 import { absoluteUrl, ref, webPageSchemas } from "@/lib/schema";
-import { areaGuidePlaceSchema, propertyListSchema } from "@/lib/schema-entities";
+import { areaGuideArticleSchema, areaGuidePlaceSchema, propertyListSchema } from "@/lib/schema-entities";
 import { notFoundMetadata, pageMetadata } from "@/lib/seo";
 import { areaListingsHref, getAreaListings, getSectorGuide, SECTORS_PATH } from "@/lib/sector-guides";
 
@@ -51,10 +51,12 @@ export default async function SectorGuidePage({ params }: PageProps<"/dha-gujran
             name: guide.meta_title ?? `${guide.title}, ${guide.society.name}`,
             description: guide.meta_description ?? guide.summary,
             breadcrumb: trail,
-            mainEntity: ref(`${absoluteUrl(guide.path)}#place`),
+            mainEntity: ref(`${absoluteUrl(guide.path)}#article`),
+            about: ref(`${absoluteUrl(guide.path)}#place`),
             datePublished: guide.published_at,
             dateModified: guide.updated_at,
           }),
+          areaGuideArticleSchema(guide, `${guide.title}, ${guide.society.name}`, guide.meta_description ?? guide.summary),
           areaGuidePlaceSchema(guide, { society: guide.society, phase: guide.phase }, mapped?.sector.boundary),
           propertyListSchema(guide.path, listings, `Properties in ${guide.title}`),
         ]}
