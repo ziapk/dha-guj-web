@@ -445,7 +445,7 @@ export function blogPostImage(post: BlogPost): Schema | null {
   const id = `${absoluteUrl(postHref(post.slug))}#primaryimage`;
 
   return post.cover_image_url
-    ? imageObject(post.cover_image_url, { id, caption: altText(post.cover_image_alt, post.title) })
+    ? imageObject(post.cover_image_url, { id, caption: post.title })
     : imageObject(post.og_image_url, { id, caption: post.og_image_alt || post.title });
 }
 
